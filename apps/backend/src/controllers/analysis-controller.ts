@@ -165,7 +165,7 @@ export async function registerAnalysisRoutes(app: FastifyInstance): Promise<void
 
       return reply.status(200).send({
         success: true,
-        data: analysisResult.result,
+        data: analysisResult.result!,
       } satisfies ApiResponse<AnalysisResult>);
 
     } catch (error) {
@@ -353,8 +353,8 @@ function isAllowedFileType(filename: string, mimetype: string): boolean {
   const ext = filename.toLowerCase().split('.').pop();
   const extWithDot = ext ? `.${ext}` : '';
 
-  const validExtension = config.upload.allowedExtensions.includes(extWithDot);
-  const validMime = config.upload.allowedMimeTypes.includes(mimetype);
+  const validExtension = (config.upload.allowedExtensions as readonly string[]).includes(extWithDot);
+  const validMime = (config.upload.allowedMimeTypes as readonly string[]).includes(mimetype);
 
   // Aceita se extensão OU mimetype for válido
   // (alguns browsers enviam mimetypes diferentes)

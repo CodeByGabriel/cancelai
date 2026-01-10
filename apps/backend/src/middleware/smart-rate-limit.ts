@@ -186,7 +186,7 @@ function checkRateLimit(
     }
     // Tempo de bloqueio passou, reseta
     usage.blocked = false;
-    usage.blockReason = undefined;
+    delete usage.blockReason;
   }
 
   // Verifica se a janela expirou e reseta contadores

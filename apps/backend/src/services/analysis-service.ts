@@ -147,8 +147,8 @@ export async function analyzeStatements(
         filesProcessed: successfulParses.length,
         bankFormatsDetected: [...new Set(banksDetected)],
       },
-      warnings: resultWarnings.length > 0 ? resultWarnings : undefined,
-      info: resultInfo.length > 0 ? resultInfo : undefined,
+      ...(resultWarnings.length > 0 && { warnings: resultWarnings }),
+      ...(resultInfo.length > 0 && { info: resultInfo }),
     };
 
     // SEGURANÇA: Limpa referências aos dados originais

@@ -502,8 +502,8 @@ function analyzeGroupWithScore(
     confidence: confidenceLevel,
     confidenceScore: roundToTwo(finalScore * 100) / 100, // 0-1 com 2 decimais
     confidenceReasons,
-    category: knownService?.category,
-    cancelInstructions: knownService ? getCancelInstructions(knownService) : undefined,
+    ...(knownService?.category && { category: knownService.category }),
+    ...(knownService && { cancelInstructions: getCancelInstructions(knownService) }),
   };
 
   return subscription;

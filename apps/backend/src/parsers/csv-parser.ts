@@ -193,7 +193,7 @@ export class CSVParser extends BaseBankParser {
 
   async parse(content: string | Buffer, filename: string): Promise<ParseResult> {
     try {
-      const contentStr = content instanceof Buffer ? content.toString('utf-8') : content;
+      const contentStr = typeof content === 'string' ? content : content.toString('utf-8');
 
       // SEGURANÇA: Limita tamanho do conteúdo para prevenir DoS
       if (contentStr.length > 10 * 1024 * 1024) {
