@@ -148,6 +148,13 @@ const COLUMN_MAPPINGS: Record<string, ColumnMapping> = {
     amount: ['Valor', 'VALOR'],
     detectPattern: /xp\s*investimentos|banco xp|xp$/i,
   },
+  mercadoPago: {
+    date: ['Fecha', 'Data', 'data', 'fecha_creacion', 'date_created'],
+    description: ['Descripción', 'Descrição', 'descricao', 'motivo', 'description'],
+    amount: ['Monto', 'Valor', 'valor', 'monto_neto', 'net_amount'],
+    type: ['Tipo', 'tipo', 'tipo_operacion', 'operation_type'],
+    detectPattern: /mercado\s*pago|meli|mercadolibre|mercado\s*livre/i,
+  },
 
   // ══════════════════════════════════════════════════════════════
   // PARSER GENÉRICO (FALLBACK)
@@ -287,7 +294,9 @@ export class CSVParser extends BaseBankParser {
     let maxCount = 0;
 
     for (const delimiter of delimiters) {
-      const count = (firstLines.match(new RegExp(delimiter, 'g')) || []).length;
+      // Escapa caracteres especiais de regex (especialmente | que significa OR)
+      const escapedDelimiter = delimiter.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const count = (firstLines.match(new RegExp(escapedDelimiter, 'g')) || []).length;
       if (count > maxCount) {
         maxCount = count;
         bestDelimiter = delimiter;

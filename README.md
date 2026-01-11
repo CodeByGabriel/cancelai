@@ -264,7 +264,11 @@ Transacoes Brutas
 
 ## Base de Servicos Conhecidos
 
-O sistema inclui uma base curada de **80+ servicos** de assinatura brasileiros com aliases reais coletados de faturas Nubank, PicPay, Mercado Pago, Itau, Bradesco e outros bancos.
+O sistema inclui uma base curada de **80+ servicos** de assinatura brasileiros com **300+ aliases** reais coletados de faturas Nubank, PicPay, Mercado Pago, Itau, Bradesco e outros bancos.
+
+**Arquivo:** [`apps/backend/src/services/known-services.ts`](apps/backend/src/services/known-services.ts)
+
+> **Como contribuir:** Para adicionar novos servicos ou aliases, edite o arquivo acima seguindo o padrao existente e abra um PR.
 
 ### Categorias
 

@@ -40,7 +40,7 @@ interface DeepSeekResponse {
 const CONFIG = {
   API_URL: 'https://api.deepseek.com/v1/chat/completions',
   MODEL: 'deepseek-chat',
-  TIMEOUT_MS: 3000,
+  TIMEOUT_MS: 2500, // Limite de 2.5s conforme especificação
   MAX_CONFIDENCE_ADJUSTMENT: 0.1,
 };
 

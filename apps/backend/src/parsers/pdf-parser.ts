@@ -67,6 +67,22 @@ const BANK_PATTERNS: BankPattern[] = [
       /(\d{2}\/\d{2}\/?\d{0,4})\s+(.+?)\s+(-?[\d.,]+)\s*([DC])?$/gim,
     dateParser: parseStandardDate,
   },
+  {
+    name: 'PicPay',
+    detectPattern: /picpay|pic\s*pay/i,
+    // Padrão PicPay Card: DD/MM Descrição R$ XX,XX
+    transactionPattern:
+      /(\d{2}\/\d{2}(?:\/\d{2,4})?)\s+(.{5,60}?)\s+R?\$?\s*(-?[\d.,]+)/gim,
+    dateParser: parseStandardDate,
+  },
+  {
+    name: 'Mercado Pago',
+    detectPattern: /mercado\s*pago|mercadolibre|meli/i,
+    // Padrão Mercado Pago: DD/MM/YYYY Descrição Valor
+    transactionPattern:
+      /(\d{2}\/\d{2}\/?\d{0,4})\s+(.{5,60}?)\s+R?\$?\s*(-?[\d.,]+)/gim,
+    dateParser: parseStandardDate,
+  },
   // Parser genérico como fallback
   {
     name: 'PDF Genérico',
