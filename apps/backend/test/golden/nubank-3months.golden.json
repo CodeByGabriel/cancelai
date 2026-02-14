@@ -1,0 +1,362 @@
+{
+  "groundTruth": {
+    "subscriptions": [
+      "netflix",
+      "spotify",
+      "youtube",
+      "amazon prime",
+      "disney",
+      "canva",
+      "chatgpt"
+    ]
+  },
+  "snapshot": {
+    "subscriptions": [
+      {
+        "id": "77b63d10-855c-4862-8d39-78774c381862",
+        "name": "ChatGPT Plus",
+        "originalNames": [
+          "CHATGPT PLUS"
+        ],
+        "monthlyAmount": 108.9,
+        "annualAmount": 1306.8,
+        "occurrences": 3,
+        "transactions": [
+          {
+            "date": "2024-12-12T03:00:00.000Z",
+            "amount": 108.9,
+            "description": "CHATGPT PLUS"
+          },
+          {
+            "date": "2024-11-12T03:00:00.000Z",
+            "amount": 108.9,
+            "description": "CHATGPT PLUS"
+          },
+          {
+            "date": "2024-10-12T03:00:00.000Z",
+            "amount": 108.9,
+            "description": "CHATGPT PLUS"
+          }
+        ],
+        "confidence": "high",
+        "confidenceScore": 0.9551999999999999,
+        "confidenceReasons": [
+          "Padrao mensal consistente",
+          "Valores muito consistentes",
+          "Servico popular reconhecido",
+          "Consistencia temporal alta",
+          "Confianca muito alta"
+        ],
+        "category": "software",
+        "cancelInstructions": "https://chat.openai.com/settings/subscription",
+        "detectedPeriod": "monthly",
+        "priceRangeFlag": "normal"
+      },
+      {
+        "id": "f12c360d-6dcf-4fad-8aef-1b5cfee83948",
+        "name": "Netflix",
+        "originalNames": [
+          "NETFLIX.COM"
+        ],
+        "monthlyAmount": 55.9,
+        "annualAmount": 670.8,
+        "occurrences": 3,
+        "transactions": [
+          {
+            "date": "2024-12-01T03:00:00.000Z",
+            "amount": 55.9,
+            "description": "NETFLIX.COM"
+          },
+          {
+            "date": "2024-11-01T03:00:00.000Z",
+            "amount": 55.9,
+            "description": "NETFLIX.COM"
+          },
+          {
+            "date": "2024-10-01T03:00:00.000Z",
+            "amount": 55.9,
+            "description": "NETFLIX.COM"
+          }
+        ],
+        "confidence": "high",
+        "confidenceScore": 0.9551999999999999,
+        "confidenceReasons": [
+          "Padrao mensal consistente",
+          "Valores muito consistentes",
+          "Servico popular reconhecido",
+          "Consistencia temporal alta",
+          "Confianca muito alta"
+        ],
+        "category": "streaming",
+        "cancelInstructions": "https://www.netflix.com/cancelplan",
+        "detectedPeriod": "monthly",
+        "priceRangeFlag": "normal"
+      },
+      {
+        "id": "f1e19f1f-3be0-4e2d-b960-65ef5b689007",
+        "name": "Canva Pro",
+        "originalNames": [
+          "PAG*Canva"
+        ],
+        "monthlyAmount": 34.99,
+        "annualAmount": 419.88,
+        "occurrences": 3,
+        "transactions": [
+          {
+            "date": "2024-12-20T03:00:00.000Z",
+            "amount": 34.99,
+            "description": "PAG*Canva"
+          },
+          {
+            "date": "2024-11-20T03:00:00.000Z",
+            "amount": 34.99,
+            "description": "PAG*Canva"
+          },
+          {
+            "date": "2024-10-20T03:00:00.000Z",
+            "amount": 34.99,
+            "description": "PAG*Canva"
+          }
+        ],
+        "confidence": "high",
+        "confidenceScore": 0.9551999999999999,
+        "confidenceReasons": [
+          "Padrao mensal consistente",
+          "Valores muito consistentes",
+          "Servico popular reconhecido",
+          "Consistencia temporal alta",
+          "Confianca muito alta"
+        ],
+        "category": "software",
+        "cancelInstructions": "https://www.canva.com/settings/billing",
+        "detectedPeriod": "monthly",
+        "priceRangeFlag": "promo"
+      },
+      {
+        "id": "bdaf0775-c637-473d-a810-2ed3d8d19108",
+        "name": "Disney+",
+        "originalNames": [
+          "DISNEY PLUS"
+        ],
+        "monthlyAmount": 33.9,
+        "annualAmount": 406.8,
+        "occurrences": 3,
+        "transactions": [
+          {
+            "date": "2024-12-03T03:00:00.000Z",
+            "amount": 33.9,
+            "description": "DISNEY PLUS"
+          },
+          {
+            "date": "2024-11-03T03:00:00.000Z",
+            "amount": 33.9,
+            "description": "DISNEY PLUS"
+          },
+          {
+            "date": "2024-10-03T03:00:00.000Z",
+            "amount": 33.9,
+            "description": "DISNEY PLUS"
+          }
+        ],
+        "confidence": "high",
+        "confidenceScore": 0.9551999999999999,
+        "confidenceReasons": [
+          "Padrao mensal consistente",
+          "Valores muito consistentes",
+          "Servico popular reconhecido",
+          "Consistencia temporal alta",
+          "Confianca muito alta"
+        ],
+        "category": "streaming",
+        "cancelInstructions": "https://www.disneyplus.com/account",
+        "detectedPeriod": "monthly",
+        "priceRangeFlag": "normal"
+      },
+      {
+        "id": "889060e5-7fef-4479-9782-fd20bfe500c3",
+        "name": "YouTube Premium",
+        "originalNames": [
+          "GOOGLE*YouTubePr"
+        ],
+        "monthlyAmount": 29.9,
+        "annualAmount": 358.8,
+        "occurrences": 3,
+        "transactions": [
+          {
+            "date": "2024-12-10T03:00:00.000Z",
+            "amount": 29.9,
+            "description": "GOOGLE*YouTubePr"
+          },
+          {
+            "date": "2024-11-10T03:00:00.000Z",
+            "amount": 29.9,
+            "description": "GOOGLE*YouTubePr"
+          },
+          {
+            "date": "2024-10-10T03:00:00.000Z",
+            "amount": 29.9,
+            "description": "GOOGLE*YouTubePr"
+          }
+        ],
+        "confidence": "high",
+        "confidenceScore": 0.9551999999999999,
+        "confidenceReasons": [
+          "Padrao mensal consistente",
+          "Valores muito consistentes",
+          "Servico popular reconhecido",
+          "Consistencia temporal alta",
+          "Confianca muito alta"
+        ],
+        "category": "music",
+        "cancelInstructions": "https://www.youtube.com/paid_memberships",
+        "detectedPeriod": "monthly",
+        "priceRangeFlag": "normal"
+      },
+      {
+        "id": "0c87aa52-b56e-44e2-ad45-cab50b912798",
+        "name": "Spotify",
+        "originalNames": [
+          "SPOTIFY BRASIL"
+        ],
+        "monthlyAmount": 21.9,
+        "annualAmount": 262.8,
+        "occurrences": 3,
+        "transactions": [
+          {
+            "date": "2024-12-05T03:00:00.000Z",
+            "amount": 21.9,
+            "description": "SPOTIFY BRASIL"
+          },
+          {
+            "date": "2024-11-05T03:00:00.000Z",
+            "amount": 21.9,
+            "description": "SPOTIFY BRASIL"
+          },
+          {
+            "date": "2024-10-05T03:00:00.000Z",
+            "amount": 21.9,
+            "description": "SPOTIFY BRASIL"
+          }
+        ],
+        "confidence": "high",
+        "confidenceScore": 0.9551999999999999,
+        "confidenceReasons": [
+          "Padrao mensal consistente",
+          "Valores muito consistentes",
+          "Servico popular reconhecido",
+          "Consistencia temporal alta",
+          "Confianca muito alta"
+        ],
+        "category": "music",
+        "cancelInstructions": "https://www.spotify.com/br/account/subscription/",
+        "detectedPeriod": "monthly",
+        "priceRangeFlag": "normal"
+      },
+      {
+        "id": "81b16ea1-f6ec-4b1e-9828-9ac87187a37a",
+        "name": "Amazon",
+        "originalNames": [
+          "PAG*AmazonPrime"
+        ],
+        "monthlyAmount": 14.9,
+        "annualAmount": 178.8,
+        "occurrences": 3,
+        "transactions": [
+          {
+            "date": "2024-12-15T03:00:00.000Z",
+            "amount": 14.9,
+            "description": "PAG*AmazonPrime"
+          },
+          {
+            "date": "2024-11-15T03:00:00.000Z",
+            "amount": 14.9,
+            "description": "PAG*AmazonPrime"
+          },
+          {
+            "date": "2024-10-15T03:00:00.000Z",
+            "amount": 14.9,
+            "description": "PAG*AmazonPrime"
+          }
+        ],
+        "confidence": "high",
+        "confidenceScore": 0.9551999999999999,
+        "confidenceReasons": [
+          "Padrao mensal consistente",
+          "Valores muito consistentes",
+          "Servico popular reconhecido",
+          "Consistencia temporal alta",
+          "Confianca muito alta"
+        ],
+        "category": "other",
+        "cancelInstructions": "https://www.amazon.com.br/",
+        "detectedPeriod": "monthly",
+        "priceRangeFlag": "normal"
+      }
+    ],
+    "summary": {
+      "totalMonthlySpending": 300.39,
+      "totalAnnualSpending": 3604.68,
+      "subscriptionCount": 7,
+      "highConfidenceCount": 7,
+      "mediumConfidenceCount": 0,
+      "lowConfidenceCount": 0,
+      "periodStart": "2024-10-01T03:00:00.000Z",
+      "periodEnd": "2024-12-28T03:00:00.000Z",
+      "transactionsAnalyzed": 71
+    },
+    "metadata": {
+      "processedAt": "2026-02-14T12:15:06.610Z",
+      "processingTimeMs": 24,
+      "filesProcessed": 1,
+      "bankFormatsDetected": [
+        "Nubank"
+      ],
+      "version": "1.0.0"
+    },
+    "warnings": [
+      "Canva Pro: R$34.99 esta abaixo da faixa tipica (possivel promocao)"
+    ],
+    "installments": [
+      {
+        "description": "CASAS BAHIA PARC 1/6",
+        "originalDescription": "CASAS BAHIA PARC 1/6",
+        "amount": 150,
+        "date": "2024-10-15T03:00:00.000Z",
+        "installmentInfo": {
+          "current": 1,
+          "total": 6
+        }
+      },
+      {
+        "description": "CASAS BAHIA PARC 2/6",
+        "originalDescription": "CASAS BAHIA PARC 2/6",
+        "amount": 150,
+        "date": "2024-11-15T03:00:00.000Z",
+        "installmentInfo": {
+          "current": 2,
+          "total": 6
+        }
+      },
+      {
+        "description": "MAGAZINE LUIZA PARCELA 1/3",
+        "originalDescription": "MAGAZINE LUIZA PARCELA 1/3",
+        "amount": 89.9,
+        "date": "2024-11-16T03:00:00.000Z",
+        "installmentInfo": {
+          "current": 1,
+          "total": 3
+        }
+      },
+      {
+        "description": "CASAS BAHIA PARC 3/6",
+        "originalDescription": "CASAS BAHIA PARC 3/6",
+        "amount": 150,
+        "date": "2024-12-15T03:00:00.000Z",
+        "installmentInfo": {
+          "current": 3,
+          "total": 6
+        }
+      }
+    ]
+  }
+}

@@ -3,15 +3,81 @@
 @tailwind utilities;
 
 /* Font */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
 
-/* Base styles */
+/* ══════════════════════════════════════════════════
+   Design Tokens — CSS Custom Properties
+   ══════════════════════════════════════════════════ */
+
+:root {
+  /* Page */
+  --color-bg: #FFFFFF;
+  --color-bg-surface: #F9FAFB;
+  --color-bg-elevated: #F3F4F6;
+  --color-bg-card: #FFFFFF;
+
+  /* Text */
+  --color-text: #111827;
+  --color-text-secondary: #4B5563;
+  --color-text-muted: #6B7280;
+  --color-text-faint: #9CA3AF;
+
+  /* Border */
+  --color-border: #F3F4F6;
+  --color-border-strong: #E5E7EB;
+
+  /* Primary (brand green) */
+  --color-primary: #22c55e;
+  --color-primary-soft: #F0FDF4;
+  --color-primary-muted: #DCFCE7;
+  --color-primary-text: #15803D;
+
+  /* Shadow */
+  --color-shadow: rgba(0, 0, 0, 0.05);
+
+  /* Shimmer */
+  --color-shimmer-from: #f0f0f0;
+  --color-shimmer-via: #e0e0e0;
+}
+
+.dark {
+  --color-bg: #0a0a0a;
+  --color-bg-surface: #171717;
+  --color-bg-elevated: #262626;
+  --color-bg-card: #171717;
+
+  --color-text: #f5f5f5;
+  --color-text-secondary: #d4d4d4;
+  --color-text-muted: #a3a3a3;
+  --color-text-faint: #737373;
+
+  --color-border: #262626;
+  --color-border-strong: #404040;
+
+  --color-primary: #4ade80;
+  --color-primary-soft: rgba(74, 222, 128, 0.1);
+  --color-primary-muted: rgba(74, 222, 128, 0.15);
+  --color-primary-text: #86efac;
+
+  --color-shadow: rgba(0, 0, 0, 0.4);
+
+  --color-shimmer-from: #262626;
+  --color-shimmer-via: #333333;
+}
+
+/* ══════════════════════════════════════════════════
+   Base styles
+   ══════════════════════════════════════════════════ */
+
 html {
   scroll-behavior: smooth;
 }
 
 body {
   @apply antialiased;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Custom scrollbar */
@@ -21,23 +87,28 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-gray-100;
+  background: var(--color-bg-elevated);
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-gray-300 rounded-full;
+  background: var(--color-border-strong);
+  border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-gray-400;
+  background: var(--color-text-faint);
 }
 
 /* Focus states */
 *:focus-visible {
-  @apply outline-none ring-2 ring-primary-500 ring-offset-2;
+  @apply outline-none ring-2 ring-offset-2;
+  ring-color: var(--color-primary);
 }
 
-/* Animations */
+/* ══════════════════════════════════════════════════
+   Animations
+   ══════════════════════════════════════════════════ */
+
 @keyframes shimmer {
   0% {
     background-position: -200% 0;
@@ -50,9 +121,9 @@ body {
 .animate-shimmer {
   background: linear-gradient(
     90deg,
-    #f0f0f0 25%,
-    #e0e0e0 50%,
-    #f0f0f0 75%
+    var(--color-shimmer-from) 25%,
+    var(--color-shimmer-via) 50%,
+    var(--color-shimmer-from) 75%
   );
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
@@ -60,5 +131,12 @@ body {
 
 /* Drag and drop highlight */
 .dropzone-active {
-  @apply border-primary-500 bg-primary-50;
+  border-color: var(--color-primary);
+  background-color: var(--color-primary-soft);
+}
+
+/* Performance: offscreen cards skip rendering */
+.content-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 200px;
 }

@@ -20,6 +20,7 @@ import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import type { MultipartFile } from '@fastify/multipart';
 import { config } from '../config/index.js';
 import { analyzeStatements } from '../services/index.js';
+import { runPipeline } from '../pipeline/index.js';
 import type { FileToProcess } from '../parsers/index.js';
 import type { ApiResponse, AnalysisResult } from '../types/index.js';
 
@@ -34,14 +35,36 @@ function generateRequestId(): string {
  * Resultado do processamento de upload
  */
 interface UploadResult {
-  files: FileToProcess[];
-  errors: string[];
-  debugInfo: {
+  readonly files: FileToProcess[];
+  readonly errors: string[];
+  readonly debugInfo: {
     partsReceived: number;
     filesReceived: number;
     fieldsReceived: number;
   };
 }
+
+/**
+ * Job store para SSE streaming — in-memory com TTL
+ */
+interface PipelineJob {
+  readonly generator: ReturnType<typeof runPipeline>;
+  readonly createdAt: number;
+}
+
+const jobs = new Map<string, PipelineJob>();
+const JOB_TTL_MS = 60_000;
+
+const cleanupInterval = setInterval(() => {
+  const now = Date.now();
+  for (const [id, job] of jobs) {
+    if (now - job.createdAt > JOB_TTL_MS) {
+      jobs.delete(id);
+      void job.generator.return(undefined as never);
+    }
+  }
+}, 30_000);
+cleanupInterval.unref();
 
 /**
  * Registra as rotas de análise
@@ -194,6 +217,112 @@ export async function registerAnalysisRoutes(app: FastifyInstance): Promise<void
   });
 
   /**
+   * POST /api/analyze/stream
+   *
+   * Processa upload e cria job de pipeline.
+   * Retorna jobId para consumo via SSE em GET /api/analyze/:jobId/stream.
+   */
+  app.post('/api/analyze/stream', async (request: FastifyRequest, reply: FastifyReply) => {
+    const requestId = generateRequestId();
+    console.log(`[${requestId}] POST /api/analyze/stream - Iniciando`);
+
+    if (!request.isMultipart()) {
+      return reply.status(400).send({
+        success: false,
+        error: {
+          code: 'INVALID_CONTENT_TYPE',
+          message: 'Content-Type deve ser multipart/form-data',
+        },
+      } satisfies ApiResponse<never>);
+    }
+
+    const uploadResult = await processUploadedFiles(request, requestId);
+
+    if (uploadResult.files.length === 0) {
+      return reply.status(400).send({
+        success: false,
+        error: {
+          code: 'NO_FILES',
+          message: uploadResult.errors.length > 0
+            ? uploadResult.errors.join('; ')
+            : 'Nenhum arquivo recebido',
+        },
+      } satisfies ApiResponse<never>);
+    }
+
+    const jobId = `job_${Date.now().toString(36)}_${Math.random().toString(36).substring(2, 7)}`;
+    const generator = runPipeline(uploadResult.files, requestId);
+
+    jobs.set(jobId, { generator, createdAt: Date.now() });
+
+    console.log(`[${requestId}] Job criado: ${jobId} (${uploadResult.files.length} arquivo(s))`);
+
+    return reply.status(200).send({
+      success: true,
+      data: { jobId, streamUrl: `/api/analyze/${jobId}/stream` },
+    });
+  });
+
+  /**
+   * GET /api/analyze/:jobId/stream
+   *
+   * Abre conexão SSE para consumir eventos do pipeline.
+   * Cada job só pode ser consumido uma vez.
+   */
+  app.get<{ Params: { jobId: string } }>(
+    '/api/analyze/:jobId/stream',
+    async (request, reply) => {
+      const { jobId } = request.params;
+      const job = jobs.get(jobId);
+
+      if (!job) {
+        return reply.status(404).send({
+          success: false,
+          error: {
+            code: 'JOB_NOT_FOUND',
+            message: 'Job não encontrado ou já consumido',
+          },
+        } satisfies ApiResponse<never>);
+      }
+
+      // Consumo único — remove do store
+      jobs.delete(jobId);
+
+      reply.hijack();
+      reply.raw.writeHead(200, {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+        'X-Accel-Buffering': 'no',
+        // Security headers (Helmet bypass fix — reply.hijack() skips plugins)
+        'X-Content-Type-Options': 'nosniff',
+        'X-Frame-Options': 'DENY',
+        'Referrer-Policy': 'no-referrer',
+        // CORS (plugin bypass fix)
+        'Access-Control-Allow-Origin': config.cors.origin,
+      });
+
+      try {
+        for await (const event of job.generator) {
+          if (reply.raw.destroyed) break;
+          reply.raw.write(`event: ${event.type}\ndata: ${JSON.stringify(event)}\n\n`);
+        }
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Erro no pipeline';
+        if (!reply.raw.destroyed) {
+          reply.raw.write(
+            `event: error\ndata: ${JSON.stringify({ type: 'error', code: 'STREAM_ERROR', message, recoverable: false })}\n\n`
+          );
+        }
+      } finally {
+        if (!reply.raw.destroyed) {
+          reply.raw.end();
+        }
+      }
+    }
+  );
+
+  /**
    * GET /api/health
    *
    * Endpoint de health check para monitoramento.
@@ -290,7 +419,7 @@ async function processUploadedFiles(
       // Log de debug do arquivo
       console.log(
         `[${requestId}] Arquivo recebido: ` +
-        `fieldname=${file.fieldname}, filename=${file.filename}, mimetype=${file.mimetype}`
+        `fieldname=${file.fieldname}, filename=${sanitizeFilename(file.filename)}, mimetype=${file.mimetype}`
       );
 
       // SEGURANÇA: Valida quantidade de arquivos

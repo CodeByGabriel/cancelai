@@ -32,7 +32,6 @@ export function FileUpload({ onFilesSelected, status, error }: FileUploadProps) 
 
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
-      // Limita quantidade de arquivos
       const newFiles = [...files, ...acceptedFiles].slice(0, MAX_FILES);
       setFiles(newFiles);
     },
@@ -68,8 +67,8 @@ export function FileUpload({ onFilesSelected, status, error }: FileUploadProps) 
         className={cn(
           'relative border-2 border-dashed rounded-2xl p-8 sm:p-12 transition-all duration-200 cursor-pointer',
           isDragActive
-            ? 'border-primary-500 bg-primary-50'
-            : 'border-gray-200 hover:border-primary-300 hover:bg-gray-50',
+            ? 'border-brand bg-brand-soft'
+            : 'border-border-strong hover:border-brand/50 hover:bg-surface',
           isProcessing && 'opacity-50 cursor-not-allowed'
         )}
       >
@@ -77,14 +76,14 @@ export function FileUpload({ onFilesSelected, status, error }: FileUploadProps) 
 
         <div className="flex flex-col items-center text-center">
           {isProcessing ? (
-            <Loader2 className="w-12 h-12 text-primary-500 animate-spin mb-4" />
+            <Loader2 className="w-12 h-12 text-brand animate-spin mb-4" />
           ) : (
-            <div className="w-16 h-16 bg-primary-100 rounded-2xl flex items-center justify-center mb-4">
-              <Upload className="w-8 h-8 text-primary-600" />
+            <div className="w-16 h-16 bg-brand-muted rounded-2xl flex items-center justify-center mb-4">
+              <Upload className="w-8 h-8 text-brand-text" />
             </div>
           )}
 
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+          <h3 className="text-lg font-semibold text-foreground mb-2">
             {isDragActive
               ? 'Solte os arquivos aqui'
               : isProcessing
@@ -94,29 +93,29 @@ export function FileUpload({ onFilesSelected, status, error }: FileUploadProps) 
               : 'Arraste seus extratos aqui'}
           </h3>
 
-          <p className="text-gray-500 mb-4">
+          <p className="text-foreground-muted mb-4">
             {isProcessing
               ? 'Aguarde enquanto processamos seus extratos'
               : 'ou clique para selecionar arquivos'}
           </p>
 
-          <div className="flex flex-wrap gap-2 justify-center text-xs text-gray-400">
-            <span className="px-2 py-1 bg-gray-100 rounded">PDF</span>
-            <span className="px-2 py-1 bg-gray-100 rounded">CSV</span>
-            <span className="px-2 py-1 bg-gray-100 rounded">Até 10MB</span>
-            <span className="px-2 py-1 bg-gray-100 rounded">Máx. 5 arquivos</span>
+          <div className="flex flex-wrap gap-2 justify-center text-xs text-foreground-faint">
+            <span className="px-2 py-1 bg-elevated rounded">PDF</span>
+            <span className="px-2 py-1 bg-elevated rounded">CSV</span>
+            <span className="px-2 py-1 bg-elevated rounded">Até 10MB</span>
+            <span className="px-2 py-1 bg-elevated rounded">Máx. 5 arquivos</span>
           </div>
         </div>
       </div>
 
       {/* Erros de rejeição */}
       {fileRejections.length > 0 && (
-        <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-xl">
-          <div className="flex items-center gap-2 text-red-700 mb-2">
+        <div className="mt-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl">
+          <div className="flex items-center gap-2 text-red-700 dark:text-red-300 mb-2">
             <AlertCircle className="w-5 h-5" />
             <span className="font-medium">Arquivos rejeitados</span>
           </div>
-          <ul className="text-sm text-red-600 space-y-1">
+          <ul className="text-sm text-red-600 dark:text-red-400 space-y-1">
             {fileRejections.map(({ file, errors }) => (
               <li key={file.name}>
                 {file.name}: {errors.map((e) => e.message).join(', ')}
@@ -128,8 +127,8 @@ export function FileUpload({ onFilesSelected, status, error }: FileUploadProps) 
 
       {/* Erro da API */}
       {error && (
-        <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-xl">
-          <div className="flex items-center gap-2 text-red-700">
+        <div className="mt-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl">
+          <div className="flex items-center gap-2 text-red-700 dark:text-red-300">
             <AlertCircle className="w-5 h-5" />
             <span>{error}</span>
           </div>
@@ -139,7 +138,7 @@ export function FileUpload({ onFilesSelected, status, error }: FileUploadProps) 
       {/* Lista de arquivos selecionados */}
       {files.length > 0 && (
         <div className="mt-6 space-y-3">
-          <h4 className="text-sm font-medium text-gray-700">
+          <h4 className="text-sm font-medium text-foreground-secondary">
             Arquivos selecionados ({files.length})
           </h4>
 
@@ -147,17 +146,17 @@ export function FileUpload({ onFilesSelected, status, error }: FileUploadProps) 
             {files.map((file, index) => (
               <div
                 key={`${file.name}-${index}`}
-                className="flex items-center justify-between p-3 bg-white border border-gray-200 rounded-xl"
+                className="flex items-center justify-between p-3 bg-card border border-border-strong rounded-xl"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                    <File className="w-5 h-5 text-gray-500" />
+                  <div className="w-10 h-10 bg-elevated rounded-lg flex items-center justify-center">
+                    <File className="w-5 h-5 text-foreground-muted" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-gray-900 truncate max-w-[200px] sm:max-w-none">
+                    <p className="text-sm font-medium text-foreground truncate max-w-[200px] sm:max-w-none">
                       {file.name}
                     </p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-foreground-muted">
                       {formatFileSize(file.size)}
                     </p>
                   </div>
@@ -166,7 +165,7 @@ export function FileUpload({ onFilesSelected, status, error }: FileUploadProps) 
                 {!isProcessing && (
                   <button
                     onClick={() => removeFile(index)}
-                    className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                    className="p-2 text-foreground-faint hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
                     aria-label={`Remover ${file.name}`}
                   >
                     <X className="w-4 h-4" />
@@ -184,6 +183,7 @@ export function FileUpload({ onFilesSelected, status, error }: FileUploadProps) 
               'w-full py-4 px-6 rounded-xl font-semibold text-white transition-all duration-200',
               'bg-gradient-to-r from-primary-600 to-primary-500',
               'hover:from-primary-700 hover:to-primary-600',
+              'active:scale-[0.98]',
               'focus:ring-4 focus:ring-primary-500/25',
               'disabled:opacity-50 disabled:cursor-not-allowed',
               'shadow-lg shadow-primary-500/25'
@@ -205,9 +205,9 @@ export function FileUpload({ onFilesSelected, status, error }: FileUploadProps) 
       )}
 
       {/* Mensagem de privacidade */}
-      <p className="mt-6 text-center text-xs text-gray-400">
+      <p className="mt-6 text-center text-xs text-foreground-faint">
         <span className="inline-flex items-center gap-1">
-          <CheckCircle className="w-3 h-3 text-primary-500" />
+          <CheckCircle className="w-3 h-3 text-brand" />
           Seus arquivos são analisados e descartados imediatamente.
           Não armazenamos nenhum dado.
         </span>

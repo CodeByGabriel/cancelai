@@ -39,11 +39,11 @@ export function formatFileSize(bytes: number): string {
 export function getConfidenceColor(confidence: 'high' | 'medium' | 'low'): string {
   switch (confidence) {
     case 'high':
-      return 'bg-green-100 text-green-800 border-green-200';
+      return 'bg-green-100 text-green-800 border-green-200 dark:bg-green-900/20 dark:text-green-200 dark:border-green-800';
     case 'medium':
-      return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      return 'bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-200 dark:border-yellow-800';
     case 'low':
-      return 'bg-gray-100 text-gray-600 border-gray-200';
+      return 'bg-gray-100 text-gray-600 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700';
   }
 }
 
@@ -74,8 +74,6 @@ export function getCategoryIcon(category?: string): string {
       return '🎮';
     case 'software':
       return '💻';
-    case 'cloud':
-      return '☁️';
     case 'news':
       return '📰';
     case 'fitness':
@@ -86,6 +84,12 @@ export function getCategoryIcon(category?: string): string {
       return '🚗';
     case 'education':
       return '📚';
+    case 'telecom':
+      return '📱';
+    case 'security':
+      return '🔒';
+    case 'dating':
+      return '💕';
     case 'finance':
       return '💰';
     default:
@@ -106,8 +110,6 @@ export function getCategoryLabel(category?: string): string {
       return 'Jogos';
     case 'software':
       return 'Software';
-    case 'cloud':
-      return 'Armazenamento';
     case 'news':
       return 'Notícias';
     case 'fitness':
@@ -118,6 +120,12 @@ export function getCategoryLabel(category?: string): string {
       return 'Transporte';
     case 'education':
       return 'Educação';
+    case 'telecom':
+      return 'Telecom';
+    case 'security':
+      return 'Segurança';
+    case 'dating':
+      return 'Namoro';
     case 'finance':
       return 'Finanças';
     default:
@@ -146,7 +154,7 @@ export function formatConfidenceScore(score?: number): string {
 export function getScoreBarColor(score: number): string {
   if (score >= 0.8) return 'bg-green-500';
   if (score >= 0.6) return 'bg-yellow-500';
-  return 'bg-gray-400';
+  return 'bg-gray-400 dark:bg-gray-600';
 }
 
 /**

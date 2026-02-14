@@ -26,6 +26,36 @@ export interface ProcessedTransaction extends Transaction {
 }
 
 /**
+ * Tipo de periodo de recorrencia detectado
+ */
+export type RecurrencePeriodType =
+  | 'weekly' | 'biweekly' | 'monthly' | 'bimonthly'
+  | 'quarterly' | 'semiannual' | 'annual' | 'unknown';
+
+/**
+ * Metricas de recorrencia calculadas para um grupo de transacoes
+ */
+export interface RecurrenceMetrics {
+  readonly medianInterval: number;
+  readonly periodType: RecurrencePeriodType;
+  readonly habitualityScore: number;
+  readonly streamMaturity: number;
+  readonly intervalCount: number;
+  readonly intervals: readonly number[];
+}
+
+/**
+ * Parcela detectada (separada de assinaturas)
+ */
+export interface DetectedInstallment {
+  readonly description: string;
+  readonly originalDescription: string;
+  readonly amount: number;
+  readonly date: Date;
+  readonly installmentInfo?: { readonly current: number; readonly total: number } | undefined;
+}
+
+/**
  * Representa uma assinatura detectada
  */
 export interface DetectedSubscription {
@@ -41,6 +71,8 @@ export interface DetectedSubscription {
   readonly confidenceReasons: readonly string[];
   readonly category?: SubscriptionCategory;
   readonly cancelInstructions?: string;
+  readonly detectedPeriod?: RecurrencePeriodType | undefined;
+  readonly priceRangeFlag?: 'normal' | 'promo' | 'above_range' | undefined;
 }
 
 /**
@@ -53,21 +85,28 @@ export interface SubscriptionTransaction {
 }
 
 /**
- * Categorias de assinaturas conhecidas
+ * Categorias de assinaturas conhecidas (14 categorias)
  */
 export type SubscriptionCategory =
   | 'streaming'
   | 'music'
   | 'gaming'
   | 'software'
-  | 'cloud'
-  | 'news'
+  | 'education'
   | 'fitness'
   | 'food'
   | 'transport'
-  | 'education'
+  | 'telecom'
+  | 'news'
+  | 'security'
+  | 'dating'
   | 'finance'
   | 'other';
+
+/**
+ * Método de cancelamento do serviço
+ */
+export type CancelMethod = 'web' | 'app' | 'phone' | 'platform' | 'telecom';
 
 /**
  * Resultado do processamento de extratos
@@ -78,6 +117,7 @@ export interface AnalysisResult {
   readonly metadata: AnalysisMetadata;
   readonly warnings?: readonly string[]; // Avisos informativos (não são erros)
   readonly info?: readonly string[]; // Mensagens informativas para o usuário
+  readonly installments?: readonly DetectedInstallment[] | undefined;
 }
 
 /**

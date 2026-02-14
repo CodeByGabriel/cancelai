@@ -31,13 +31,13 @@ export function Features() {
       {features.map((feature, index) => (
         <div
           key={index}
-          className="text-center p-4 rounded-2xl hover:bg-white hover:shadow-lg transition-all duration-200"
+          className="text-center p-4 rounded-2xl hover:bg-card hover:shadow-lg transition-all duration-200"
         >
-          <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center mx-auto mb-3">
-            <feature.icon className="w-6 h-6 text-primary-600" />
+          <div className="w-12 h-12 bg-brand-muted rounded-xl flex items-center justify-center mx-auto mb-3">
+            <feature.icon className="w-6 h-6 text-brand-text" />
           </div>
-          <h3 className="font-semibold text-gray-900 mb-1">{feature.title}</h3>
-          <p className="text-sm text-gray-500">{feature.description}</p>
+          <h3 className="font-semibold text-foreground mb-1">{feature.title}</h3>
+          <p className="text-sm text-foreground-muted">{feature.description}</p>
         </div>
       ))}
     </div>

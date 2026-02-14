@@ -1,0 +1,276 @@
+{
+  "groundTruth": {
+    "subscriptions": [
+      "netflix",
+      "spotify",
+      "google one",
+      "crunchyroll",
+      "alura"
+    ]
+  },
+  "snapshot": {
+    "subscriptions": [
+      {
+        "id": "2660e13f-551b-4664-b97a-ecbd0a549982",
+        "name": "Alura",
+        "originalNames": [
+          "PAG*ALURA"
+        ],
+        "monthlyAmount": 89.9,
+        "annualAmount": 1078.8,
+        "occurrences": 2,
+        "transactions": [
+          {
+            "date": "2024-12-15T03:00:00.000Z",
+            "amount": 89.9,
+            "description": "PAG*ALURA"
+          },
+          {
+            "date": "2024-11-15T03:00:00.000Z",
+            "amount": 89.9,
+            "description": "PAG*ALURA"
+          }
+        ],
+        "confidence": "high",
+        "confidenceScore": 0.9617,
+        "confidenceReasons": [
+          "Padrao mensal consistente",
+          "Valores muito consistentes",
+          "Servico popular reconhecido",
+          "Consistencia temporal alta",
+          "Confianca muito alta"
+        ],
+        "category": "education",
+        "cancelInstructions": "https://www.alura.com.br/minha-conta",
+        "detectedPeriod": "monthly",
+        "priceRangeFlag": "normal"
+      },
+      {
+        "id": "c534e401-c1dc-4eed-8820-5ab0abced4fd",
+        "name": "Netflix",
+        "originalNames": [
+          "NETFLIX.COM"
+        ],
+        "monthlyAmount": 55.9,
+        "annualAmount": 670.8,
+        "occurrences": 2,
+        "transactions": [
+          {
+            "date": "2024-12-01T03:00:00.000Z",
+            "amount": 55.9,
+            "description": "NETFLIX.COM"
+          },
+          {
+            "date": "2024-11-01T03:00:00.000Z",
+            "amount": 55.9,
+            "description": "NETFLIX.COM"
+          }
+        ],
+        "confidence": "high",
+        "confidenceScore": 0.9617,
+        "confidenceReasons": [
+          "Padrao mensal consistente",
+          "Valores muito consistentes",
+          "Servico popular reconhecido",
+          "Consistencia temporal alta",
+          "Confianca muito alta"
+        ],
+        "category": "streaming",
+        "cancelInstructions": "https://www.netflix.com/cancelplan",
+        "detectedPeriod": "monthly",
+        "priceRangeFlag": "normal"
+      },
+      {
+        "id": "b3f7b65b-b36a-4a41-b735-edafc075d931",
+        "name": "Crunchyroll",
+        "originalNames": [
+          "CRUNCHYROLL"
+        ],
+        "monthlyAmount": 25,
+        "annualAmount": 300,
+        "occurrences": 2,
+        "transactions": [
+          {
+            "date": "2024-12-10T03:00:00.000Z",
+            "amount": 25,
+            "description": "CRUNCHYROLL"
+          },
+          {
+            "date": "2024-11-10T03:00:00.000Z",
+            "amount": 25,
+            "description": "CRUNCHYROLL"
+          }
+        ],
+        "confidence": "high",
+        "confidenceScore": 0.9617,
+        "confidenceReasons": [
+          "Padrao mensal consistente",
+          "Valores muito consistentes",
+          "Servico popular reconhecido",
+          "Consistencia temporal alta",
+          "Confianca muito alta"
+        ],
+        "category": "streaming",
+        "cancelInstructions": "https://www.crunchyroll.com/account",
+        "detectedPeriod": "monthly",
+        "priceRangeFlag": "normal"
+      },
+      {
+        "id": "0c119b6a-ffa0-468f-84d3-df9ec1269d5c",
+        "name": "Spotify",
+        "originalNames": [
+          "SPOTIFY BRASIL"
+        ],
+        "monthlyAmount": 21.9,
+        "annualAmount": 262.8,
+        "occurrences": 2,
+        "transactions": [
+          {
+            "date": "2024-12-05T03:00:00.000Z",
+            "amount": 21.9,
+            "description": "SPOTIFY BRASIL"
+          },
+          {
+            "date": "2024-11-05T03:00:00.000Z",
+            "amount": 21.9,
+            "description": "SPOTIFY BRASIL"
+          }
+        ],
+        "confidence": "high",
+        "confidenceScore": 0.9617,
+        "confidenceReasons": [
+          "Padrao mensal consistente",
+          "Valores muito consistentes",
+          "Servico popular reconhecido",
+          "Consistencia temporal alta",
+          "Confianca muito alta"
+        ],
+        "category": "music",
+        "cancelInstructions": "https://www.spotify.com/br/account/subscription/",
+        "detectedPeriod": "monthly",
+        "priceRangeFlag": "normal"
+      },
+      {
+        "id": "355ad1cb-00b7-42e3-b358-995ed25571f6",
+        "name": "OneDrive",
+        "originalNames": [
+          "GOOGLE*One"
+        ],
+        "monthlyAmount": 9.9,
+        "annualAmount": 118.8,
+        "occurrences": 2,
+        "transactions": [
+          {
+            "date": "2024-12-08T03:00:00.000Z",
+            "amount": 9.9,
+            "description": "GOOGLE*One"
+          },
+          {
+            "date": "2024-11-08T03:00:00.000Z",
+            "amount": 9.9,
+            "description": "GOOGLE*One"
+          }
+        ],
+        "confidence": "high",
+        "confidenceScore": 0.9392,
+        "confidenceReasons": [
+          "Padrao mensal consistente",
+          "Valores muito consistentes",
+          "Servico de assinatura conhecido",
+          "Consistencia temporal alta",
+          "Confianca muito alta"
+        ],
+        "category": "software",
+        "cancelInstructions": "https://account.microsoft.com/services/",
+        "detectedPeriod": "monthly",
+        "priceRangeFlag": "promo"
+      },
+      {
+        "id": "3ffc3640-0a0b-4f68-94dc-0f9448aee3c0",
+        "name": "Renner Roupas",
+        "originalNames": [
+          "RENNER ROUPAS",
+          "MARISA ROUPAS"
+        ],
+        "monthlyAmount": 102.45,
+        "annualAmount": 1229.4,
+        "occurrences": 2,
+        "transactions": [
+          {
+            "date": "2024-12-21T03:00:00.000Z",
+            "amount": 95,
+            "description": "MARISA ROUPAS"
+          },
+          {
+            "date": "2024-11-19T03:00:00.000Z",
+            "amount": 109.9,
+            "description": "RENNER ROUPAS"
+          }
+        ],
+        "confidence": "medium",
+        "confidenceScore": 0.665,
+        "confidenceReasons": [
+          "Padrao mensal consistente",
+          "Valores similares",
+          "Consistencia temporal alta"
+        ],
+        "detectedPeriod": "monthly"
+      }
+    ],
+    "summary": {
+      "totalMonthlySpending": 305.05,
+      "totalAnnualSpending": 3660.6,
+      "subscriptionCount": 6,
+      "highConfidenceCount": 5,
+      "mediumConfidenceCount": 1,
+      "lowConfidenceCount": 0,
+      "periodStart": "2024-11-01T03:00:00.000Z",
+      "periodEnd": "2024-12-28T03:00:00.000Z",
+      "transactionsAnalyzed": 56
+    },
+    "metadata": {
+      "processedAt": "2026-02-14T12:15:06.691Z",
+      "processingTimeMs": 27,
+      "filesProcessed": 1,
+      "bankFormatsDetected": [
+        "Mercado Pago"
+      ],
+      "version": "1.0.0"
+    },
+    "warnings": [
+      "OneDrive: R$9.90 esta abaixo da faixa tipica (possivel promocao)"
+    ],
+    "installments": [
+      {
+        "description": "KABUM PARC 1/4",
+        "originalDescription": "KABUM PARC 1/4",
+        "amount": 200,
+        "date": "2024-11-12T03:00:00.000Z",
+        "installmentInfo": {
+          "current": 1,
+          "total": 4
+        }
+      },
+      {
+        "description": "MERCADO LIVRE PARCELA 1/2",
+        "originalDescription": "MERCADO LIVRE PARCELA 1/2",
+        "amount": 350,
+        "date": "2024-11-27T03:00:00.000Z",
+        "installmentInfo": {
+          "current": 1,
+          "total": 2
+        }
+      },
+      {
+        "description": "KABUM PARC 2/4",
+        "originalDescription": "KABUM PARC 2/4",
+        "amount": 200,
+        "date": "2024-12-12T03:00:00.000Z",
+        "installmentInfo": {
+          "current": 2,
+          "total": 4
+        }
+      }
+    ]
+  }
+}

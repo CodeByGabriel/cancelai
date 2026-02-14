@@ -14,8 +14,8 @@
  * 4. Se subscription com confidence >= 0.75: promove para resultado final
  */
 
-import type { DetectedSubscription, SubscriptionCategory } from '../types/index.js';
-import { findKnownService, KNOWN_SERVICES } from './known-services.js';
+import type { DetectedSubscription } from '../types/index.js';
+import { findKnownService } from './known-services.js';
 
 // ═══════════════════════════════════════════════════════════════
 // TIPOS
@@ -26,45 +26,45 @@ import { findKnownService, KNOWN_SERVICES } from './known-services.js';
  * NÃO contém dados sensíveis nem transações cruas
  */
 export interface AmbiguousChargeSummary {
-  id: string;
-  normalizedDescription: string;
-  occurrenceCount: number;
-  values: number[];
-  monthsDetected: string[];
-  flags: ChargeFlags;
-  possibleServiceMatches: string[];
+  readonly id: string;
+  readonly normalizedDescription: string;
+  readonly occurrenceCount: number;
+  readonly values: readonly number[];
+  readonly monthsDetected: readonly string[];
+  readonly flags: ChargeFlags;
+  readonly possibleServiceMatches: readonly string[];
 }
 
 /**
  * Flags que indicam características da cobrança
  */
 interface ChargeFlags {
-  hasParc: boolean;           // Contém "PARC" ou variações
-  hasGoogle: boolean;         // Cobrado via Google
-  hasApple: boolean;          // Cobrado via Apple
-  hasInstallmentPattern: boolean; // Padrão de parcelamento
-  isKnownService: boolean;    // Match com serviço conhecido
-  hasConsistentValue: boolean; // Valores consistentes
-  hasMonthlyPattern: boolean;  // Padrão mensal detectado
+  readonly hasParc: boolean;
+  readonly hasGoogle: boolean;
+  readonly hasApple: boolean;
+  readonly hasInstallmentPattern: boolean;
+  readonly isKnownService: boolean;
+  readonly hasConsistentValue: boolean;
+  readonly hasMonthlyPattern: boolean;
 }
 
 /**
  * Resposta da IA para cada cobrança
  */
 export interface AIClassification {
-  id: string;
-  classification: 'subscription' | 'installment' | 'not_subscription';
-  confidence: number; // 0-1
-  reason: string;
+  readonly id: string;
+  readonly classification: 'subscription' | 'installment' | 'not_subscription';
+  readonly confidence: number;
+  readonly reason: string;
 }
 
 /**
  * Resultado da classificação por IA
  */
 export interface AIClassificationResult {
-  processed: boolean;
-  classifications: AIClassification[];
-  error?: string;
+  readonly processed: boolean;
+  readonly classifications: readonly AIClassification[];
+  readonly error?: string | undefined;
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -115,7 +115,7 @@ function detectFlags(subscription: DetectedSubscription): ChargeFlags {
   const hasParc = /\bPARC\b/.test(allDescs) || /\bPARCEL/.test(allDescs);
   const hasGoogle = /\bGOOGLE\b/.test(allDescs);
   const hasApple = /\bAPPLE\b/.test(allDescs) || /\biTUNES\b/.test(allDescs);
-  const hasInstallmentPattern = /\d+\s*[\/\\]\s*\d+/.test(allDescs) || /\d+\s*DE\s*\d+/.test(allDescs);
+  const hasInstallmentPattern = /\d+\s*[/\\]\s*\d+/.test(allDescs) || /\d+\s*DE\s*\d+/.test(allDescs);
 
   // Verifica se é serviço conhecido
   const knownService = findKnownService(subscription.name);
@@ -307,7 +307,7 @@ async function callAI(prompt: string): Promise<AIClassification[] | null> {
     if (error instanceof Error && error.name === 'AbortError') {
       console.warn('[AIClassifier] Timeout');
     } else {
-      console.warn('[AIClassifier] Erro:', error);
+      console.warn('[AIClassifier] Erro:', error instanceof Error ? error.message : String(error));
     }
     return null;
   } finally {
@@ -371,7 +371,7 @@ export async function classifyAmbiguousCharges(
  */
 export function applyAIClassifications(
   ambiguous: readonly DetectedSubscription[],
-  classifications: AIClassification[]
+  classifications: readonly AIClassification[]
 ): {
   promoted: DetectedSubscription[];
   discarded: DetectedSubscription[];

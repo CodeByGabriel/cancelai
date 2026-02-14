@@ -41,6 +41,44 @@ export async function analyzeStatements(
 }
 
 /**
+ * Inicia analise via streaming SSE
+ * Retorna jobId e streamUrl para consumir eventos em tempo real
+ */
+export async function startStreamAnalysis(
+  files: File[]
+): Promise<ApiResponse<{ jobId: string; streamUrl: string }>> {
+  const formData = new FormData();
+
+  for (const file of files) {
+    formData.append('files', file);
+  }
+
+  try {
+    const response = await fetch(`${API_URL}/api/analyze/stream`, {
+      method: 'POST',
+      body: formData,
+    });
+
+    const data = await response.json();
+    return data as ApiResponse<{ jobId: string; streamUrl: string }>;
+  } catch (error) {
+    console.error('Erro ao iniciar stream:', error);
+    return {
+      success: false,
+      error: {
+        code: 'NETWORK_ERROR',
+        message: 'Erro de conexão. Verifique sua internet e tente novamente.',
+      },
+    };
+  }
+}
+
+/** Base URL exportada para o SSE hook construir a URL do EventSource */
+export function getApiUrl(): string {
+  return API_URL as string;
+}
+
+/**
  * Verifica status da API
  */
 export async function checkHealth(): Promise<boolean> {

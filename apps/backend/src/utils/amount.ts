@@ -22,7 +22,7 @@ export function parseAmount(amountStr: string): number | null {
   let cleaned = amountStr.trim();
 
   // Verifica se é negativo (entre parênteses ou com sinal)
-  const isNegative = cleaned.includes('-') || (cleaned.startsWith('(') && cleaned.endsWith(')'));
+  const _isNegative = cleaned.includes('-') || (cleaned.startsWith('(') && cleaned.endsWith(')'));
 
   // Remove símbolos de moeda e parênteses
   cleaned = cleaned
@@ -67,10 +67,10 @@ export function isDebit(rawAmount: string, typeColumn?: string): boolean {
   if (typeColumn) {
     const typeLower = typeColumn.toLowerCase();
     return (
+      typeLower === 'd' ||
       typeLower.includes('deb') ||
       typeLower.includes('saida') ||
-      typeLower.includes('saída') ||
-      typeLower.includes('d')
+      typeLower.includes('saída')
     );
   }
 

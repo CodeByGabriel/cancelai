@@ -1,0 +1,242 @@
+{
+  "groundTruth": {
+    "subscriptions": [
+      "netflix",
+      "spotify",
+      "amazon prime",
+      "duolingo",
+      "adobe"
+    ]
+  },
+  "snapshot": {
+    "subscriptions": [
+      {
+        "id": "06ea3bfa-924b-43db-b460-87d052309461",
+        "name": "Adobe Creative Cloud",
+        "originalNames": [
+          "ADOBE CREATIVE"
+        ],
+        "monthlyAmount": 109,
+        "annualAmount": 1308,
+        "occurrences": 2,
+        "transactions": [
+          {
+            "date": "2025-01-03T03:00:00.000Z",
+            "amount": 109,
+            "description": "ADOBE CREATIVE"
+          },
+          {
+            "date": "2024-12-03T03:00:00.000Z",
+            "amount": 109,
+            "description": "ADOBE CREATIVE"
+          }
+        ],
+        "confidence": "high",
+        "confidenceScore": 0.9318000000000001,
+        "confidenceReasons": [
+          "Padrao mensal consistente",
+          "Valores muito consistentes",
+          "Servico popular reconhecido",
+          "Consistencia temporal alta",
+          "Confianca muito alta"
+        ],
+        "category": "software",
+        "cancelInstructions": "https://account.adobe.com/plans",
+        "detectedPeriod": "monthly",
+        "priceRangeFlag": "normal"
+      },
+      {
+        "id": "9672c98a-6209-4cc9-ada4-3fca42f07cf5",
+        "name": "Netflix",
+        "originalNames": [
+          "NETFLIX.COM"
+        ],
+        "monthlyAmount": 55.9,
+        "annualAmount": 670.8,
+        "occurrences": 2,
+        "transactions": [
+          {
+            "date": "2025-01-01T03:00:00.000Z",
+            "amount": 55.9,
+            "description": "NETFLIX.COM"
+          },
+          {
+            "date": "2024-12-01T03:00:00.000Z",
+            "amount": 55.9,
+            "description": "NETFLIX.COM"
+          }
+        ],
+        "confidence": "high",
+        "confidenceScore": 0.9318000000000001,
+        "confidenceReasons": [
+          "Padrao mensal consistente",
+          "Valores muito consistentes",
+          "Servico popular reconhecido",
+          "Consistencia temporal alta",
+          "Confianca muito alta"
+        ],
+        "category": "streaming",
+        "cancelInstructions": "https://www.netflix.com/cancelplan",
+        "detectedPeriod": "monthly",
+        "priceRangeFlag": "normal"
+      },
+      {
+        "id": "b3f1f6bc-324b-4882-8aea-718de69958ff",
+        "name": "Duolingo Plus",
+        "originalNames": [
+          "PAG*Duolingo"
+        ],
+        "monthlyAmount": 42,
+        "annualAmount": 504,
+        "occurrences": 2,
+        "transactions": [
+          {
+            "date": "2025-01-10T03:00:00.000Z",
+            "amount": 42,
+            "description": "PAG*Duolingo"
+          },
+          {
+            "date": "2024-12-10T03:00:00.000Z",
+            "amount": 42,
+            "description": "PAG*Duolingo"
+          }
+        ],
+        "confidence": "high",
+        "confidenceScore": 0.9318000000000001,
+        "confidenceReasons": [
+          "Padrao mensal consistente",
+          "Valores muito consistentes",
+          "Servico popular reconhecido",
+          "Consistencia temporal alta",
+          "Confianca muito alta"
+        ],
+        "category": "education",
+        "cancelInstructions": "https://www.duolingo.com/settings/subscription",
+        "detectedPeriod": "monthly",
+        "priceRangeFlag": "normal"
+      },
+      {
+        "id": "b5193395-4e9f-4c92-850d-93ceb0f6c3e7",
+        "name": "Spotify",
+        "originalNames": [
+          "SPOTIFY"
+        ],
+        "monthlyAmount": 21.9,
+        "annualAmount": 262.8,
+        "occurrences": 2,
+        "transactions": [
+          {
+            "date": "2025-01-05T03:00:00.000Z",
+            "amount": 21.9,
+            "description": "SPOTIFY"
+          },
+          {
+            "date": "2024-12-05T03:00:00.000Z",
+            "amount": 21.9,
+            "description": "SPOTIFY"
+          }
+        ],
+        "confidence": "high",
+        "confidenceScore": 0.9318000000000001,
+        "confidenceReasons": [
+          "Padrao mensal consistente",
+          "Valores muito consistentes",
+          "Servico popular reconhecido",
+          "Consistencia temporal alta",
+          "Confianca muito alta"
+        ],
+        "category": "music",
+        "cancelInstructions": "https://www.spotify.com/br/account/subscription/",
+        "detectedPeriod": "monthly",
+        "priceRangeFlag": "normal"
+      },
+      {
+        "id": "f593e494-9b84-4310-bbac-32d0ab368837",
+        "name": "Amazon Prime",
+        "originalNames": [
+          "AMAZON PRIME"
+        ],
+        "monthlyAmount": 14.9,
+        "annualAmount": 178.8,
+        "occurrences": 2,
+        "transactions": [
+          {
+            "date": "2025-01-08T03:00:00.000Z",
+            "amount": 14.9,
+            "description": "AMAZON PRIME"
+          },
+          {
+            "date": "2024-12-08T03:00:00.000Z",
+            "amount": 14.9,
+            "description": "AMAZON PRIME"
+          }
+        ],
+        "confidence": "high",
+        "confidenceScore": 0.9318000000000001,
+        "confidenceReasons": [
+          "Padrao mensal consistente",
+          "Valores muito consistentes",
+          "Servico popular reconhecido",
+          "Consistencia temporal alta",
+          "Confianca muito alta"
+        ],
+        "category": "streaming",
+        "cancelInstructions": "https://www.amazon.com.br/hz/mycd/myx",
+        "detectedPeriod": "monthly",
+        "priceRangeFlag": "normal"
+      }
+    ],
+    "summary": {
+      "totalMonthlySpending": 243.7,
+      "totalAnnualSpending": 2924.4,
+      "subscriptionCount": 5,
+      "highConfidenceCount": 5,
+      "mediumConfidenceCount": 0,
+      "lowConfidenceCount": 0,
+      "periodStart": "2024-12-01T03:00:00.000Z",
+      "periodEnd": "2025-01-14T03:00:00.000Z",
+      "transactionsAnalyzed": 45
+    },
+    "metadata": {
+      "processedAt": "2026-02-14T12:15:06.654Z",
+      "processingTimeMs": 4,
+      "filesProcessed": 1,
+      "bankFormatsDetected": [
+        "Bradesco"
+      ],
+      "version": "1.0.0"
+    },
+    "installments": [
+      {
+        "description": "RENNER PARC 2/5",
+        "originalDescription": "RENNER PARC 2/5",
+        "amount": 79.9,
+        "date": "2024-12-15T03:00:00.000Z",
+        "installmentInfo": {
+          "current": 2,
+          "total": 5
+        }
+      },
+      {
+        "description": "MAGALU PARCELADO 1 DE 3",
+        "originalDescription": "MAGALU PARCELADO 1 DE 3",
+        "amount": 299,
+        "date": "2024-12-21T03:00:00.000Z",
+        "installmentInfo": {
+          "current": 1,
+          "total": 3
+        }
+      },
+      {
+        "description": "RENNER PARC 3/5",
+        "originalDescription": "RENNER PARC 3/5",
+        "amount": 79.9,
+        "date": "2025-01-11T03:00:00.000Z",
+        "installmentInfo": {
+          "current": 3,
+          "total": 5
+        }
+      }
+    ]
+  }
+}

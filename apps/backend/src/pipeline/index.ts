@@ -1,0 +1,20 @@
+/**
+ * Barrel export para o pipeline
+ */
+export { runPipeline, createPipelineContext } from './pipeline-orchestrator.js';
+export type {
+  PipelineContext,
+  PipelineEvent,
+  PipelineStage,
+  TransactionGroup,
+  StageStartEvent,
+  StageCompleteEvent,
+  SubscriptionDetectedEvent,
+  ProgressEvent,
+  FileErrorEvent,
+  FilePartialEvent,
+  CompleteEvent,
+  ErrorEvent,
+} from './pipeline-events.js';
+export { LoggingObserver, observePipeline } from './pipeline-observer.js';
+export type { PipelineObserver } from './pipeline-observer.js';

@@ -1,136 +1,148 @@
 'use client';
 
-/**
- * AnalysisProgress - Feedback visual de progresso da análise
- *
- * Exibe as etapas do processamento de forma clara e transparente,
- * sem delays artificiais ou promessas exageradas.
- */
-
-import { CheckCircle, Loader2, Circle } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { CheckCircle, Loader2 } from 'lucide-react';
+import { m, AnimatePresence } from 'motion/react';
 import { cn } from '@/lib/utils';
 
-export type AnalysisStep =
-  | 'uploading'
-  | 'reading'
-  | 'analyzing'
-  | 'validating'
-  | 'complete';
-
 interface AnalysisProgressProps {
-  currentStep: AnalysisStep;
-  filesCount: number;
+  currentStage: string;
+  progressMessage: string;
+  filesProcessed: string[];
+  subscriptionsFound: number;
+  startTime: number;
+  isComplete?: boolean;
+  totalDurationMs?: number;
 }
 
-interface StepConfig {
-  id: AnalysisStep;
-  label: string;
-  description: string;
-}
+const STAGE_PROGRESS: Record<string, number> = {
+  '': 2,
+  validation: 5,
+  parsing: 25,
+  normalization: 35,
+  grouping: 50,
+  scoring: 70,
+  sanity: 85,
+  'ai-classification': 95,
+  cleanup: 100,
+};
 
-const STEPS: StepConfig[] = [
-  {
-    id: 'uploading',
-    label: 'Enviando arquivos',
-    description: 'Preparando seus extratos para análise',
-  },
-  {
-    id: 'reading',
-    label: 'Lendo transações',
-    description: 'Extraindo dados dos seus extratos',
-  },
-  {
-    id: 'analyzing',
-    label: 'Analisando padrões',
-    description: 'Identificando cobranças recorrentes',
-  },
-  {
-    id: 'validating',
-    label: 'Validando resultados',
-    description: 'Verificando confiança das detecções',
-  },
-];
+export function AnalysisProgress({
+  currentStage,
+  progressMessage,
+  filesProcessed,
+  subscriptionsFound,
+  startTime,
+  isComplete = false,
+  totalDurationMs,
+}: AnalysisProgressProps) {
+  const [elapsed, setElapsed] = useState(0);
 
-function getStepIndex(step: AnalysisStep): number {
-  if (step === 'complete') return STEPS.length;
-  return STEPS.findIndex(s => s.id === step);
-}
+  useEffect(() => {
+    if (isComplete || !startTime) return;
 
-export function AnalysisProgress({ currentStep, filesCount }: AnalysisProgressProps) {
-  const currentIndex = getStepIndex(currentStep);
+    const update = () => setElapsed((Date.now() - startTime) / 1000);
+    update();
+    const interval = setInterval(update, 100);
+    return () => clearInterval(interval);
+  }, [startTime, isComplete]);
+
+  const progressPercent = isComplete ? 100 : (STAGE_PROGRESS[currentStage] ?? 10);
+  const displayDuration = isComplete && totalDurationMs
+    ? (totalDurationMs / 1000).toFixed(1)
+    : elapsed.toFixed(1);
 
   return (
-    <div className="w-full max-w-xl mx-auto py-8">
+    <div
+      className="w-full max-w-xl mx-auto py-8"
+      role="progressbar"
+      aria-valuenow={progressPercent}
+      aria-valuemin={0}
+      aria-valuemax={100}
+      aria-busy={!isComplete}
+      aria-label="Progresso da analise"
+    >
       {/* Header */}
-      <div className="text-center mb-8">
-        <div className="w-16 h-16 bg-primary-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-          <Loader2 className="w-8 h-8 text-primary-600 animate-spin" />
-        </div>
-        <h3 className="text-xl font-semibold text-gray-900 mb-2">
-          Analisando {filesCount} {filesCount === 1 ? 'extrato' : 'extratos'}
+      <div className="text-center mb-6">
+        {isComplete ? (
+          <m.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+            className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-2xl flex items-center justify-center mx-auto mb-4"
+          >
+            <CheckCircle className="w-8 h-8 text-green-600 dark:text-green-400" />
+          </m.div>
+        ) : (
+          <div className="w-16 h-16 bg-brand-muted rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <Loader2 className="w-8 h-8 text-brand-text animate-spin" />
+          </div>
+        )}
+
+        <h3 className="text-xl font-semibold text-foreground mb-1">
+          {isComplete
+            ? `Analisado em ${displayDuration}s`
+            : 'Analisando seus extratos'}
         </h3>
-        <p className="text-gray-500 text-sm">
-          Isso geralmente leva de 10 a 30 segundos
+
+        <p className="text-foreground-muted text-sm tabular-nums">
+          {isComplete ? `${subscriptionsFound} assinaturas encontradas` : `${displayDuration}s`}
         </p>
       </div>
 
-      {/* Steps */}
-      <div className="space-y-4">
-        {STEPS.map((step, index) => {
-          const isComplete = index < currentIndex;
-          const isCurrent = index === currentIndex;
-          const isPending = index > currentIndex;
-
-          return (
-            <div
-              key={step.id}
-              className={cn(
-                'flex items-center gap-4 p-4 rounded-xl transition-all duration-300',
-                isComplete && 'bg-green-50 border border-green-100',
-                isCurrent && 'bg-primary-50 border border-primary-200',
-                isPending && 'bg-gray-50 border border-gray-100 opacity-50'
-              )}
-            >
-              {/* Icon */}
-              <div className="flex-shrink-0">
-                {isComplete ? (
-                  <CheckCircle className="w-6 h-6 text-green-600" />
-                ) : isCurrent ? (
-                  <Loader2 className="w-6 h-6 text-primary-600 animate-spin" />
-                ) : (
-                  <Circle className="w-6 h-6 text-gray-300" />
-                )}
-              </div>
-
-              {/* Text */}
-              <div className="flex-1 min-w-0">
-                <p className={cn(
-                  'font-medium',
-                  isComplete && 'text-green-700',
-                  isCurrent && 'text-primary-700',
-                  isPending && 'text-gray-400'
-                )}>
-                  {step.label}
-                </p>
-                <p className={cn(
-                  'text-sm',
-                  isComplete && 'text-green-600',
-                  isCurrent && 'text-primary-600',
-                  isPending && 'text-gray-400'
-                )}>
-                  {step.description}
-                </p>
-              </div>
-            </div>
-          );
-        })}
+      {/* Progress bar */}
+      <div className="h-2 bg-elevated rounded-full overflow-hidden mb-4">
+        <div
+          className={cn(
+            'h-full rounded-full transition-all duration-500',
+            isComplete ? 'bg-green-500' : 'bg-brand animate-pulse'
+          )}
+          style={{ width: `${progressPercent}%` }}
+        />
       </div>
 
-      {/* Privacy reminder */}
-      <p className="mt-8 text-center text-xs text-gray-400">
-        Seus arquivos são processados em memória e descartados imediatamente.
-        Nenhum dado é armazenado.
-      </p>
+      {/* Dynamic message */}
+      <AnimatePresence mode="wait">
+        <m.p
+          key={progressMessage}
+          initial={{ opacity: 0, y: 5 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -5 }}
+          transition={{ duration: 0.2 }}
+          className="text-center text-sm text-foreground-secondary mb-4 min-h-[1.25rem]"
+        >
+          {progressMessage}
+        </m.p>
+      </AnimatePresence>
+
+      {/* Files processed chips */}
+      {filesProcessed.length > 0 && (
+        <div className="flex flex-wrap justify-center gap-2 mb-4">
+          <AnimatePresence>
+            {filesProcessed.map((file) => (
+              <m.span
+                key={file}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="text-xs px-2 py-1 bg-brand-soft text-brand-text rounded-lg font-medium"
+              >
+                {file}
+              </m.span>
+            ))}
+          </AnimatePresence>
+        </div>
+      )}
+
+      {/* Subscriptions found counter */}
+      {subscriptionsFound > 0 && !isComplete && (
+        <m.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="text-center text-sm font-medium text-brand-text"
+        >
+          {subscriptionsFound} {subscriptionsFound === 1 ? 'assinatura encontrada' : 'assinaturas encontradas'}
+        </m.p>
+      )}
     </div>
   );
 }

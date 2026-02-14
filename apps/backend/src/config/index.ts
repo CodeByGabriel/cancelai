@@ -38,8 +38,10 @@ export const config = {
       'text/x-csv', // Variação Linux
       'text/comma-separated-values', // Formato antigo
       'application/octet-stream', // Fallback genérico (validamos pela extensão)
+      'application/x-ofx', // OFX (Open Financial Exchange)
+      'application/vnd.intu.qfx', // QFX (Quicken Financial Exchange)
     ],
-    allowedExtensions: ['.pdf', '.csv', '.txt'], // .txt para CSVs renomeados
+    allowedExtensions: ['.pdf', '.csv', '.txt', '.ofx', '.qfx'],
   },
 
   detection: {
@@ -151,17 +153,17 @@ export const knownSubscriptions = {
   },
   dropbox: {
     patterns: ['dropbox'],
-    category: 'cloud',
+    category: 'software',
     cancelUrl: 'https://www.dropbox.com/account/plan',
   },
   googleOne: {
     patterns: ['google one', 'google storage', 'google*one'],
-    category: 'cloud',
+    category: 'software',
     cancelUrl: 'https://one.google.com/settings',
   },
   icloud: {
     patterns: ['icloud', 'apple*icloud'],
-    category: 'cloud',
+    category: 'software',
     cancelUrl: 'https://support.apple.com/pt-br/HT207594',
   },
 
@@ -252,3 +254,51 @@ export const knownSubscriptions = {
 } as const;
 
 export type KnownSubscriptionKey = keyof typeof knownSubscriptions;
+
+// ── Fase 3: Scoring & Similarity Config ──────────────────────────────
+
+export const GATEWAY_PREFIXES = Object.freeze([
+  'PAG\\*', 'MP\\*', 'MERCPAGO\\*', 'MERPAGO\\*', 'GOOGLE\\*',
+  'PAYPAL\\*', 'IZ\\*', 'PICPAY\\*', 'APPLE\\.COM/', 'HTM\\*',
+  'EDZ\\*', 'EBW\\+', 'APMX\\*', 'STRIPE\\*', 'SP\\s+', 'PP\\s+',
+  'PG\\s+',
+] as const);
+
+export const NOISE_STOP_WORDS = Object.freeze([
+  'COMPRA', 'CARTAO', 'DEBITO', 'CREDITO', 'VISA', 'MASTERCARD', 'ELO',
+  'LTDA', 'SA', 'EIRELI', 'MEI', 'ME',
+] as const);
+
+export const SIMILARITY_CONFIG = Object.freeze({
+  tokenJaccardPreFilter: 0.3,
+  jaroWinklerPrimary: 0.88,
+  diceTiebreaker: 0.65,
+} as const);
+
+export const RECURRENCE_PERIODS = Object.freeze({
+  weekly:     { idealDays: 7,   tolerance: 2 },
+  biweekly:   { idealDays: 14,  tolerance: 3 },
+  monthly:    { idealDays: 30,  tolerance: 5 },
+  bimonthly:  { idealDays: 61,  tolerance: 7 },
+  quarterly:  { idealDays: 91,  tolerance: 10 },
+  semiannual: { idealDays: 182, tolerance: 15 },
+  annual:     { idealDays: 365, tolerance: 20 },
+} as const);
+
+export const SCORING_WEIGHTS_V2 = Object.freeze({
+  stringSimilarity: 0.20,
+  recurrence:       0.30,
+  valueStability:   0.20,
+  knownService:     0.15,
+  habituality:      0.10,
+  streamMaturity:   0.05,
+} as const);
+
+export const CONFIDENCE_THRESHOLDS_V2 = Object.freeze({
+  high:   0.85,
+  medium: 0.60,
+  low:    0.40,
+} as const);
+
+export const PRICE_RANGE_TOLERANCE = 0.15;
+export const NORMALIZATION_CACHE_SIZE = 10_000;

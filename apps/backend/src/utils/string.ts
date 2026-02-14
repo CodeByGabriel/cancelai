@@ -2,37 +2,106 @@
  * Utilitários de manipulação de strings para o Cancelaí
  *
  * Funções especializadas para normalização de descrições bancárias brasileiras.
+ * Pipeline de similaridade híbrido: Token Jaccard → Jaro-Winkler → Dice tiebreaker.
  */
 
-import stringSimilarity from 'string-similarity';
+import { JaroWrinker, SorensenDice } from 'string-comparisons';
+import { LRUCache } from './lru-cache.js';
+import {
+  GATEWAY_PREFIXES,
+  NOISE_STOP_WORDS,
+  SIMILARITY_CONFIG,
+  NORMALIZATION_CACHE_SIZE,
+} from '../config/index.js';
+
+// ── Pre-compiled regexes ────────────────────────────────────────────
+
+const GATEWAY_REGEX = new RegExp(
+  `^(?:${GATEWAY_PREFIXES.join('|')})`,
+  'i',
+);
+
+const STOP_WORDS_REGEX = new RegExp(
+  `\\b(?:${NOISE_STOP_WORDS.join('|')})\\b`,
+  'gi',
+);
+
+const ACCENT_REGEX = /[\u0300-\u036f]/g;
+// Auth codes: sequences with at least one digit AND 6+ total alnum chars (not pure alpha words)
+const AUTH_CODE_REGEX = /\b(?=[A-Z0-9]*\d)[A-Z0-9]{6,}\b/g;
+const DATE_REGEX = /\d{2}\/\d{2}(?:\/\d{2,4})?/g;
+const TIME_REGEX = /\d{2}:\d{2}(?::\d{2})?/g;
+const INSTALLMENT_REGEX = /\b(?:PARC(?:ELA)?\.?\s*\d+\s*(?:\/|DE)\s*\d+|\d+\s*[Xx]\s|\d+\/\d+)\b/gi;
+const SPECIAL_CHARS_REGEX = /[^\w\s]/g;
+const MULTI_SPACE_REGEX = /\s+/g;
+
+// ── LRU Cache ───────────────────────────────────────────────────────
+
+const normalizationCache = new LRUCache<string, string>(NORMALIZATION_CACHE_SIZE);
+
+/**
+ * Limpa o cache de normalizacao (para testes)
+ */
+export function clearNormalizationCache(): void {
+  normalizationCache.clear();
+}
 
 /**
  * Normaliza uma descrição de transação para comparação
  *
- * Remove caracteres especiais, normaliza espaços, converte para minúsculas.
- * Mantém apenas informações relevantes para identificação do serviço.
+ * Pipeline:
+ * 1. Cache check
+ * 2. Strip acentos (NFD)
+ * 3. Uppercase (para regex matching)
+ * 4. Remove gateway prefixes (PAG*, MP*, etc.)
+ * 5. Remove codigos alfanumericos 6+ chars
+ * 6. Remove datas embutidas DD/MM, timestamps
+ * 7. Remove marcadores de parcela
+ * 8. Remove stop words financeiras
+ * 9. Remove chars especiais, collapse whitespace
+ * 10. Lowercase final, trim
  */
 export function normalizeDescription(description: string): string {
-  return (
-    description
-      .toLowerCase()
-      // Remove códigos de autorização comuns em extratos brasileiros
-      .replace(/\b\d{6,}\b/g, '')
-      // Remove datas no formato DD/MM ou DD/MM/YY
-      .replace(/\d{2}\/\d{2}(\/\d{2,4})?/g, '')
-      // Remove horários
-      .replace(/\d{2}:\d{2}(:\d{2})?/g, '')
-      // Remove caracteres especiais mas mantém espaços
-      .replace(/[^\w\s]/g, ' ')
-      // Normaliza múltiplos espaços
-      .replace(/\s+/g, ' ')
-      // Remove prefixos comuns de bancos
-      .replace(
-        /^(pag\*|pagamento|compra|deb|cred|pix|ted|doc|transf|transferencia)\s*/i,
-        ''
-      )
-      .trim()
-  );
+  const cached = normalizationCache.get(description);
+  if (cached !== undefined) return cached;
+
+  let result = description;
+
+  // Strip acentos
+  result = result.normalize('NFD').replace(ACCENT_REGEX, '');
+
+  // Uppercase para regex matching
+  result = result.toUpperCase();
+
+  // Remove gateway prefixes
+  result = result.replace(GATEWAY_REGEX, '');
+
+  // Remove codigos alfanumericos 6+ chars (auth codes, IDs)
+  result = result.replace(AUTH_CODE_REGEX, '');
+
+  // Remove datas embutidas
+  result = result.replace(DATE_REGEX, '');
+
+  // Remove timestamps
+  result = result.replace(TIME_REGEX, '');
+
+  // Remove marcadores de parcela
+  result = result.replace(INSTALLMENT_REGEX, '');
+
+  // Remove stop words financeiras
+  result = result.replace(STOP_WORDS_REGEX, '');
+
+  // Remove chars especiais
+  result = result.replace(SPECIAL_CHARS_REGEX, ' ');
+
+  // Collapse whitespace
+  result = result.replace(MULTI_SPACE_REGEX, ' ');
+
+  // Lowercase final + trim
+  result = result.toLowerCase().trim();
+
+  normalizationCache.set(description, result);
+  return result;
 }
 
 /**
@@ -50,10 +119,35 @@ export function extractServiceName(description: string): string {
   return significantWords.join(' ') || normalized;
 }
 
+// ── Similarity Pipeline ─────────────────────────────────────────────
+
+/**
+ * Calcula Token Jaccard (set intersection / union de palavras)
+ */
+function tokenJaccard(s1: string, s2: string): number {
+  const tokens1 = new Set(s1.split(' ').filter(Boolean));
+  const tokens2 = new Set(s2.split(' ').filter(Boolean));
+
+  if (tokens1.size === 0 && tokens2.size === 0) return 1;
+  if (tokens1.size === 0 || tokens2.size === 0) return 0;
+
+  let intersection = 0;
+  for (const token of tokens1) {
+    if (tokens2.has(token)) intersection++;
+  }
+
+  const union = tokens1.size + tokens2.size - intersection;
+  return union === 0 ? 0 : intersection / union;
+}
+
 /**
  * Calcula similaridade entre duas descrições
  *
- * Usa o algoritmo Dice's Coefficient que é eficiente para strings curtas.
+ * Pipeline híbrido:
+ * 1. Token Jaccard pre-filter (fast reject se < 0.3)
+ * 2. Jaro-Winkler primary (se >= 0.88, retorna JW score)
+ * 3. Dice tiebreaker (se >= 0.65, retorna media)
+ * 4. Senao retorna max(JW, Dice)
  */
 export function calculateSimilarity(str1: string, str2: string): number {
   const normalized1 = normalizeDescription(str1);
@@ -69,7 +163,26 @@ export function calculateSimilarity(str1: string, str2: string): number {
     return 0;
   }
 
-  return stringSimilarity.compareTwoStrings(normalized1, normalized2);
+  // Step 1: Token Jaccard pre-filter
+  const jaccard = tokenJaccard(normalized1, normalized2);
+  if (jaccard < SIMILARITY_CONFIG.tokenJaccardPreFilter) {
+    return jaccard;
+  }
+
+  // Step 2: Jaro-Winkler primary
+  const jw = JaroWrinker.similarity(normalized1, normalized2);
+  if (jw >= SIMILARITY_CONFIG.jaroWinklerPrimary) {
+    return jw;
+  }
+
+  // Step 3: Dice tiebreaker
+  const dice = SorensenDice.similarity(normalized1, normalized2);
+  if (dice >= SIMILARITY_CONFIG.diceTiebreaker) {
+    return (jw + dice) / 2;
+  }
+
+  // Step 4: Return max
+  return Math.max(jw, dice);
 }
 
 /**

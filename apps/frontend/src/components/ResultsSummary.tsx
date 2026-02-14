@@ -71,32 +71,32 @@ export function ResultsSummary({ summary, metadata }: ResultsSummaryProps) {
       {/* Grid de Métricas Secundárias */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {/* Assinaturas Detectadas */}
-        <div className="bg-white rounded-2xl p-4 border border-gray-200 shadow-sm">
-          <div className="flex items-center gap-2 mb-3 text-gray-500">
+        <div className="bg-card rounded-2xl p-4 border border-border-strong shadow-sm">
+          <div className="flex items-center gap-2 mb-3 text-foreground-muted">
             <FileCheck className="w-4 h-4" />
             <span className="text-sm font-medium">Assinaturas</span>
           </div>
-          <p className="text-3xl font-bold text-gray-900">
+          <p className="text-3xl font-bold text-foreground">
             {summary.subscriptionCount}
           </p>
           <div className="flex flex-wrap gap-x-3 gap-y-1 mt-2">
             <span className={cn(
               "text-xs font-medium flex items-center gap-1",
-              summary.highConfidenceCount > 0 ? "text-green-600" : "text-gray-400"
+              summary.highConfidenceCount > 0 ? "text-green-600 dark:text-green-400" : "text-foreground-faint"
             )}>
               <span className="w-2 h-2 rounded-full bg-green-500" />
               {summary.highConfidenceCount} certas
             </span>
             <span className={cn(
               "text-xs font-medium flex items-center gap-1",
-              summary.mediumConfidenceCount > 0 ? "text-yellow-600" : "text-gray-400"
+              summary.mediumConfidenceCount > 0 ? "text-yellow-600 dark:text-yellow-400" : "text-foreground-faint"
             )}>
               <span className="w-2 h-2 rounded-full bg-yellow-500" />
               {summary.mediumConfidenceCount} prováveis
             </span>
             {summary.lowConfidenceCount > 0 && (
-              <span className="text-xs font-medium flex items-center gap-1 text-gray-500">
-                <span className="w-2 h-2 rounded-full bg-gray-400" />
+              <span className="text-xs font-medium flex items-center gap-1 text-foreground-muted">
+                <span className="w-2 h-2 rounded-full bg-gray-400 dark:bg-gray-600" />
                 {summary.lowConfidenceCount} incertas
               </span>
             )}
@@ -104,37 +104,37 @@ export function ResultsSummary({ summary, metadata }: ResultsSummaryProps) {
         </div>
 
         {/* Transações Analisadas */}
-        <div className="bg-white rounded-2xl p-4 border border-gray-200 shadow-sm">
-          <div className="flex items-center gap-2 mb-3 text-gray-500">
+        <div className="bg-card rounded-2xl p-4 border border-border-strong shadow-sm">
+          <div className="flex items-center gap-2 mb-3 text-foreground-muted">
             <Clock className="w-4 h-4" />
             <span className="text-sm font-medium">Transações</span>
           </div>
-          <p className="text-3xl font-bold text-gray-900">
+          <p className="text-3xl font-bold text-foreground">
             {summary.transactionsAnalyzed.toLocaleString('pt-BR')}
           </p>
-          <p className="text-xs text-gray-500 mt-2">
+          <p className="text-xs text-foreground-muted mt-2">
             analisadas em {metadata.processingTimeMs}ms
           </p>
         </div>
 
         {/* Período Analisado */}
-        <div className="bg-white rounded-2xl p-4 border border-gray-200 shadow-sm">
-          <div className="flex items-center gap-2 mb-3 text-gray-500">
+        <div className="bg-card rounded-2xl p-4 border border-border-strong shadow-sm">
+          <div className="flex items-center gap-2 mb-3 text-foreground-muted">
             <Calendar className="w-4 h-4" />
             <span className="text-sm font-medium">Período</span>
           </div>
-          <p className="text-sm font-semibold text-gray-900">
+          <p className="text-sm font-semibold text-foreground">
             {formatDate(summary.periodStart)}
           </p>
-          <p className="text-sm text-gray-500 flex items-center gap-1">
+          <p className="text-sm text-foreground-muted flex items-center gap-1">
             <TrendingUp className="w-3 h-3" />
             até {formatDate(summary.periodEnd)}
           </p>
         </div>
 
         {/* Bancos Detectados */}
-        <div className="bg-white rounded-2xl p-4 border border-gray-200 shadow-sm">
-          <div className="flex items-center gap-2 mb-3 text-gray-500">
+        <div className="bg-card rounded-2xl p-4 border border-border-strong shadow-sm">
+          <div className="flex items-center gap-2 mb-3 text-foreground-muted">
             <Building className="w-4 h-4" />
             <span className="text-sm font-medium">Fontes</span>
           </div>
@@ -143,13 +143,13 @@ export function ResultsSummary({ summary, metadata }: ResultsSummaryProps) {
               metadata.bankFormatsDetected.map((bank, i) => (
                 <span
                   key={i}
-                  className="text-xs px-2 py-1 bg-primary-50 text-primary-700 rounded-lg font-medium"
+                  className="text-xs px-2 py-1 bg-brand-soft text-brand-text rounded-lg font-medium"
                 >
                   {bank}
                 </span>
               ))
             ) : (
-              <span className="text-xs text-gray-400">
+              <span className="text-xs text-foreground-faint">
                 {metadata.filesProcessed} arquivo(s)
               </span>
             )}

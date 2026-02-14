@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  darkMode: 'class',
   content: [
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
@@ -8,7 +9,23 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Cores da marca Cancelaí
+        // Semantic tokens (CSS variables — auto-switch light/dark)
+        background: 'var(--color-bg)',
+        surface: 'var(--color-bg-surface)',
+        elevated: 'var(--color-bg-elevated)',
+        card: 'var(--color-bg-card)',
+        foreground: 'var(--color-text)',
+        'foreground-secondary': 'var(--color-text-secondary)',
+        'foreground-muted': 'var(--color-text-muted)',
+        'foreground-faint': 'var(--color-text-faint)',
+        'border-default': 'var(--color-border)',
+        'border-strong': 'var(--color-border-strong)',
+        brand: 'var(--color-primary)',
+        'brand-soft': 'var(--color-primary-soft)',
+        'brand-muted': 'var(--color-primary-muted)',
+        'brand-text': 'var(--color-primary-text)',
+
+        // Static color scales (unchanged by theme)
         primary: {
           50: '#f0fdf4',
           100: '#dcfce7',
@@ -36,7 +53,7 @@ module.exports = {
         },
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        sans: ['DM Sans', 'system-ui', 'sans-serif'],
       },
       animation: {
         'fade-in': 'fadeIn 0.5s ease-out',

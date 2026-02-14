@@ -310,8 +310,11 @@ export async function smartRateLimitHook(
 export function registerSmartRateLimit(app: FastifyInstance): void {
   // Aplica o hook apenas para rotas de análise
   app.addHook('preHandler', async (request, reply) => {
-    // Só aplica rate limit para POST /api/analyze
-    if (request.method === 'POST' && request.url.startsWith('/api/analyze')) {
+    // Aplica rate limit para POST /api/analyze e GET /api/analyze/:jobId/stream
+    if (
+      (request.method === 'POST' && request.url.startsWith('/api/analyze')) ||
+      (request.method === 'GET' && request.url.includes('/stream'))
+    ) {
       try {
         await smartRateLimitHook(request, reply);
       } catch {

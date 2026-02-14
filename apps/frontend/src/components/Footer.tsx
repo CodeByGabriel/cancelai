@@ -4,29 +4,29 @@ import { Heart } from 'lucide-react';
 
 export function Footer() {
   return (
-    <footer className="border-t border-gray-100 bg-white py-8 mt-auto">
+    <footer className="border-t border-border-default bg-card py-8 mt-auto transition-colors">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2 text-sm text-gray-500">
+          <div className="flex items-center gap-2 text-sm text-foreground-muted">
             <span>Feito com</span>
             <Heart className="w-4 h-4 text-red-500 fill-red-500" />
             <span>para ajudar brasileiros a economizar</span>
           </div>
 
-          <div className="flex items-center gap-6 text-sm text-gray-500">
+          <div className="flex items-center gap-6 text-sm text-foreground-muted">
             <span>Cancelaí 2024</span>
             <a
               href="https://github.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-primary-600 transition-colors"
+              className="hover:text-brand-text transition-colors"
             >
               GitHub
             </a>
           </div>
         </div>
 
-        <div className="mt-6 text-center text-xs text-gray-400">
+        <div className="mt-6 text-center text-xs text-foreground-faint">
           <p>
             Este serviço é apenas informativo. Não nos responsabilizamos por
             decisões tomadas com base nas análises.

@@ -8,6 +8,8 @@
     "start": "node dist/server.js",
     "test": "vitest",
     "test:coverage": "vitest --coverage",
+    "test:accuracy": "vitest run test/classification-accuracy",
+    "test:golden": "UPDATE_GOLDEN=true vitest run test/classification-accuracy",
     "lint": "eslint src --ext .ts"
   },
   "dependencies": {
@@ -16,17 +18,20 @@
     "@fastify/multipart": "^8.1.0",
     "csv-parse": "^5.5.3",
     "fastify": "^4.26.0",
+    "fuse.js": "^7.1.0",
+    "ofx-data-extractor": "^1.4.8",
+    "opossum": "^9.0.0",
     "pdf-parse": "^1.1.1",
-    "string-similarity": "^4.0.4",
-    "zod": "^3.22.4"
+    "string-comparisons": "^0.0.20"
   },
   "devDependencies": {
     "@types/node": "^20.11.5",
+    "@types/opossum": "^8.1.9",
     "@types/pdf-parse": "^1.1.4",
-    "@types/string-similarity": "^4.0.2",
     "@typescript-eslint/eslint-plugin": "^6.19.0",
     "@typescript-eslint/parser": "^6.19.0",
     "eslint": "^8.56.0",
+    "fast-check": "^4.5.3",
     "tsx": "^4.7.0",
     "typescript": "^5.3.3",
     "vitest": "^1.2.1"

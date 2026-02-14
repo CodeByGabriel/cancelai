@@ -1,0 +1,280 @@
+{
+  "groundTruth": {
+    "subscriptions": [
+      "netflix",
+      "max",
+      "youtube",
+      "canva",
+      "gympass"
+    ]
+  },
+  "snapshot": {
+    "subscriptions": [
+      {
+        "id": "8d9d2dae-d534-4346-918b-eab6557cf2a0",
+        "name": "Wellhub (ex-Gympass)",
+        "originalNames": [
+          "GYMPASS WELLHUB"
+        ],
+        "monthlyAmount": 89.9,
+        "annualAmount": 1078.8,
+        "occurrences": 3,
+        "transactions": [
+          {
+            "date": "2024-12-18T03:00:00.000Z",
+            "amount": 89.9,
+            "description": "GYMPASS WELLHUB"
+          },
+          {
+            "date": "2024-11-18T03:00:00.000Z",
+            "amount": 89.9,
+            "description": "GYMPASS WELLHUB"
+          },
+          {
+            "date": "2024-10-18T03:00:00.000Z",
+            "amount": 89.9,
+            "description": "GYMPASS WELLHUB"
+          }
+        ],
+        "confidence": "high",
+        "confidenceScore": 0.9551999999999999,
+        "confidenceReasons": [
+          "Padrao mensal consistente",
+          "Valores muito consistentes",
+          "Servico popular reconhecido",
+          "Consistencia temporal alta",
+          "Confianca muito alta"
+        ],
+        "category": "fitness",
+        "cancelInstructions": "https://wellhub.com/pt-br/",
+        "detectedPeriod": "monthly",
+        "priceRangeFlag": "normal"
+      },
+      {
+        "id": "17cdeb9f-ecfc-454e-b5aa-66e88a39ef28",
+        "name": "Netflix",
+        "originalNames": [
+          "NETFLIX.COM"
+        ],
+        "monthlyAmount": 55.9,
+        "annualAmount": 670.8,
+        "occurrences": 3,
+        "transactions": [
+          {
+            "date": "2024-12-01T03:00:00.000Z",
+            "amount": 55.9,
+            "description": "NETFLIX.COM"
+          },
+          {
+            "date": "2024-11-01T03:00:00.000Z",
+            "amount": 55.9,
+            "description": "NETFLIX.COM"
+          },
+          {
+            "date": "2024-10-01T03:00:00.000Z",
+            "amount": 55.9,
+            "description": "NETFLIX.COM"
+          }
+        ],
+        "confidence": "high",
+        "confidenceScore": 0.9551999999999999,
+        "confidenceReasons": [
+          "Padrao mensal consistente",
+          "Valores muito consistentes",
+          "Servico popular reconhecido",
+          "Consistencia temporal alta",
+          "Confianca muito alta"
+        ],
+        "category": "streaming",
+        "cancelInstructions": "https://www.netflix.com/cancelplan",
+        "detectedPeriod": "monthly",
+        "priceRangeFlag": "normal"
+      },
+      {
+        "id": "a5c7f6cb-17ac-4f42-aef1-0c05164f0355",
+        "name": "Canva Pro",
+        "originalNames": [
+          "PAG*Canva"
+        ],
+        "monthlyAmount": 34.99,
+        "annualAmount": 419.88,
+        "occurrences": 3,
+        "transactions": [
+          {
+            "date": "2024-12-15T03:00:00.000Z",
+            "amount": 34.99,
+            "description": "PAG*Canva"
+          },
+          {
+            "date": "2024-11-15T03:00:00.000Z",
+            "amount": 34.99,
+            "description": "PAG*Canva"
+          },
+          {
+            "date": "2024-10-15T03:00:00.000Z",
+            "amount": 34.99,
+            "description": "PAG*Canva"
+          }
+        ],
+        "confidence": "high",
+        "confidenceScore": 0.9551999999999999,
+        "confidenceReasons": [
+          "Padrao mensal consistente",
+          "Valores muito consistentes",
+          "Servico popular reconhecido",
+          "Consistencia temporal alta",
+          "Confianca muito alta"
+        ],
+        "category": "software",
+        "cancelInstructions": "https://www.canva.com/settings/billing",
+        "detectedPeriod": "monthly",
+        "priceRangeFlag": "promo"
+      },
+      {
+        "id": "89c7b9bd-efcc-4c4e-bc6b-260e6ca7f18b",
+        "name": "Max (HBO)",
+        "originalNames": [
+          "HBO MAX"
+        ],
+        "monthlyAmount": 34.9,
+        "annualAmount": 418.8,
+        "occurrences": 3,
+        "transactions": [
+          {
+            "date": "2024-12-03T03:00:00.000Z",
+            "amount": 34.9,
+            "description": "HBO MAX"
+          },
+          {
+            "date": "2024-11-03T03:00:00.000Z",
+            "amount": 34.9,
+            "description": "HBO MAX"
+          },
+          {
+            "date": "2024-10-03T03:00:00.000Z",
+            "amount": 34.9,
+            "description": "HBO MAX"
+          }
+        ],
+        "confidence": "high",
+        "confidenceScore": 0.9551999999999999,
+        "confidenceReasons": [
+          "Padrao mensal consistente",
+          "Valores muito consistentes",
+          "Servico popular reconhecido",
+          "Consistencia temporal alta",
+          "Confianca muito alta"
+        ],
+        "category": "streaming",
+        "cancelInstructions": "https://www.max.com/account",
+        "detectedPeriod": "monthly",
+        "priceRangeFlag": "normal"
+      },
+      {
+        "id": "cd79d08d-ff9d-46c4-83a4-899648d8eb56",
+        "name": "YouTube Premium",
+        "originalNames": [
+          "GOOGLE*YouTubePr"
+        ],
+        "monthlyAmount": 29.9,
+        "annualAmount": 358.8,
+        "occurrences": 3,
+        "transactions": [
+          {
+            "date": "2024-12-10T03:00:00.000Z",
+            "amount": 29.9,
+            "description": "GOOGLE*YouTubePr"
+          },
+          {
+            "date": "2024-11-10T03:00:00.000Z",
+            "amount": 29.9,
+            "description": "GOOGLE*YouTubePr"
+          },
+          {
+            "date": "2024-10-10T03:00:00.000Z",
+            "amount": 29.9,
+            "description": "GOOGLE*YouTubePr"
+          }
+        ],
+        "confidence": "high",
+        "confidenceScore": 0.9551999999999999,
+        "confidenceReasons": [
+          "Padrao mensal consistente",
+          "Valores muito consistentes",
+          "Servico popular reconhecido",
+          "Consistencia temporal alta",
+          "Confianca muito alta"
+        ],
+        "category": "music",
+        "cancelInstructions": "https://www.youtube.com/paid_memberships",
+        "detectedPeriod": "monthly",
+        "priceRangeFlag": "normal"
+      }
+    ],
+    "summary": {
+      "totalMonthlySpending": 245.59,
+      "totalAnnualSpending": 2947.08,
+      "subscriptionCount": 5,
+      "highConfidenceCount": 5,
+      "mediumConfidenceCount": 0,
+      "lowConfidenceCount": 0,
+      "periodStart": "2024-10-01T03:00:00.000Z",
+      "periodEnd": "2024-12-26T03:00:00.000Z",
+      "transactionsAnalyzed": 65
+    },
+    "metadata": {
+      "processedAt": "2026-02-14T12:15:06.661Z",
+      "processingTimeMs": 4,
+      "filesProcessed": 1,
+      "bankFormatsDetected": [
+        "Banco Inter"
+      ],
+      "version": "1.0.0"
+    },
+    "warnings": [
+      "Canva Pro: R$34.99 esta abaixo da faixa tipica (possivel promocao)"
+    ],
+    "installments": [
+      {
+        "description": "SHOPEE PARC 1/3",
+        "originalDescription": "SHOPEE PARC 1/3",
+        "amount": 45,
+        "date": "2024-10-12T03:00:00.000Z",
+        "installmentInfo": {
+          "current": 1,
+          "total": 3
+        }
+      },
+      {
+        "description": "SHOPEE PARC 2/3",
+        "originalDescription": "SHOPEE PARC 2/3",
+        "amount": 45,
+        "date": "2024-11-12T03:00:00.000Z",
+        "installmentInfo": {
+          "current": 2,
+          "total": 3
+        }
+      },
+      {
+        "description": "ALIEXPRESS PARCELA 1/2",
+        "originalDescription": "ALIEXPRESS PARCELA 1/2",
+        "amount": 120,
+        "date": "2024-11-13T03:00:00.000Z",
+        "installmentInfo": {
+          "current": 1,
+          "total": 2
+        }
+      },
+      {
+        "description": "SHOPEE PARC 3/3",
+        "originalDescription": "SHOPEE PARC 3/3",
+        "amount": 45,
+        "date": "2024-12-12T03:00:00.000Z",
+        "installmentInfo": {
+          "current": 3,
+          "total": 3
+        }
+      }
+    ]
+  }
+}

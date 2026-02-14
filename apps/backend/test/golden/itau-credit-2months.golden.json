@@ -1,0 +1,312 @@
+{
+  "groundTruth": {
+    "subscriptions": [
+      "netflix",
+      "deezer",
+      "smart fit",
+      "globoplay",
+      "nordvpn",
+      "max"
+    ]
+  },
+  "snapshot": {
+    "subscriptions": [
+      {
+        "id": "c48a0ad2-a8ef-4835-b89c-39ba874ce135",
+        "name": "Smart Fit",
+        "originalNames": [
+          "IZ*SmartFit"
+        ],
+        "monthlyAmount": 109.9,
+        "annualAmount": 1318.8,
+        "occurrences": 2,
+        "transactions": [
+          {
+            "date": "2024-12-05T03:00:00.000Z",
+            "amount": 109.9,
+            "description": "IZ*SmartFit"
+          },
+          {
+            "date": "2024-11-05T03:00:00.000Z",
+            "amount": 109.9,
+            "description": "IZ*SmartFit"
+          }
+        ],
+        "confidence": "high",
+        "confidenceScore": 0.9617,
+        "confidenceReasons": [
+          "Padrao mensal consistente",
+          "Valores muito consistentes",
+          "Servico popular reconhecido",
+          "Consistencia temporal alta",
+          "Confianca muito alta"
+        ],
+        "category": "fitness",
+        "cancelInstructions": "Compareca presencialmente a unidade mais proxima com documento de identidade. Nao e possivel cancelar online.",
+        "detectedPeriod": "monthly",
+        "priceRangeFlag": "normal"
+      },
+      {
+        "id": "dd3e87ae-a324-4f63-8617-0038f5a7bb95",
+        "name": "Netflix",
+        "originalNames": [
+          "NETFLIX.COM"
+        ],
+        "monthlyAmount": 55.9,
+        "annualAmount": 670.8,
+        "occurrences": 2,
+        "transactions": [
+          {
+            "date": "2024-12-01T03:00:00.000Z",
+            "amount": 55.9,
+            "description": "NETFLIX.COM"
+          },
+          {
+            "date": "2024-11-01T03:00:00.000Z",
+            "amount": 55.9,
+            "description": "NETFLIX.COM"
+          }
+        ],
+        "confidence": "high",
+        "confidenceScore": 0.9617,
+        "confidenceReasons": [
+          "Padrao mensal consistente",
+          "Valores muito consistentes",
+          "Servico popular reconhecido",
+          "Consistencia temporal alta",
+          "Confianca muito alta"
+        ],
+        "category": "streaming",
+        "cancelInstructions": "https://www.netflix.com/cancelplan",
+        "detectedPeriod": "monthly",
+        "priceRangeFlag": "normal"
+      },
+      {
+        "id": "765da5b9-45be-479e-a617-6550ac73ba0b",
+        "name": "Globoplay",
+        "originalNames": [
+          "GLOBOPLAY"
+        ],
+        "monthlyAmount": 49.9,
+        "annualAmount": 598.8,
+        "occurrences": 2,
+        "transactions": [
+          {
+            "date": "2024-12-07T03:00:00.000Z",
+            "amount": 49.9,
+            "description": "GLOBOPLAY"
+          },
+          {
+            "date": "2024-11-07T03:00:00.000Z",
+            "amount": 49.9,
+            "description": "GLOBOPLAY"
+          }
+        ],
+        "confidence": "high",
+        "confidenceScore": 0.9617,
+        "confidenceReasons": [
+          "Padrao mensal consistente",
+          "Valores muito consistentes",
+          "Servico popular reconhecido",
+          "Consistencia temporal alta",
+          "Confianca muito alta"
+        ],
+        "category": "streaming",
+        "cancelInstructions": "https://globoplay.globo.com/minha-conta/",
+        "detectedPeriod": "monthly",
+        "priceRangeFlag": "normal"
+      },
+      {
+        "id": "b21fea80-5045-4614-bd1e-fd4068acd707",
+        "name": "Deezer",
+        "originalNames": [
+          "DEEZER"
+        ],
+        "monthlyAmount": 34.9,
+        "annualAmount": 418.8,
+        "occurrences": 2,
+        "transactions": [
+          {
+            "date": "2024-12-03T03:00:00.000Z",
+            "amount": 34.9,
+            "description": "DEEZER"
+          },
+          {
+            "date": "2024-11-03T03:00:00.000Z",
+            "amount": 34.9,
+            "description": "DEEZER"
+          }
+        ],
+        "confidence": "high",
+        "confidenceScore": 0.9392,
+        "confidenceReasons": [
+          "Padrao mensal consistente",
+          "Valores muito consistentes",
+          "Servico de assinatura conhecido",
+          "Consistencia temporal alta",
+          "Confianca muito alta"
+        ],
+        "category": "music",
+        "cancelInstructions": "https://www.deezer.com/account/subscription",
+        "detectedPeriod": "monthly",
+        "priceRangeFlag": "normal"
+      },
+      {
+        "id": "3fe24e56-3a09-426c-91d1-5e95e890ed5a",
+        "name": "Max (HBO)",
+        "originalNames": [
+          "PAG*Max"
+        ],
+        "monthlyAmount": 34.9,
+        "annualAmount": 418.8,
+        "occurrences": 2,
+        "transactions": [
+          {
+            "date": "2024-12-12T03:00:00.000Z",
+            "amount": 34.9,
+            "description": "PAG*Max"
+          },
+          {
+            "date": "2024-11-12T03:00:00.000Z",
+            "amount": 34.9,
+            "description": "PAG*Max"
+          }
+        ],
+        "confidence": "high",
+        "confidenceScore": 0.9617,
+        "confidenceReasons": [
+          "Padrao mensal consistente",
+          "Valores muito consistentes",
+          "Servico popular reconhecido",
+          "Consistencia temporal alta",
+          "Confianca muito alta"
+        ],
+        "category": "streaming",
+        "cancelInstructions": "https://www.max.com/account",
+        "detectedPeriod": "monthly",
+        "priceRangeFlag": "normal"
+      },
+      {
+        "id": "7ac1563c-27e1-43f6-8774-10a65966ff73",
+        "name": "NordVPN",
+        "originalNames": [
+          "NORDVPN.COM"
+        ],
+        "monthlyAmount": 11.9,
+        "annualAmount": 142.8,
+        "occurrences": 2,
+        "transactions": [
+          {
+            "date": "2024-12-10T03:00:00.000Z",
+            "amount": 11.9,
+            "description": "NORDVPN.COM"
+          },
+          {
+            "date": "2024-11-10T03:00:00.000Z",
+            "amount": 11.9,
+            "description": "NORDVPN.COM"
+          }
+        ],
+        "confidence": "high",
+        "confidenceScore": 0.9392,
+        "confidenceReasons": [
+          "Padrao mensal consistente",
+          "Valores muito consistentes",
+          "Servico popular reconhecido",
+          "Consistencia temporal alta",
+          "Confianca muito alta"
+        ],
+        "category": "security",
+        "cancelInstructions": "https://my.nordaccount.com/dashboard/nordvpn/",
+        "detectedPeriod": "monthly",
+        "priceRangeFlag": "promo"
+      },
+      {
+        "id": "726da341-fc51-487b-91ee-87c5b1640737",
+        "name": "Raia Farma",
+        "originalNames": [
+          "RAIA FARMA",
+          "ARAUJO FARMA"
+        ],
+        "monthlyAmount": 30.05,
+        "annualAmount": 360.6,
+        "occurrences": 2,
+        "transactions": [
+          {
+            "date": "2024-12-28T03:00:00.000Z",
+            "amount": 31.2,
+            "description": "ARAUJO FARMA"
+          },
+          {
+            "date": "2024-11-04T03:00:00.000Z",
+            "amount": 28.9,
+            "description": "RAIA FARMA"
+          }
+        ],
+        "confidence": "medium",
+        "confidenceScore": 0.6089,
+        "confidenceReasons": [
+          "Padrao bimestral detectado",
+          "Valores muito consistentes",
+          "Consistencia temporal alta"
+        ],
+        "detectedPeriod": "bimonthly"
+      }
+    ],
+    "summary": {
+      "totalMonthlySpending": 327.45,
+      "totalAnnualSpending": 3929.4,
+      "subscriptionCount": 7,
+      "highConfidenceCount": 6,
+      "mediumConfidenceCount": 1,
+      "lowConfidenceCount": 0,
+      "periodStart": "2024-11-01T03:00:00.000Z",
+      "periodEnd": "2024-12-29T03:00:00.000Z",
+      "transactionsAnalyzed": 58
+    },
+    "metadata": {
+      "processedAt": "2026-02-14T12:15:06.647Z",
+      "processingTimeMs": 32,
+      "filesProcessed": 1,
+      "bankFormatsDetected": [
+        "Itaú"
+      ],
+      "version": "1.0.0"
+    },
+    "warnings": [
+      "NordVPN: R$11.90 esta abaixo da faixa tipica (possivel promocao)"
+    ],
+    "installments": [
+      {
+        "description": "AMERICANAS PARC 1/4",
+        "originalDescription": "AMERICANAS PARC 1/4",
+        "amount": 200,
+        "date": "2024-11-15T03:00:00.000Z",
+        "installmentInfo": {
+          "current": 1,
+          "total": 4
+        }
+      },
+      {
+        "description": "AMERICANAS PARC 2/4",
+        "originalDescription": "AMERICANAS PARC 2/4",
+        "amount": 200,
+        "date": "2024-12-15T03:00:00.000Z",
+        "installmentInfo": {
+          "current": 2,
+          "total": 4
+        }
+      },
+      {
+        "description": "AMERICANAS PARC 3/4",
+        "originalDescription": "AMERICANAS PARC 3/4",
+        "amount": 200,
+        "date": "2024-12-21T03:00:00.000Z",
+        "installmentInfo": {
+          "current": 3,
+          "total": 4
+        }
+      }
+    ]
+  }
+}
