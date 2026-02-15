@@ -264,6 +264,23 @@ export const GATEWAY_PREFIXES = Object.freeze([
   'PG\\s+',
 ] as const);
 
+/**
+ * Platform hints: prefixos normalizados que indicam assinatura provável
+ * mesmo quando o serviço específico não é identificado.
+ * Padrões já normalizados via normalizeForMatching() (lowercase, sem acentos, espaço no lugar de special chars).
+ */
+export const PLATFORM_HINTS = Object.freeze([
+  { pattern: 'apple com bill', label: 'Assinatura Apple', category: 'software' },
+  { pattern: 'itunes com bill', label: 'Assinatura Apple', category: 'software' },
+  { pattern: 'google ', label: 'Assinatura via Google Play', category: 'software' },
+  { pattern: 'stripe ', label: 'Assinatura SaaS', category: 'software' },
+  { pattern: 'hotmart', label: 'Assinatura via Hotmart', category: 'education' },
+  { pattern: 'editora abril', label: 'Assinatura Editora Abril', category: 'news' },
+  { pattern: 'assineabril', label: 'Assinatura Editora Abril', category: 'news' },
+  { pattern: 'infoglobo', label: 'Assinatura Jornal Globo', category: 'news' },
+  { pattern: 'amzn ', label: 'Assinatura Amazon', category: 'software' },
+] as const);
+
 export const NOISE_STOP_WORDS = Object.freeze([
   'COMPRA', 'CARTAO', 'DEBITO', 'CREDITO', 'VISA', 'MASTERCARD', 'ELO',
   'LTDA', 'SA', 'EIRELI', 'MEI', 'ME',

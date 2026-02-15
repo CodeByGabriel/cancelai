@@ -78,6 +78,10 @@ export function getCategoryIcon(category?: string): string {
       return '📰';
     case 'fitness':
       return '💪';
+    case 'health':
+      return '🏥';
+    case 'insurance':
+      return '🛡️';
     case 'food':
       return '🍕';
     case 'transport':
@@ -114,6 +118,10 @@ export function getCategoryLabel(category?: string): string {
       return 'Notícias';
     case 'fitness':
       return 'Academia';
+    case 'health':
+      return 'Saúde';
+    case 'insurance':
+      return 'Seguros';
     case 'food':
       return 'Delivery';
     case 'transport':

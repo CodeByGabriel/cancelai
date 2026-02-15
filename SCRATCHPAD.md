@@ -2,13 +2,15 @@
 
 ## Status Atual
 
-- **Fase:** Reconciliacao (Fase 9) — COMPLETO
-- **Ultima mudanca:** 2026-02-14
+- **Fase:** Expansao C (saude, seguros, lifestyle, midia, platform detector) — COMPLETO
+- **Ultima mudanca:** 2026-02-15
 - **Testes:** 75 passing, 0 failing (64 unitarios + 6 accuracy + 5 property-based)
 - **Build:** Backend (tsc) e Frontend (next build) compilam limpo
 - **Security audit:** SECURITY-AUDIT.md gerado na raiz do monorepo
 - **Accuracy:** F1=0.966, Recall=1.000, Precision=0.933 (CI gates: F1>=0.85, R>=0.90, P>=0.80)
-- **Status:** Projeto reconciliado, pronto para deploy
+- **Servicos:** 352 (era 273) — 79 novos + 8 existentes modificados (Fase C)
+- **Categorias:** 16 (era 14) — adicionadas 'health' e 'insurance' (Fase C)
+- **Status:** Fase C completa. 3 fases de expansao concluidas (A: 152→183, B: 183→273, C: 273→352)
 
 ## Decisoes Tomadas
 
@@ -140,6 +142,126 @@
 - **FP reduction:** De 21 FPs (primeiro run) para 2 FPs (diversificacao de descricoes normais)
 - **Dependencia:** `fast-check` (property-based testing)
 
+### Expansao Fase B — Software/AI, Seguranca, Educacao, Financas
+
+- **Objetivo:** Expandir banco de 183 para 273 servicos (+90 novos, 29 existentes modificados)
+- **Mudanca estrutural:** currency type extendido com `'EUR/USD'` (pCloud, DeepL, ProtonMail, etc.)
+- **29 existentes modificados:** Novos billingDescriptors + campos currency/iofApplicable/platformBilled/annualOnly
+  - SOFTWARE (18): chatgpt, claude, grammarly, notion (+alias 'notion ai'), figma, slack, zoom, lastpass, onePassword, bitwarden, evernote, pcloud, jetbrains, asana, trello, monday, github (+alias 'github copilot'), vercel
+  - EDUCATION (7): coursera, udemy, skillshare, linkedin, babbel, masterclass, hotmartClub (+platformBilled:'hotmart')
+  - SECURITY (4): nordvpn, expressVpn, avast, bitdefender
+- **90 novos servicos por sub-secao:**
+  - AI & Machine Learning (12): chatgptGo, geminiAdvanced, googleAiPlus, midjourney, runwayMl, elevenLabs, perplexityPro, cursorPro, replitPro, deepLPro, microsoftCopilot, synthesia
+  - Dev Tools & Cloud (13): netlifyPro, railway, digitalOcean, aws, azure, heroku, gitLab, render, supabase, cloudflare, planetScale, flyIo, firebaseBlaze
+  - Design & Colaboracao (7): sketch, miro, clickUp, linear, jira, discordNitro, loom
+  - Senhas, Email & Armazenamento (5): dashlane, fastmail, obsidianSync, megaNz, backblaze
+  - Business, Marketing & ERP (12): contaAzul, omie, bling, nibo, tinyErp, nfeIo, rdStation, mailchimp, hubSpot, semrush, activeCampaign, hotjar
+  - Educacao Brasil (8): granCursos, qConcursos, aprovaConcursos, stoodi, meSalva, passeiDireto, casaDoSaber, cifraClubPro
+  - Idiomas (8): busuu, rosettaStone, cambly, openEnglish, wizardOnline, cnaGo, memrise, preply
+  - Educacao Internacional (5): pluralsight, dataCamp, codecademy, brilliantOrg, fenderPlay
+  - VPN & Email Seguro (9): cyberGhost, protonMail, tutanota, protonVpn, pia, mullvad, eset, trendMicro, malwarebytes
+  - Gestao Financeira (8): mobills, organizze, ynab, kinvo, tradeMap, statusInvest, tradingView, profitChart
+  - Consulta de Credito (3): boaVistaScpc, quod, spcBrasil
+- **Merges realizados:** Notion AI → notion (alias), GitHub Copilot → github (alias), ChatGPT Go → entry separado (plano BR)
+- **Colisoes documentadas:** OPENAI (chatgpt vs chatgptGo), PROTON AG (protonMail vs protonVpn), ATLASSIAN (trello vs jira), SALESFORCE omitido
+- **Fix hotmart:** Removido `'HOTMART*'` duplicado (normaliza igual a `'HOTMART'`)
+- **Metricas:** F1=0.966, Recall=1.000, Precision=0.933 — zero regressao
+
+### Servicos por Categoria (Pos-Fase B)
+
+| Categoria | Quantidade | Delta Fase B |
+|-----------|-----------|-------------|
+| streaming | 19 | — |
+| music | 8 | — |
+| gaming | 10 | — |
+| software | 54 | +32 |
+| education | 33 | +21 |
+| fitness | 11 | — |
+| food | 6 | — |
+| transport | 9 | — |
+| telecom | 8 | — |
+| news | 11 | — |
+| security | 17 | +9 |
+| dating | 7 | — |
+| finance | 19 | +11 |
+| other | 6 | — |
+| **TOTAL** | **273** | **+90** (era 183) |
+
+### Expansao Fase C — Saude, Seguros, Lifestyle, Midia, Platform Detector
+
+- **Objetivo:** Expandir banco de 273 para 352 servicos (+79 novos, 8 existentes modificados), 2 novas categorias, platform detector
+- **Novas categorias:** `health` (saude, dental, wellness, terapia) e `insurance` (seguros auto, vida, residencial, pet)
+- **8 existentes modificados:**
+  - oglobo (+EDITORA GLOBO), veja (+ASSINEABRIL), exame (+EXAME)
+  - nytimes (+THE NEW YORK TIMES, currency:USD, iofApplicable), economist (+THE ECONOMIST, currency:USD, iofApplicable, price max 170)
+  - medium (+STRIPE*MEDIUM, currency:USD, iofApplicable), canva (+CANVA, CANVA PTY, currency:BRL, price max 240)
+- **79 novos servicos por secao:**
+  - Saude — Planos (9): unimed, amil, bradescoSaude, sulamericaSaude, hapvida, notreDame, qualicorp, aliceSaude, samiSaude
+  - Saude — Dental (6): odontoPrev, bradescoDental, metlifeDental, sulamericaOdonto, amilDental, uniodonto
+  - Seguros (9): portoSeguro, sulamericaAuto, azulSeguros, youse, pier, caixaSeguradora, mapfre, liberty, portoSeguroPet
+  - Wellness/Terapia (6): zenklub, vittude, psicologiaViva, cingulo, zenApp, lojong — category: health
+  - Pet (3): petloveClub (other), petloveSaude (health), petiko (other)
+  - Boxes Food (8): wine, evinoClub, grandCru, clubeDoMalte, nespresso, coffeeAndJoy, mokaClube, sociedadeDaCarne
+  - Boxes Outros (4): glambox, tagLivros, leiturinha (other), cartaoDeTodos (health)
+  - Automotive (3): localizaMeoo, movidaAssinatura, kovi — category: transport
+  - Tags (2): c6Tag, interTag — category: transport
+  - Coworking (3): wework, beerOrCoffee, iwgRegus — category: other
+  - Banking Premium (5): nubankUltravioleta, c6Carbon, itauPersonnalite, bradescoPrime, santanderSelect — category: finance
+  - Jornais Regionais (3): correioBraziliense, zeroHora, gazetaDoPovo
+  - Revistas (5): superinteressante, quatroRodas, istoE, crusoe, revistaOeste
+  - Jornais Internacionais (3): washingtonPost, financialTimes, wallStreetJournal — currency: USD, iofApplicable
+  - Content Platforms (7): substack, patreon, catarse, apoiaSe, scribd, socialComics, marvelUnlimited
+  - Creative Assets (3): envatoElements, shutterstock, epidemicSound — category: software
+- **Platform Detector (feature de codigo):**
+  - `PLATFORM_HINTS` em config/index.ts: 9 patterns (apple com bill, itunes com bill, google, stripe, hotmart, editora abril, assineabril, infoglobo, amzn)
+  - `detectPlatformHint()` em known-services.ts: fallback apos findKnownService() retornar null
+  - scoring-stage.ts: boost de 0.3 * 0.15 = 0.045 no finalScore quando platform hint detectado
+  - Protecao contra FP: nao cria subscriptions sozinho — apenas boosta score de grupos que ja passaram pelo pipeline (minOccurrences >= 2, recurrence, stability)
+- **Colisoes resolvidas:**
+  - INFOGLOBO: oglobo mantém, Valor usa apenas 'VALOR ECONOMICO'. INFOGLOBO e platform hint
+  - EDITORA ABRIL: nao adicionado a nenhum servico individual. E platform hint generico
+  - CAIXA SEGURADORA: youse usa APENAS 'YOUSE SEGUROS', caixaSeguradora recebe 'CAIXA SEGURADORA'
+  - PORTO SEGURO vs PET: longAliasEntries sorted by length DESC — 'porto seguro pet' testado ANTES de 'porto seguro'
+  - NUBANK: nubank mantém 'NU PAGAMENTOS', nubankUltravioleta usa 'NUBANK ULTRAVIOLETA'
+  - C6 BANK: c6Tag usa 'C6 TAG', c6Carbon usa 'C6 CARBON'
+- **Metricas:** F1=0.966, Recall=1.000, Precision=0.933 — zero regressao
+
+### Servicos por Categoria (Pos-Fase C)
+
+Contagem por anotacao `category:` (discontinued incluidos na categoria original):
+
+| Categoria | Quantidade | Delta Fase C |
+|-----------|-----------|-------------|
+| streaming | 37 | — |
+| music | 13 | — |
+| gaming | 17 | — |
+| software | 79 | +3 |
+| education | 34 | — |
+| fitness | 11 | — |
+| health | 23 | +23 (NOVA) |
+| insurance | 9 | +9 (NOVA) |
+| food | 14 | +8 |
+| transport | 14 | +5 |
+| telecom | 8 | — |
+| news | 29 | +18 |
+| security | 17 | — |
+| dating | 7 | — |
+| finance | 25 | +5 |
+| other | 15 | +8 |
+| **TOTAL** | **352** | **+79** (era 273) |
+
+### Expansao Fase A — Servicos de Entretenimento
+
+- **Objetivo:** Expandir banco de 152 para 183 servicos + mudancas estruturais na interface KnownService
+- **Mudancas estruturais:** 6 novos campos opcionais na interface KnownService:
+  - `currency` ('BRL'|'USD'|'EUR'|'BRL/USD'), `iofApplicable` (boolean), `status` ('active'|'merged'|'discontinued'), `mergedInto` (string), `annualOnly` (boolean), `platformBilled` ('apple'|'google'|'amazon'|'hotmart'|'direct')
+- **Collision detection:** Validacao de billingDescriptors duplicados no module load (console.warn)
+  - Colisoes pre-existentes detectadas: `APPLE.COM/BILL` (appleTvPlus, appleMusicOne, icloud), `ITUNES.COM/BILL` (appleTvPlus, appleMusicOne)
+- **31 novos servicos:** 15 streaming nicho + 7 gaming + 5 musica/audiobooks + 4 descontinuados/migrados
+- **12 existentes modificados:** Star+ (merged→Disney+), MUBI/Looke/Premiere (novos descriptors), GeForce NOW (ABYA descriptors), DAZN/Oldflix (currency), Epic Games (Fortnite Crew), Roblox (platformBilled), Amazon Music/SoundCloud/Audible
+- **Servicos descontinuados/migrados:** Star+ →Disney+, Funimation→Crunchyroll, UFC Fight Pass (discontinued), GuiaBolso→PicPay, Anime Onegai (discontinued)
+- **Metricas:** F1=0.966, Recall=1.000, Precision=0.933 — zero regressao
+
 ### Reconciliacao Algoritmo x Banco (Fase 9)
 
 - **Objetivo:** Alinhar algoritmo de deteccao (Fase 3) com banco expandido (Fase 4) — fases executadas linearmente (0→8) em vez da ordem recomendada (0→4→3)
@@ -267,6 +389,25 @@ apps/backend/test/
 ## Dependencias Alteradas (Fase 6)
 
 - Adicionado: `fast-check` (property-based testing)
+
+## Arquivos Modificados (Fase C — Expansao)
+
+- `types/index.ts` — SubscriptionCategory: adicionadas `'health'` e `'insurance'` (14→16 categorias)
+- `frontend/src/lib/utils.ts` — getCategoryIcon/getCategoryLabel: adicionados health→'🏥'/'Saúde' e insurance→'🛡️'/'Seguros'
+- `config/index.ts` — adicionado PLATFORM_HINTS array (9 patterns para platform detector)
+- `services/known-services.ts` — adicionada funcao detectPlatformHint() + import de PLATFORM_HINTS
+- `pipeline/stages/scoring-stage.ts` — integrado platform hint fallback: boost 0.3 * knownService weight, platformHint.label como nome, platformHint.category como categoria
+- `config/known-services-data.ts` — +79 entries, 8 updates, 2 novas secoes (SAUDE E PLANOS, SEGUROS), header 270+→350+, contadores de secao corrigidos
+
+## Arquivos Modificados (Fase B — Expansao)
+
+- `services/known-services.ts` — currency type extendido com `'EUR/USD'` (linha 61)
+- `config/known-services-data.ts` — +90 novos servicos, 29 existentes modificados, sub-secoes com comentarios, contadores atualizados (183→273), header 180+→270+
+
+## Arquivos Modificados (Fase A — Expansao)
+
+- `services/known-services.ts` — +6 campos opcionais na interface KnownService (currency, iofApplicable, status, mergedInto, annualOnly, platformBilled) + collision detection no module load
+- `config/known-services-data.ts` — 31 novos servicos, 12 existentes modificados, contadores de secao atualizados (152→183)
 
 ## Arquivos Modificados (Fase 9)
 

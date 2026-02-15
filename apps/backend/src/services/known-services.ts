@@ -15,7 +15,7 @@
 
 import type { SubscriptionCategory, CancelMethod } from '../types/index.js';
 import { KNOWN_SERVICES_DATA } from '../config/known-services-data.js';
-import { GATEWAY_PREFIXES as GATEWAY_PATTERNS } from '../config/index.js';
+import { GATEWAY_PREFIXES as GATEWAY_PATTERNS, PLATFORM_HINTS } from '../config/index.js';
 import { LRUCache } from '../utils/lru-cache.js';
 import Fuse from 'fuse.js';
 
@@ -56,6 +56,24 @@ export interface KnownService {
 
   /** Indica se é um serviço muito comum (aumenta confiança) */
   readonly isPopular?: boolean;
+
+  /** Moeda de cobrança (default BRL quando omitido) */
+  readonly currency?: 'BRL' | 'USD' | 'EUR' | 'BRL/USD' | 'EUR/USD';
+
+  /** Se IOF (3.5%) é aplicável — serviços cobrados em moeda estrangeira */
+  readonly iofApplicable?: boolean;
+
+  /** Status do serviço */
+  readonly status?: 'active' | 'merged' | 'discontinued';
+
+  /** Para serviços merged/discontinued, chave do serviço que o absorveu */
+  readonly mergedInto?: string;
+
+  /** Serviço cobra apenas anualmente (não tem plano mensal) */
+  readonly annualOnly?: boolean;
+
+  /** Plataforma intermediária de billing */
+  readonly platformBilled?: 'apple' | 'google' | 'amazon' | 'hotmart' | 'direct';
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -156,6 +174,28 @@ for (const service of Object.values(KNOWN_SERVICES_DATA)) {
 // Sort long aliases by length descending (prefer longer matches first)
 longAliasEntries.sort((a, b) => b[0].length - a[0].length);
 
+// ── Collision detection (billingDescriptors duplicados entre serviços) ──
+const descriptorOwners = new Map<string, string[]>();
+for (const [key, service] of Object.entries(KNOWN_SERVICES_DATA)) {
+  for (const descriptor of service.billingDescriptors) {
+    const norm = normalizeForMatching(descriptor);
+    if (norm.length === 0) continue;
+    const owners = descriptorOwners.get(norm);
+    if (owners) {
+      owners.push(key);
+    } else {
+      descriptorOwners.set(norm, [key]);
+    }
+  }
+}
+for (const [desc, owners] of descriptorOwners) {
+  if (owners.length > 1) {
+    console.warn(
+      `[known-services] descriptor collision: "${desc}" → ${owners.join(', ')}`
+    );
+  }
+}
+
 /** Fuse.js index for fuzzy matching */
 const fuseItems = Object.values(KNOWN_SERVICES_DATA).map((service) => ({
   service,
@@ -238,6 +278,24 @@ export function findKnownService(description: string): KnownService | null {
   // 5. Cache store (including nulls to avoid re-search)
   matchCache.set(description, result);
   return result;
+}
+
+/**
+ * Detecta plataforma de billing quando o serviço específico não é identificado.
+ * Roda como FALLBACK após findKnownService() retornar null.
+ * Retorna label genérico + categoria para boost de scoring.
+ */
+export function detectPlatformHint(description: string): {
+  label: string;
+  category: SubscriptionCategory;
+} | null {
+  const normalized = normalizeForMatching(description);
+  for (const hint of PLATFORM_HINTS) {
+    if (normalized.includes(hint.pattern)) {
+      return { label: hint.label, category: hint.category as SubscriptionCategory };
+    }
+  }
+  return null;
 }
 
 /**

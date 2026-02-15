@@ -85,7 +85,7 @@ export interface SubscriptionTransaction {
 }
 
 /**
- * Categorias de assinaturas conhecidas (14 categorias)
+ * Categorias de assinaturas conhecidas (16 categorias)
  */
 export type SubscriptionCategory =
   | 'streaming'
@@ -94,6 +94,8 @@ export type SubscriptionCategory =
   | 'software'
   | 'education'
   | 'fitness'
+  | 'health'
+  | 'insurance'
   | 'food'
   | 'transport'
   | 'telecom'

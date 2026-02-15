@@ -25,6 +25,7 @@ import { daysBetween } from '../../utils/date.js';
 import { calculateAverage, roundToTwo } from '../../utils/amount.js';
 import {
   findKnownService,
+  detectPlatformHint,
   getCancelInstructions,
   isValueInTypicalRange,
   type KnownService,
@@ -235,6 +236,7 @@ function analyzeGroupWithScore(
 
   const serviceName = extractServiceName(group.normalizedName);
   const knownService = findKnownService(serviceName);
+  const platformHint = !knownService ? detectPlatformHint(serviceName) : null;
 
   const scores = calculateAllScores(group, dates, amounts, knownService);
 
@@ -243,20 +245,30 @@ function analyzeGroupWithScore(
     return null;
   }
 
-  const finalScore = highValueCheck.adjustedScore ?? scores.finalScore;
+  let finalScore = highValueCheck.adjustedScore ?? scores.finalScore;
 
-  if (finalScore < CONFIDENCE_THRESHOLDS_V2.low && !knownService) {
+  // Platform hint fallback: small boost when billing platform detected
+  // but specific service is unknown (e.g. APPLE.COM/BILL, GOOGLE*, STRIPE*)
+  if (platformHint) {
+    finalScore = Math.min(1, finalScore + 0.3 * SCORING_WEIGHTS_V2.knownService);
+  }
+
+  if (finalScore < CONFIDENCE_THRESHOLDS_V2.low && !knownService && !platformHint) {
     return null;
   }
 
   const confidenceLevel = getConfidenceLevel(finalScore);
   const confidenceReasons = generateConfidenceReasons({ ...scores, finalScore }, knownService, group);
 
+  if (platformHint && !knownService) {
+    confidenceReasons.push('Plataforma de assinatura detectada');
+  }
+
   const avgAmount = calculateAverage(amounts);
 
   const subscription: DetectedSubscription = {
     id: generateId(),
-    name: knownService?.canonicalName ?? capitalizeServiceName(serviceName),
+    name: knownService?.canonicalName ?? platformHint?.label ?? capitalizeServiceName(serviceName),
     originalNames: Array.from(group.originalNames),
     monthlyAmount: roundToTwo(avgAmount),
     annualAmount: roundToTwo(avgAmount * 12),
@@ -273,7 +285,7 @@ function analyzeGroupWithScore(
     confidence: confidenceLevel,
     confidenceScore: roundToTwo(finalScore * 100) / 100,
     confidenceReasons,
-    ...(knownService?.category && { category: knownService.category }),
+    ...(knownService?.category ? { category: knownService.category } : platformHint?.category ? { category: platformHint.category } : {}),
     ...(knownService && { cancelInstructions: getCancelInstructions(knownService) }),
     ...(group.detectedPeriod && group.detectedPeriod !== 'unknown' && { detectedPeriod: group.detectedPeriod }),
   };
