@@ -319,7 +319,7 @@ export function HomeContent() {
               <section className="py-16 px-4 bg-surface transition-colors">
                 <div className="max-w-6xl mx-auto">
                   <h2 className="text-2xl font-bold text-foreground text-center mb-8">
-                    Por que usar o Cancelai?
+                    Por que usar o Cancel<span className="text-brand-text">aí</span>?
                   </h2>
                   <Features />
                 </div>
