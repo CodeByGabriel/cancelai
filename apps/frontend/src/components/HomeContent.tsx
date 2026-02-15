@@ -294,7 +294,7 @@ export function HomeContent() {
                       <p className="text-foreground-muted">Bancos suportados</p>
                     </div>
                     <div className="text-center">
-                      <p className="text-2xl font-bold text-foreground">150+</p>
+                      <p className="text-2xl font-bold text-foreground">350+</p>
                       <p className="text-foreground-muted">Servicos conhecidos</p>
                     </div>
                     <div className="text-center">
