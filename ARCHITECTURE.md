@@ -13,23 +13,30 @@ cancelai/
 │   ├── frontend/              # Next.js 14 (App Router)
 │   │   └── src/
 │   │       ├── app/               # Pages (layout.tsx, page.tsx, globals.css)
-│   │       ├── components/        # React Components (Client/Server)
-│   │       ├── lib/               # api.ts, utils.ts
-│   │       └── types/             # TypeScript types (espelha backend)
+│   │       ├── components/        # 16 React Components (Client/Server)
+│   │       ├── lib/               # api.ts, use-sse-stream.ts, utils.ts
+│   │       └── types/             # TypeScript types (state machine, SSE events)
 │   │
 │   └── backend/               # Fastify + TypeScript
 │       └── src/
-│           ├── config/            # Configuracao central + knownSubscriptions
+│           ├── config/            # Configuracao central + known-services-data (352 servicos)
 │           ├── controllers/       # Route handlers (analysis-controller.ts)
-│           ├── detector/          # Algoritmo de deteccao (subscription-detector.ts)
+│           ├── detector/          # Algoritmo legado (subscription-detector.ts) — NAO usado pelo pipeline
 │           ├── middleware/        # Rate limiting (smart-rate-limit.ts)
-│           ├── parsers/           # PDF/CSV extraction (pdf-parser.ts, csv-parser.ts)
+│           ├── parsers/           # Sistema de plugins por banco
+│           │   ├── banks/         # 21 parsers (1 arquivo = 1 banco) + generic fallback
+│           │   ├── formats/       # csv-format.ts, pdf-format.ts, ofx-format.ts
+│           │   └── registry/      # ParserRegistry + BankParserPlugin interface
+│           ├── pipeline/          # Pipeline async 8 stages + SSE
+│           │   ├── stages/        # 8 stages + recurrence-analyzer
+│           │   ├── pipeline-orchestrator.ts
+│           │   ├── pipeline-events.ts
+│           │   └── pipeline-observer.ts
 │           ├── services/          # Logica de negocio
-│           │   ├── analysis-service.ts    # Orquestrador principal
+│           │   ├── analysis-service.ts    # Facade consumindo runPipeline()
 │           │   ├── ai-classifier.ts       # Pipeline IA (DeepSeek)
-│           │   ├── deepseek-analyzer.ts   # Modulo auxiliar IA (UNUSED - dead code)
-│           │   └── known-services.ts      # Banco de 80+ servicos
-│           ├── utils/             # Helpers (string.ts, date.ts, amount.ts)
+│           │   └── known-services.ts      # Matching engine (4-pass + Fuse.js + LRU cache)
+│           ├── utils/             # Helpers (string.ts, date.ts, amount.ts, lru-cache.ts)
 │           └── types/             # Interfaces (todas readonly)
 │
 ├── api/                       # Serverless entrypoint (Vercel Functions)
@@ -44,7 +51,9 @@ cancelai/
 
 | Metodo | Rota | Descricao |
 |--------|------|-----------|
-| `POST` | `/api/analyze` | Analisa extratos (multipart/form-data) |
+| `POST` | `/api/analyze` | Analisa extratos sincrono (multipart/form-data) |
+| `POST` | `/api/analyze/stream` | Cria job async, retorna jobId + streamUrl |
+| `GET` | `/api/analyze/:jobId/stream` | SSE stream de eventos do pipeline |
 | `GET` | `/api/health` | Health check |
 | `GET` | `/api/info` | Limites e versao da API |
 
@@ -58,52 +67,82 @@ cancelai/
 | `INTERNAL_ERROR` | Erro inesperado |
 | `NETWORK_ERROR` | Frontend: erro de conexao |
 
----
+### Eventos SSE (streaming)
 
-## Pipeline de Processamento
-
-```
-Upload → Validacao → Parsing → Deteccao → IA (opcional) → Resposta
-                                                            ↓
-                                                    Cleanup (zero buffers)
-```
-
-**Etapas detalhadas:**
-
-1. **Rate Limit** - IP + md5(UserAgent) como chave
-2. **Validacao** - Tipo (extensao + MIME), tamanho (10MB max), quantidade (5 max)
-3. **Sanitizacao** - Remove `..`, caracteres nao-alfanumericos, limite 255 chars no filename
-4. **Parsing** - PDF (pdf-parse + regex por banco) ou CSV (csv-parse + mapeamento de colunas)
-5. **Normalizacao** - Lowercase, remove codigos/datas/prefixos bancarios
-6. **Agrupamento** - String similarity >= 0.7 (Dice's Coefficient)
-7. **Scoring** - Formula ponderada (ver abaixo)
-8. **Validacao financeira** - Filtra TOTAL/FATURA, limite R$50k, regras para >R$500
-9. **IA (opcional)** - Classifica ambiguos via DeepSeek
-10. **Cleanup** - Buffers zerados, GC libera memoria
+| Evento | Descricao |
+|--------|-----------|
+| `stage-start` | Stage do pipeline iniciado |
+| `stage-complete` | Stage do pipeline concluido |
+| `subscription-detected` | Assinatura encontrada em tempo real |
+| `progress` | Porcentagem geral do processamento |
+| `file-partial` | Resultado parcial de um arquivo |
+| `file-error` | Erro em arquivo especifico |
+| `complete` | Resultado final completo |
+| `error` | Erro no processamento |
 
 ---
 
-## Algoritmo de Deteccao (Weighted Scoring v2.0)
+## Pipeline de Processamento (8 Stages)
+
+O pipeline usa **async generators** (`AsyncGenerator<PipelineEvent>`) para processamento lazy, pull-based.
+
+```
+Upload → ValidationStage → ParsingStage → NormalizationStage → GroupingStage
+         → ScoringStage → SanityStage → AIClassificationStage → CleanupStage
+```
+
+**Implementacao:** `pipeline-orchestrator.ts` executa stages em sequencia via `for-await-of`.
+
+| # | Stage | Arquivo | Descricao |
+|---|-------|---------|-----------|
+| 1 | **Validation** | `validation-stage.ts` | Tipo (extensao + MIME), tamanho (10MB max), quantidade (5 max) |
+| 2 | **Parsing** | `parsing-stage.ts` | Delega para `registry.parseFile()` → plugin do banco detectado |
+| 3 | **Normalization** | `normalization-stage.ts` | 10-step: acentos, gateways, auth codes, datas, parcelas, stop words |
+| 4 | **Grouping** | `grouping-stage.ts` | Bigram inverted index, similaridade hibrida (Jaccard → Jaro-Winkler → Dice) |
+| 5 | **Scoring** | `scoring-stage.ts` | Formula ponderada 6 sinais (ver abaixo) |
+| 6 | **Sanity** | `sanity-stage.ts` | Filtra aggregates (TOTAL/FATURA), limite R$50k, price range validation |
+| 7 | **AI Classification** | `ai-classification-stage.ts` | DeepSeek classifica ambiguos (circuit breaker com opossum) |
+| 8 | **Cleanup** | `cleanup-stage.ts` | Buffers zerados, GC, formata resultado final (roda no `finally`) |
+
+**Auxiliar:** `recurrence-analyzer.ts` — funcoes puras para analise de recorrencia.
+
+**Short-circuits:**
+- Apos parsing: se nenhum arquivo parseado com sucesso
+- Apos normalization: se nenhuma transacao valida
+
+**Resiliencia:**
+- Circuit breaker (`opossum`): timeout 8s, errorThreshold 50%, reset 30s
+- Fallback silencioso: se breaker aberto, copia scored subscriptions direto
+- AbortController com timeout global de 120s
+- CleanupStage roda sempre (no `finally`)
+
+---
+
+## Algoritmo de Deteccao (Weighted Scoring v3.0 — 6 Sinais)
 
 ### Formula de Confianca
 
+**Implementacao ativa:** `pipeline/stages/scoring-stage.ts` (usa `SCORING_WEIGHTS_V2` de `config/index.ts`)
+
 ```
 confidenceScore =
-    stringSimilarity    x 0.25    // Similaridade de descricao
-  + recurrenceScore     x 0.35    // Padrao mensal (28-35 dias)
+    stringSimilarity    x 0.20    // Similaridade de descricao
+  + recurrenceScore     x 0.30    // Padrao periodico (semanal a anual)
   + valueStabilityScore x 0.20    // Consistencia de valor (±15%)
-  + knownServiceBonus   x 0.20    // Servico conhecido
+  + knownServiceBonus   x 0.15    // Servico conhecido
+  + habitualityScore    x 0.10    // Regularidade dos intervalos
+  + streamMaturity      x 0.05    // Historico e quantidade de ocorrencias
 ```
 
-### Thresholds REAIS (codigo fonte)
+> **NOTA:** `detector/subscription-detector.ts` contem uma versao legada com 4 sinais (0.25/0.35/0.20/0.20, high >= 0.80). Este arquivo NAO e usado pelo pipeline ativo — mantido apenas como referencia historica.
 
-| Nivel | Score | Arquivo |
-|-------|-------|---------|
-| **High** | >= 0.80 | `subscription-detector.ts:95` |
-| **Medium** | >= 0.60 | `subscription-detector.ts:96` |
-| **Low** | < 0.60 | - |
+### Thresholds REAIS (codigo fonte: `config/index.ts:314-318`)
 
-> **ATENCAO:** O `config/index.ts` define `high: 0.85` mas o detector usa `0.80`. O valor real e `0.80`.
+| Nivel | Score | Definido em |
+|-------|-------|-------------|
+| **High** | >= 0.85 | `CONFIDENCE_THRESHOLDS_V2.high` |
+| **Medium** | >= 0.60 | `CONFIDENCE_THRESHOLDS_V2.medium` |
+| **Low** | >= 0.40 | `CONFIDENCE_THRESHOLDS_V2.low` |
 
 ### Validacao de Sanidade
 
@@ -113,6 +152,7 @@ confidenceScore =
   - Recorrencia >= 0.6
   - Estabilidade de valor >= 0.7
   - Similaridade de descricao >= 0.8
+- **Price range validation:** Usa `typicalPriceRange` de known-services-data.ts com 15% tolerancia
 
 ### Criterios de Qualidade (grupo valido)
 
@@ -160,11 +200,7 @@ const CONFIG = {
 
 ### Fallback Silencioso
 
-Se a IA falhar (timeout, erro, sem API key), retorna `confirmed + ambiguous` sem alteracao. **O sistema NUNCA falha por causa da IA.**
-
-### Dead Code
-
-`deepseek-analyzer.ts` exporta `refineWithDeepSeek()` mas **nunca e importado**. O pipeline ativo usa `ai-classifier.ts`. Este arquivo pode ser removido.
+Se a IA falhar (timeout, erro, sem API key, circuit breaker aberto), retorna `confirmed + ambiguous` sem alteracao. **O sistema NUNCA falha por causa da IA.**
 
 ---
 
@@ -180,7 +216,7 @@ clientKey = `${IP}:${md5(userAgent).substring(0, 8)}`
 
 | Parametro | Producao | Desenvolvimento |
 |-----------|----------|-----------------|
-| Requests/min | 15 | 1000 |
+| Requests/min | 10 (default, configuravel via `RATE_LIMIT_MAX`) | 1000 |
 | Upload/min | 50 MB | 500 MB |
 | Block duration | 5 min | 10 seg |
 | Suspicious threshold | 10 req/s | 1000 req/s |
@@ -193,35 +229,99 @@ In-memory `Map<string, ClientUsage>`. Em producao com multiplas instancias, cons
 
 ---
 
-## Parsers
+## Parsers (Plugin System)
 
-### PDF (pdf-parser.ts)
+### Arquitetura
 
-Suporta 10+ bancos via regex patterns:
-- Nubank, Itau, Bradesco, BB, Caixa, Inter, Santander, C6, PicPay, Mercado Pago
+O sistema usa um **plugin system** baseado no Open/Closed Principle. Cada banco e um modulo auto-contido.
 
-Cada banco tem:
-- `detectPattern`: Regex para identificar o banco no conteudo
-- `transactionPattern`: Regex para extrair data/descricao/valor
-- `dateParser`: Funcao especifica de parse de data
+**Registry:** `parsers/registry/parser-registry.ts`
+**Interface:** `parsers/registry/bank-parser.interface.ts` (`BankParserPlugin`)
 
-### CSV (csv-parser.ts)
+```
+parsers/
+├── banks/           # 21 parsers + generic fallback
+│   ├── index.ts     # Registra todos os plugins via side-effect import
+│   ├── nubank.parser.ts
+│   ├── itau.parser.ts
+│   ├── bradesco.parser.ts
+│   ├── bb.parser.ts
+│   ├── caixa.parser.ts
+│   ├── inter.parser.ts
+│   ├── santander.parser.ts
+│   ├── c6.parser.ts
+│   ├── picpay.parser.ts
+│   ├── mercadopago.parser.ts
+│   ├── neon.parser.ts
+│   ├── original.parser.ts
+│   ├── next.parser.ts
+│   ├── sofisa.parser.ts
+│   ├── agibank.parser.ts
+│   ├── sicoob.parser.ts
+│   ├── sicredi.parser.ts
+│   ├── btg.parser.ts
+│   ├── xp.parser.ts
+│   └── generic.parser.ts  # Fallback (registrado por ultimo)
+├── formats/         # Helpers compartilhados
+│   ├── csv-format.ts
+│   ├── pdf-format.ts
+│   └── ofx-format.ts
+└── registry/
+    ├── parser-registry.ts    # register(), detectParser(), parseFile()
+    └── bank-parser.interface.ts
+```
 
-- Auto-detecta delimitador (`,`, `;`, `\t`, `|`)
-- Auto-detecta banco via conteudo dos headers/linhas
-- Mapeamento de colunas flexivel por banco
+**Formatos suportados:** CSV, PDF, OFX/QFX
 
-**Bug corrigido:** `detectDelimiter` usava `new RegExp('|', 'g')` sem escapar o pipe, fazendo match com tudo. Corrigido com `.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')`.
+**Fluxo:** `parsing-stage.ts` → `registry.parseFile()` → detecta banco → plugin especifico → transacoes
 
-### Bancos Suportados
+> **NOTA:** `csv-parser.ts` e `pdf-parser.ts` na raiz de `parsers/` sao codigo legado mantido para backward compat. O pipeline ativo usa o registry.
 
-Nubank, Itau, Bradesco, Banco do Brasil, Caixa, Inter, Santander, C6, PicPay, Mercado Pago, Neon, Original, Next, Sofisa, Agibank, Sicoob + CSV Generico (fallback).
+### Adicionar Banco Novo
+
+Criar `apps/backend/src/parsers/banks/meubanco.parser.ts`:
+
+```typescript
+import { registry } from '../registry/index.js';
+import type { BankParserPlugin } from '../registry/bank-parser.interface.js';
+
+const meuBancoParser: BankParserPlugin = {
+  bankName: 'Meu Banco',
+  detect: (content: string) => /meu\s*banco/i.test(content),
+  parse: (content: string) => {
+    // Extrair transacoes do conteudo
+    return { transactions: [...], success: true };
+  },
+};
+
+registry.register(meuBancoParser);
+```
+
+Adicionar import em `banks/index.ts`:
+```typescript
+import './meubanco.parser.js';
+```
 
 ---
 
-## Servicos Conhecidos (known-services.ts)
+## Servicos Conhecidos (known-services-data.ts + known-services.ts)
 
-80+ servicos com aliases reais de extratos bancarios.
+**352 servicos** com aliases e billing descriptors reais de extratos bancarios.
+
+### Arquitetura
+
+- **Dados:** `config/known-services-data.ts` — 352 servicos (dados puros, muda frequentemente)
+- **Engine:** `services/known-services.ts` — matching 4-pass + Fuse.js + LRU cache (logica estavel)
+
+### Matching Pipeline (4 passes + LRU cache)
+
+1. **HashMap exact match** (O(1)) — aliases + billingDescriptors normalizados
+2. **Gateway prefix removal** + HashMap retry — remove PAG*, GOOGLE*, etc.
+3. **Substring match** — aliases >= 4 chars, sorted by length desc
+4. **Fuse.js fuzzy fallback** — threshold 0.4, distance 100
+
+Pre-computed indexes construidos uma vez no module load.
+LRU cache de 5K entries (inclusive null caching).
 
 ### Estrutura
 
@@ -229,23 +329,21 @@ Nubank, Itau, Bradesco, Banco do Brasil, Caixa, Inter, Santander, C6, PicPay, Me
 interface KnownService {
   canonicalName: string;        // "Netflix"
   aliases: string[];            // ["netflix", "netflix.com", "nflx*"]
+  billingDescriptors: string[]; // COM prefixo gateway: ["PAG*NETFLIX", "GOOGLE*NETFLIX"]
   category: SubscriptionCategory;
   cancelUrl?: string;
   cancelInstructions?: string;
-  typicalPriceRange?: { min: number; max: number };
+  cancelMethod?: CancelMethod;  // 'web' | 'app' | 'phone' | 'platform' | 'telecom'
+  typicalPriceRange: { min: number; max: number };  // REQUIRED
   isPopular?: boolean;
+  currency?: string;            // 'BRL' | 'USD' | 'EUR/USD'
+  iofApplicable?: boolean;
 }
 ```
 
-### Matching
+### Categorias (16)
 
-Two-pass matching:
-1. **Direto:** Compara descricao normalizada com cada alias
-2. **Gateway prefix removal:** Remove prefixos como `PG*`, `PAG*`, `MP*`, `GOOGLE*`, `APPLE*` e tenta novamente
-
-### Categorias
-
-`streaming` | `music` | `gaming` | `software` | `cloud` | `news` | `fitness` | `food` | `transport` | `education` | `finance` | `other`
+`streaming` | `music` | `gaming` | `software` | `cloud` | `news` | `fitness` | `food` | `transport` | `education` | `finance` | `security` | `dating` | `health` | `insurance` | `other`
 
 ---
 
@@ -262,16 +360,20 @@ app/layout.tsx (Server Component)
         ├── AnalysisProgress.tsx (4 steps: upload → read → analyze → validate)
         ├── Results.tsx
         │   ├── ResultsSummary.tsx (impacto financeiro + metricas)
-        │   └── SubscriptionCard.tsx (expandivel, com cancel link)
+        │   ├── SubscriptionCard.tsx (expandivel, com cancel link)
+        │   └── SubscriptionTags.tsx (categoria + periodo)
         ├── Features.tsx
+        ├── PrivacyBadge.tsx
+        ├── ThemeToggle.tsx (dark mode via next-themes)
+        ├── AnimatedCounter.tsx (react-countup)
+        ├── ClientOnly.tsx (hydration safety)
         └── Footer.tsx
 ```
 
-### Estados da Aplicacao
+### Estados da Aplicacao (State Machine)
 
 ```typescript
-type UploadStatus = 'idle' | 'uploading' | 'processing' | 'success' | 'error';
-type AnalysisStep = 'uploading' | 'reading' | 'analyzing' | 'validating' | 'complete';
+type AppState = 'idle' | 'uploading' | 'processing' | 'streaming' | 'complete' | 'error';
 ```
 
 ### API Client (lib/api.ts)
@@ -289,6 +391,10 @@ Funcoes exportadas:
 - `analyzeStatements(files)` → POST /api/analyze
 - `checkHealth()` → GET /api/health
 - `getApiInfo()` → GET /api/info
+
+### SSE Streaming (lib/use-sse-stream.ts)
+
+Custom hook para consumir eventos SSE do pipeline em tempo real.
 
 ### Utilities (lib/utils.ts)
 
@@ -324,15 +430,16 @@ if (!isMounted) return <Loading />;
 
 | Medida | Implementacao |
 |--------|---------------|
-| Zero storage | Buffers zerados apos processamento |
+| Zero storage | Buffers zerados com `.fill(0)` apos processamento |
 | CORS | Origem restrita via env `CORS_ORIGIN` |
 | Helmet | Headers HTTP seguros (CSP, XSS, etc) |
-| File validation | Extensao + MIME type + tamanho |
+| File validation | Extensao OU MIME type + tamanho |
 | Filename sanitization | Remove `..`, non-alnum, max 255 chars |
-| Rate limiting | IP + UserAgent, byte-aware |
+| Rate limiting | IP + UserAgent hash, byte-aware |
 | No sensitive logging | Apenas metricas tecnicas |
-| Buffer cleanup | `secureCleanupFiles()` - zera e seta null |
+| Buffer cleanup | `secureCleanupFiles()` - `.fill(0)` e seta null |
 | LGPD compliance | Minimizacao de dados |
+| Circuit breaker | Protege chamadas externas (DeepSeek) |
 
 ---
 
@@ -344,22 +451,22 @@ if (!isMounted) return <Loading />;
 npm run test              # Watch mode
 npm run test -- --run     # Single run
 npm run test:coverage     # Com cobertura
+npm run test:accuracy     # Accuracy suite
 ```
 
-### Arquivos de Teste (5 arquivos, 64 testes)
+### Arquivos de Teste (7 arquivos, ~75 testes)
 
-| Arquivo | Testes | Status |
-|---------|--------|--------|
-| `utils/date.test.ts` | 13 | Todos passam |
-| `utils/amount.test.ts` | 11 | 1 falha pre-existente (`isDebit` credito) |
-| `utils/string.test.ts` | 11 | 1 falha pre-existente (`PAG*` prefix removal) |
-| `services/ai-classifier.test.ts` | 14 | Todos passam |
-| `services/analysis-service.test.ts` | 9 | Todos passam |
+| Arquivo | Tipo | Testes |
+|---------|------|--------|
+| `utils/date.test.ts` | Unitario | 13 |
+| `utils/amount.test.ts` | Unitario | 11 |
+| `utils/string.test.ts` | Unitario | 11 |
+| `services/ai-classifier.test.ts` | Unitario | 14 |
+| `services/analysis-service.test.ts` | Integracao | 9 |
+| `test/classification-accuracy.test.ts` | Accuracy | 6 |
+| `test/property-based.test.ts` | Property-based | 5 |
 
-### Falhas Pre-existentes
-
-1. **`amount.test.ts`:** `isDebit('100.00')` retorna `true` mas teste espera `false`
-2. **`string.test.ts`:** `normalizeDescription('PAG*NETFLIX')` retorna `'pag netflix'` mas teste espera `'netflix'`
+**CI gates:** F1 >= 0.85, Recall >= 0.90, Precision >= 0.80 (aggregate)
 
 ### Patterns de Teste
 
@@ -367,6 +474,7 @@ npm run test:coverage     # Com cobertura
 - Testes de integracao usam CSV real com `Buffer.from(csvString)`
 - IA desabilitada via `delete process.env.DEEPSEEK_API_KEY`
 - Comparacoes de float usam `toBeCloseTo(value, 2)` nao `toBe()`
+- Property-based tests com `fast-check`
 
 ---
 
@@ -397,6 +505,8 @@ interface DetectedSubscription {
   readonly confidenceReasons: readonly string[];
   readonly category?: SubscriptionCategory;
   readonly cancelInstructions?: string;
+  readonly detectedPeriod?: string;
+  readonly priceRangeFlag?: 'normal' | 'promo' | 'above_range';
 }
 
 interface AnalysisResult {
@@ -405,6 +515,7 @@ interface AnalysisResult {
   readonly metadata: AnalysisMetadata;
   readonly warnings?: readonly string[];
   readonly info?: readonly string[];
+  readonly installments?: readonly DetectedInstallment[];
 }
 
 interface ApiResponse<T> {
@@ -417,6 +528,7 @@ interface ApiResponse<T> {
 ### Frontend (sem readonly, Date como string)
 
 Mesmas interfaces mas sem `readonly` e `date: string` ao inves de `date: Date`.
+Inclui tipos de state machine (`AppState`, `AppAction`) e eventos SSE.
 
 ---
 
@@ -438,7 +550,7 @@ NODE_ENV=development         # development | production (controla rate limit)
 DEEPSEEK_API_KEY=sk-xxx      # OPCIONAL - IA de classificacao
 MAX_FILE_SIZE=10485760       # Opcional - 10MB default
 MAX_FILES=5                  # Opcional
-RATE_LIMIT_MAX=15            # Opcional - requests/min em producao
+RATE_LIMIT_MAX=10            # Opcional - requests/min em producao (default: 10)
 ```
 
 ---
@@ -465,9 +577,11 @@ RATE_LIMIT_MAX=15            # Opcional - requests/min em producao
 - Cache de instancia Fastify para warm starts
 - Converte request/response via `fastify.inject()`
 
+> **NOTA:** SSE streaming NAO funciona em Vercel serverless (30s max). Funciona em Railway/standalone.
+
 ### Railway (Alternativa para backend standalone)
 
-Backend roda como processo Node.js persistente.
+Backend roda como processo Node.js persistente. SSE streaming funciona normalmente.
 
 ---
 
@@ -483,10 +597,13 @@ Backend roda como processo Node.js persistente.
 | `@fastify/helmet` | ^11.1 | Headers de seguranca |
 | `pdf-parse` | ^1.1 | Extracao de texto de PDFs |
 | `csv-parse` | ^5.5 | Parse de CSVs |
-| `string-similarity` | ^4.0 | Dice's Coefficient para similaridade |
-| `zod` | ^3.22 | **NUNCA IMPORTADO** - pode ser removido |
+| `ofx-data-extractor` | ^1.4 | Parse de OFX/QFX |
+| `string-comparisons` | ^0.0.20 | Jaro-Winkler + Dice + Jaccard |
+| `fuse.js` | ^7.1 | Fuzzy search para servicos conhecidos |
+| `opossum` | ^9.0 | Circuit breaker para chamadas IA |
 | `tsx` | ^4.7 | Dev: TypeScript runtime |
 | `vitest` | ^1.2 | Testing framework |
+| `fast-check` | - | Property-based testing |
 
 ### Frontend
 
@@ -496,47 +613,10 @@ Backend roda como processo Node.js persistente.
 | `react` | ^18.2 | UI |
 | `react-dropzone` | ^14.2 | Drag-drop upload |
 | `lucide-react` | ^0.321 | Icones |
+| `motion` | ^12.34 | Animacoes |
+| `next-themes` | ^0.4 | Dark mode |
+| `react-countup` | ^6.5 | Contadores animados |
 | `tailwindcss` | ^3.4 | Styling |
-
----
-
-## Fluxo do Usuario (UI)
-
-```
-1. LANDING PAGE
-   ├── Hero: "Descubra assinaturas esquecidas no seu extrato"
-   ├── Stats: 15+ bancos | 80+ servicos | 0 dados armazenados
-   ├── Area de Upload (drag-drop)
-   ├── Features: Seguro | Rapido | Transparente | Sem rastros
-   └── FAQ: Privacidade, bancos, como funciona, gratis
-
-2. UPLOAD
-   ├── Drag-drop ou click para selecionar
-   ├── Preview de arquivos com tamanho
-   ├── Remover arquivos antes de enviar
-   └── Botao "Analisar extratos"
-
-3. PROCESSAMENTO (4 steps com progress bar)
-   ├── Enviando arquivos
-   ├── Lendo extratos
-   ├── Analisando transacoes
-   └── Validando resultados
-
-4. RESULTADOS
-   ├── Banner de impacto financeiro (anual + projecao 5 anos)
-   ├── Grid de metricas (assinaturas, transacoes, periodo, bancos)
-   ├── Indicador de confianca (verde/amarelo/cinza)
-   ├── "Assinaturas confirmadas" (high confidence, borda verde)
-   ├── "Pode precisar de revisao" (medium/low, aviso amarelo)
-   ├── Cards expandiveis com:
-   │   ├── Nome + categoria + valor mensal/anual
-   │   ├── Barra de confianca visual
-   │   ├── Razoes da deteccao
-   │   ├── Historico de transacoes
-   │   ├── Link/instrucoes de cancelamento
-   │   └── Botoes: Confirmar | Rejeitar | Nao sei
-   └── Botao "Analisar novamente"
-```
 
 ---
 
@@ -544,12 +624,13 @@ Backend roda como processo Node.js persistente.
 
 ### Adicionar Servico Conhecido
 
-Editar `apps/backend/src/services/known-services.ts`:
+Editar `apps/backend/src/config/known-services-data.ts`:
 
 ```typescript
 novoServico: {
   canonicalName: 'Nome do Servico',
   aliases: ['alias1', 'alias2', 'ALIAS3'],
+  billingDescriptors: ['PAG*NOMESERVICO', 'GOOGLE*NOMESERVICO'],
   category: 'streaming',
   cancelUrl: 'https://...',
   typicalPriceRange: { min: 19.90, max: 59.90 },
@@ -557,28 +638,8 @@ novoServico: {
 },
 ```
 
-### Adicionar Banco (PDF)
+### Adicionar Banco (Plugin System)
 
-Editar `apps/backend/src/parsers/pdf-parser.ts`:
-
-```typescript
-{
-  name: 'Novo Banco',
-  detectPattern: /novo\s*banco/i,
-  transactionPattern: /(\d{2}\/\d{2})\s+(.+?)\s+(-?[\d.,]+)/gim,
-  dateParser: parseStandardDate,
-},
-```
-
-### Adicionar Banco (CSV)
-
-Editar `apps/backend/src/parsers/csv-parser.ts`:
-
-```typescript
-novoBanco: {
-  date: ['Data', 'data'],
-  description: ['Descricao', 'descricao', 'Historico'],
-  amount: ['Valor', 'valor'],
-  detectPattern: /novo\s*banco/i,
-},
-```
+Criar `apps/backend/src/parsers/banks/meubanco.parser.ts` implementando `BankParserPlugin`.
+Adicionar `import './meubanco.parser.js';` em `banks/index.ts`.
+Veja parsers existentes como referencia.

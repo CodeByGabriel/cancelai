@@ -3,14 +3,16 @@
 ## Status Atual
 
 - **Fase:** Expansao C (saude, seguros, lifestyle, midia, platform detector) — COMPLETO
-- **Ultima mudanca:** 2026-02-15
-- **Testes:** 75 passing, 0 failing (64 unitarios + 6 accuracy + 5 property-based)
+- **Ultima mudanca:** 2026-04-13 (re-auditoria de documentacao)
+- **Testes:** ~75 passing, 0 failing (58 unitarios + 6 accuracy + 5 property-based + extras)
 - **Build:** Backend (tsc) e Frontend (next build) compilam limpo
-- **Security audit:** SECURITY-AUDIT.md gerado na raiz do monorepo
+- **Security audit:** SECURITY-AUDIT.md atualizado 2026-04-13 (3 novos findings: MED-5, LOW-4, LOW-5)
 - **Accuracy:** F1=0.966, Recall=1.000, Precision=0.933 (CI gates: F1>=0.85, R>=0.90, P>=0.80)
-- **Servicos:** 352 (era 273) — 79 novos + 8 existentes modificados (Fase C)
-- **Categorias:** 16 (era 14) — adicionadas 'health' e 'insurance' (Fase C)
-- **Status:** Fase C completa. 3 fases de expansao concluidas (A: 152→183, B: 183→273, C: 273→352)
+- **Servicos:** 352 (`canonicalName:` entries em known-services-data.ts)
+- **Categorias:** 16 — streaming, music, gaming, software, education, fitness, food, transport, telecom, news, security, dating, finance, health, insurance, other
+- **Scoring ativo:** v3.0 6 sinais (scoring-stage.ts) — high >= 0.85, medium >= 0.60, low >= 0.40
+- **Dead code identificado:** subscription-detector.ts (legado, nao usado pelo pipeline), csv-parser.ts/pdf-parser.ts (legado, registry e o ativo), dist/deepseek-analyzer.* (artifacts stale)
+- **Status:** Fase C completa. 3 fases de expansao concluidas (A: 152→183, B: 183→273, C: 273→352). Docs re-auditados e atualizados.
 
 ## Decisoes Tomadas
 

@@ -51,11 +51,12 @@ new RegExp(delimiter.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g')
 // Testes: sufixo .test.ts no mesmo diretorio do modulo
 ```
 
-## Thresholds Reais (cuidado: config mente)
+## Thresholds Reais (pipeline ativo)
 
-- **High confidence:** >= 0.80 (`subscription-detector.ts:95`, NAO 0.85 do config)
-- **Medium:** >= 0.60 | **Low:** < 0.60
+- **High confidence:** >= 0.85 (`config/index.ts:315`, `CONFIDENCE_THRESHOLDS_V2`)
+- **Medium:** >= 0.60 | **Low:** >= 0.40
 - **IA min confidence:** >= 0.75 para promover ambiguo (`ai-classifier.ts`)
+- **NOTA:** `subscription-detector.ts` tem thresholds legados (0.80) mas NAO e usado pelo pipeline
 
 ## Variaveis de Ambiente
 
