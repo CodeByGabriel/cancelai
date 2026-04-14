@@ -54,7 +54,7 @@ export function matchTransactions(
         dateStr,
         description,
         amountStr,
-        typeIndicator: typeIndicator || undefined,
+        typeIndicator: typeIndicator ?? undefined,
       });
     }
   }
@@ -68,6 +68,7 @@ export function matchTransactions(
 export function cleanDescription(description: string): string {
   return description
     .replace(/\s+/g, ' ')
+    // eslint-disable-next-line no-control-regex -- intentional: cleaning control chars from PDF extracted text
     .replace(/[\x00-\x1F\x7F]/g, '')
     .replace(/\b\d{8,}\b/g, '')
     .replace(/\d{2}:\d{2}(:\d{2})?/g, '')

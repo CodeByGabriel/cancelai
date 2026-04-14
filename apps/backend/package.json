@@ -10,7 +10,8 @@
     "test:coverage": "vitest --coverage",
     "test:accuracy": "vitest run test/classification-accuracy",
     "test:golden": "UPDATE_GOLDEN=true vitest run test/classification-accuracy",
-    "lint": "eslint src --ext .ts"
+    "lint": "eslint src --ext .ts",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@fastify/cors": "^9.0.1",
@@ -22,6 +23,7 @@
     "ofx-data-extractor": "^1.4.8",
     "opossum": "^9.0.0",
     "pdf-parse": "^1.1.1",
+    "pluggy-sdk": "^0.85.2",
     "string-comparisons": "^0.0.20"
   },
   "devDependencies": {
@@ -32,6 +34,7 @@
     "@typescript-eslint/parser": "^6.19.0",
     "eslint": "^8.56.0",
     "fast-check": "^4.5.3",
+    "pino-pretty": "^13.1.3",
     "tsx": "^4.7.0",
     "typescript": "^5.3.3",
     "vitest": "^1.2.1"

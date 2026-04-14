@@ -243,7 +243,7 @@ export const knownSubscriptions = {
   // Outros
   linkedin: {
     patterns: ['linkedin', 'lnkd'],
-    category: 'other',
+    category: 'software',
     cancelUrl: 'https://www.linkedin.com/psettings/manage-subscription',
   },
   canva: {
@@ -258,10 +258,12 @@ export type KnownSubscriptionKey = keyof typeof knownSubscriptions;
 // ── Fase 3: Scoring & Similarity Config ──────────────────────────────
 
 export const GATEWAY_PREFIXES = Object.freeze([
-  'PAG\\*', 'MP\\*', 'MERCPAGO\\*', 'MERPAGO\\*', 'GOOGLE\\*',
+  'PAG\\*', 'PGTO\\*', 'MP\\*', 'MERCPAGO\\*', 'MERPAGO\\*', 'GOOGLE\\*',
   'PAYPAL\\*', 'IZ\\*', 'PICPAY\\*', 'APPLE\\.COM/', 'HTM\\*',
   'EDZ\\*', 'EBW\\+', 'APMX\\*', 'STRIPE\\*', 'SP\\s+', 'PP\\s+',
-  'PG\\s+',
+  'PG\\s+', 'DEB\\*', 'PIX\\*', 'TED\\*', 'DOC\\*', 'COMPRA\\*',
+  'CARTAO\\*', 'VISA\\*', 'MASTER\\*', 'DEBIT\\*', 'CREDIT\\*',
+  'TRANSF\\*', 'SAQUE\\*', 'DEP\\*',
 ] as const);
 
 /**
@@ -284,6 +286,7 @@ export const PLATFORM_HINTS = Object.freeze([
 export const NOISE_STOP_WORDS = Object.freeze([
   'COMPRA', 'CARTAO', 'DEBITO', 'CREDITO', 'VISA', 'MASTERCARD', 'ELO',
   'LTDA', 'SA', 'EIRELI', 'MEI', 'ME',
+  'PAGAMENTO', 'INTERNACIONAL', 'NACIONAL', 'BRASIL', 'BR',
 ] as const);
 
 export const SIMILARITY_CONFIG = Object.freeze({
@@ -303,7 +306,8 @@ export const RECURRENCE_PERIODS = Object.freeze({
 } as const);
 
 export const SCORING_WEIGHTS_V2 = Object.freeze({
-  stringSimilarity: 0.20,
+  stringSimilarity: 0.15,
+  tfidfBonus:       0.05,
   recurrence:       0.30,
   valueStability:   0.20,
   knownService:     0.15,
@@ -319,3 +323,37 @@ export const CONFIDENCE_THRESHOLDS_V2 = Object.freeze({
 
 export const PRICE_RANGE_TOLERANCE = 0.15;
 export const NORMALIZATION_CACHE_SIZE = 10_000;
+
+/**
+ * Concessionarias de servicos publicos (agua, luz, gas).
+ * Valores variaveis — NAO sao assinaturas cancelaveis.
+ * Patterns normalizados (lowercase, sem acentos).
+ */
+export const UTILITIES_EXCLUSION = Object.freeze([
+  'cpfl', 'sabesp', 'comgas', 'enel', 'cemig', 'copasa', 'light',
+  'coelba', 'celesc', 'celpe', 'energisa', 'equatorial', 'saneago',
+  'compesa', 'cedae', 'cagece', 'embasa', 'copel energia',
+  'elektro', 'neoenergia', 'eletropaulo', 'bandeirante',
+] as const);
+
+/**
+ * Estabelecimentos de varejo recorrentes que NAO sao assinaturas.
+ * Compras avulsas que aparecem frequentemente geram falsos positivos.
+ * Patterns normalizados (lowercase, sem acentos).
+ */
+export const RETAIL_EXCLUSION = Object.freeze([
+  'renner', 'raia farma', 'drogasil', 'droga raia', 'pague menos',
+  'panvel', 'carrefour', 'extra hiper', 'atacadao', 'assai',
+  'big bompreco', 'lojas americanas', 'casas bahia', 'ponto frio',
+  'mercado livre', 'mercadolivre',
+] as const);
+
+/**
+ * Patterns que indicam debito automatico (alta probabilidade de assinatura)
+ */
+export const DEBITO_AUTOMATICO_PATTERNS = Object.freeze([
+  /\bDA\s/i,
+  /\bDEB\.?\s*AUT/i,
+  /\bDEBITO\s*AUTOMATICO\b/i,
+  /\bD\.?\s*A\.?\s*-/i,
+] as const);

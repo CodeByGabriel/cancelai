@@ -9,10 +9,12 @@
  * 5. Confidence range: confidenceScore entre 0 e 1
  */
 
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll, afterEach } from 'vitest';
 import * as fc from 'fast-check';
 import { analyzeStatements } from '../src/services/analysis-service.js';
 import type { FileToProcess } from '../src/parsers/index.js';
+import { buildCorpus, tfidfCosineSimilarity } from '../src/detector/tfidf-scorer.js';
+import { normalizeDescription, clearNormalizationCache } from '../src/utils/string.js';
 
 // ══════════════════════════════════════════════════════════════
 // HELPERS
@@ -204,6 +206,127 @@ describe('Property-Based Tests', () => {
         }
       }),
       { numRuns: 3 }
+    );
+  });
+});
+
+// ══════════════════════════════════════════════════════════════
+// TF-IDF PROPERTY TESTS
+// ══════════════════════════════════════════════════════════════
+
+describe('TF-IDF Property Tests', () => {
+  const sampleCorpus = buildCorpus([
+    'netflix streaming', 'spotify music', 'disney plus',
+    'youtube premium', 'amazon prime video', 'globoplay',
+  ]);
+
+  const wordArb = fc.string({ minLength: 2, maxLength: 10 }).map((s) => s.replace(/\s+/g, '').toLowerCase() || 'ab');
+  const textArb = fc.array(wordArb, { minLength: 1, maxLength: 5 }).map((words) => words.join(' '));
+
+  it('identity: tfidfCosineSimilarity(x, x) === 1.0', () => {
+    fc.assert(
+      fc.property(textArb, (text) => {
+        const score = tfidfCosineSimilarity(text, text, sampleCorpus);
+        expect(score).toBeCloseTo(1.0, 5);
+      }),
+      { numRuns: 1000 }
+    );
+  });
+
+  it('symmetry: tfidfCosineSimilarity(a, b) === tfidfCosineSimilarity(b, a)', () => {
+    fc.assert(
+      fc.property(textArb, textArb, (a, b) => {
+        const scoreAB = tfidfCosineSimilarity(a, b, sampleCorpus);
+        const scoreBA = tfidfCosineSimilarity(b, a, sampleCorpus);
+        expect(scoreAB).toBeCloseTo(scoreBA, 10);
+      }),
+      { numRuns: 1000 }
+    );
+  });
+
+  it('range: 0 <= tfidfCosineSimilarity(a, b) <= 1', () => {
+    fc.assert(
+      fc.property(textArb, textArb, (a, b) => {
+        const score = tfidfCosineSimilarity(a, b, sampleCorpus);
+        expect(score).toBeGreaterThanOrEqual(0);
+        expect(score).toBeLessThanOrEqual(1);
+      }),
+      { numRuns: 1000 }
+    );
+  });
+
+  it('empty string: tfidfCosineSimilarity("", x) === 0', () => {
+    fc.assert(
+      fc.property(textArb, (text) => {
+        expect(tfidfCosineSimilarity('', text, sampleCorpus)).toBe(0);
+        expect(tfidfCosineSimilarity(text, '', sampleCorpus)).toBe(0);
+      }),
+      { numRuns: 1000 }
+    );
+  });
+});
+
+// ══════════════════════════════════════════════════════════════
+// NORMALIZATION PROPERTY TESTS
+// ══════════════════════════════════════════════════════════════
+
+describe('Normalization Property Tests', () => {
+  // Realistic bank description generator: uppercase letters, digits, spaces, common separators
+  const bankDescArb = fc.constantFrom(
+    'PAG*NETFLIX 123456 01/02',
+    'SPOTIFY BRASIL SAO PAULO',
+    'GOOGLE*YOUTUBE PREMIUM',
+    'MERCPAGO*DISNEY PLUS',
+    'DEB.AUT SMART FIT',
+    'NETFLIX.COM 202501',
+    'ADOBE CREATIVE CLOUD',
+    'MICROSOFT 365 OFFICE',
+    'APPLE.COM/BILL ITUNES',
+    'AMAZON PRIME VIDEO',
+    'UBER*UBERONE',
+    'CARTAO GLOBOPLAY',
+    'IFOOD SAO PAULO BR',
+    'SEM PARAR LTDA',
+    'ALURA TREINAMENTOS',
+  );
+
+  // Also test with word-based random descriptions (alphanumeric only)
+  const wordOnlyArb = fc.array(
+    fc.constantFrom('PAG', 'NETFLIX', 'SPOTIFY', 'GOOGLE', 'APPLE', 'AMAZON', 'UBER', '123', '456789', 'SAO', 'PAULO', 'BR', 'LTDA', 'COM'),
+    { minLength: 1, maxLength: 6 },
+  ).map((words) => words.join(' '));
+
+  const combinedArb = fc.oneof(bankDescArb, wordOnlyArb);
+
+  beforeAll(() => {
+    clearNormalizationCache();
+  });
+
+  afterEach(() => {
+    clearNormalizationCache();
+  });
+
+  it('idempotency: normalize(normalize(x)) === normalize(x)', () => {
+    fc.assert(
+      fc.property(combinedArb, (input) => {
+        clearNormalizationCache();
+        const once = normalizeDescription(input);
+        clearNormalizationCache();
+        const twice = normalizeDescription(once);
+        expect(twice).toBe(once);
+      }),
+      { numRuns: 1000 }
+    );
+  });
+
+  it('never grows: normalize(x).length <= x.length', () => {
+    fc.assert(
+      fc.property(combinedArb, (input) => {
+        clearNormalizationCache();
+        const normalized = normalizeDescription(input);
+        expect(normalized.length).toBeLessThanOrEqual(input.length);
+      }),
+      { numRuns: 1000 }
     );
   });
 });

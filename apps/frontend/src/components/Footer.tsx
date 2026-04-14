@@ -14,9 +14,15 @@ export function Footer() {
           </div>
 
           <div className="flex items-center gap-6 text-sm text-foreground-muted">
-            <span>Cancelaí 2024</span>
+            <span>Cancelai 2024</span>
             <a
-              href="https://github.com"
+              href="/privacidade"
+              className="hover:text-brand-text transition-colors"
+            >
+              Privacidade
+            </a>
+            <a
+              href="https://github.com/CodeByGabriel/cancelai"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-brand-text transition-colors"

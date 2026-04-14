@@ -174,6 +174,8 @@ export type SSEEvent =
 export type AppState =
   | { status: 'idle' }
   | { status: 'uploading'; files: File[] }
+  | { status: 'connecting-bank' }
+  | { status: 'fetching-transactions'; connectionId: string; accountId: string }
   | { status: 'processing'; files: File[]; jobId: string; streamUrl: string }
   | {
       status: 'streaming';
@@ -192,6 +194,9 @@ export type AppState =
 export type AppAction =
   | { type: 'START_UPLOAD'; files: File[] }
   | { type: 'UPLOAD_COMPLETE'; jobId: string; streamUrl: string }
+  | { type: 'START_BANK_CONNECTION' }
+  | { type: 'BANK_CONNECTED'; connectionId: string; accountId: string }
+  | { type: 'OPEN_FINANCE_READY'; jobId: string; streamUrl: string }
   | { type: 'SSE_CONNECTED' }
   | { type: 'SUBSCRIPTION_DETECTED'; subscription: DetectedSubscription }
   | { type: 'PROGRESS'; stage: string; message: string }

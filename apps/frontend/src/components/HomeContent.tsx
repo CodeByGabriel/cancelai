@@ -12,8 +12,11 @@ import { AnalysisProgress } from './AnalysisProgress';
 import { AnimatedCounter } from './AnimatedCounter';
 import { SubscriptionTags } from './SubscriptionTags';
 import { PrivacyBadge } from './PrivacyBadge';
+import { MethodSelector } from './MethodSelector';
+import { BankConnect } from './BankConnect';
 import { analyzeStatements, startStreamAnalysis } from '@/lib/api';
 import { useSSEStream } from '@/lib/use-sse-stream';
+import { ConnectionStatus } from './ConnectionStatus';
 import type { AppState, AppAction, AnalysisResult, DetectedSubscription } from '@/types';
 import { cn } from '@/lib/utils';
 
@@ -31,6 +34,23 @@ function appReducer(state: AppState, action: AppAction): AppState {
       return {
         status: 'processing',
         files: state.files,
+        jobId: action.jobId,
+        streamUrl: action.streamUrl,
+      };
+
+    case 'START_BANK_CONNECTION':
+      if (state.status !== 'idle' && state.status !== 'error') return state;
+      return { status: 'connecting-bank' };
+
+    case 'BANK_CONNECTED':
+      if (state.status !== 'connecting-bank') return state;
+      return { status: 'fetching-transactions', connectionId: action.connectionId, accountId: action.accountId };
+
+    case 'OPEN_FINANCE_READY':
+      if (state.status !== 'fetching-transactions' && state.status !== 'connecting-bank' && state.status !== 'idle' && state.status !== 'error') return state;
+      return {
+        status: 'processing',
+        files: [],
         jobId: action.jobId,
         streamUrl: action.streamUrl,
       };
@@ -105,6 +125,8 @@ function appReducer(state: AppState, action: AppAction): AppState {
 // ─── Stage messages ────────────────────────────────────────────────
 function getStageMessage(stage: string): string {
   const messages: Record<string, string> = {
+    'connecting-bank': 'Conectando ao banco...',
+    'fetching-transactions': 'Obtendo transacoes bancarias...',
     validation: 'Validando arquivos...',
     parsing: 'Lendo transacoes dos extratos...',
     normalization: 'Normalizando dados...',
@@ -157,6 +179,7 @@ function FaqItem({ question, answer }: { question: string; answer: string }) {
 export function HomeContent() {
   const [state, dispatch] = useReducer(appReducer, INITIAL_STATE);
   const [isMounted, setIsMounted] = useState(false);
+  const [selectedMethod, setSelectedMethod] = useState<'upload' | 'open-finance'>('upload');
 
   useEffect(() => {
     setIsMounted(true);
@@ -169,7 +192,7 @@ export function HomeContent() {
     null;
 
   // ── SSE hook ──
-  useSSEStream(streamUrl, {
+  const { connectionStatus, reconnectAttempt, retry: retryConnection } = useSSEStream(streamUrl, {
     onStageStart(stage) {
       if (state.status === 'processing') {
         dispatch({ type: 'SSE_CONNECTED' });
@@ -219,6 +242,19 @@ export function HomeContent() {
     }
   }, []);
 
+  // ── Open Finance handlers ──
+  const handleBankConnecting = useCallback(() => {
+    dispatch({ type: 'START_BANK_CONNECTION' });
+  }, []);
+
+  const handleOpenFinanceAnalysisStarted = useCallback((jobId: string, streamUrl: string) => {
+    dispatch({ type: 'OPEN_FINANCE_READY', jobId, streamUrl });
+  }, []);
+
+  const handleOpenFinanceError = useCallback((message: string) => {
+    dispatch({ type: 'ERROR', message, canRetry: true });
+  }, []);
+
   // ── File selection handler ──
   const handleFilesSelected = useCallback(async (files: File[]) => {
     dispatch({ type: 'START_UPLOAD', files });
@@ -265,7 +301,11 @@ export function HomeContent() {
     <div className="min-h-screen flex flex-col">
       <Header />
 
-      <main className="flex-1">
+      <main
+        className="flex-1"
+        aria-live="polite"
+        aria-busy={state.status === 'uploading' || state.status === 'processing' || state.status === 'streaming' || state.status === 'connecting-bank' || state.status === 'fetching-transactions'}
+      >
         <AnimatePresence mode="wait">
           {/* ── IDLE ── */}
           {(state.status === 'idle' || state.status === 'error') && (
@@ -294,7 +334,7 @@ export function HomeContent() {
                       <p className="text-foreground-muted">Bancos suportados</p>
                     </div>
                     <div className="text-center">
-                      <p className="text-2xl font-bold text-foreground">350+</p>
+                      <p className="text-2xl font-bold text-foreground">500+</p>
                       <p className="text-foreground-muted">Servicos conhecidos</p>
                     </div>
                     <div className="text-center">
@@ -305,14 +345,28 @@ export function HomeContent() {
                 </div>
               </section>
 
-              {/* Upload */}
+              {/* Method selector + Upload/Connect */}
               <section className="py-8 px-4">
-                <FileUpload
-                  onFilesSelected={handleFilesSelected}
-                  status={state.status === 'error' ? 'error' : 'idle'}
-                  error={state.status === 'error' ? state.message : undefined}
-                />
-                <PrivacyBadge variant="inline" />
+                <MethodSelector onMethodChange={setSelectedMethod} />
+
+                {selectedMethod === 'upload' ? (
+                  <>
+                    <FileUpload
+                      onFilesSelected={handleFilesSelected}
+                      status={state.status === 'error' ? 'error' : 'idle'}
+                      error={state.status === 'error' ? state.message : undefined}
+                    />
+                    <PrivacyBadge variant="inline" />
+                  </>
+                ) : (
+                  <BankConnect
+                    onAnalysisStarted={handleOpenFinanceAnalysisStarted}
+                    onConnecting={handleBankConnecting}
+                    onError={handleOpenFinanceError}
+                    status={state.status === 'error' ? 'error' : 'idle'}
+                    error={state.status === 'error' ? state.message : undefined}
+                  />
+                )}
               </section>
 
               {/* Features */}
@@ -378,8 +432,8 @@ export function HomeContent() {
             </m.div>
           )}
 
-          {/* ── UPLOADING / PROCESSING (pre-SSE) ── */}
-          {(state.status === 'uploading' || state.status === 'processing') && (
+          {/* ── UPLOADING / PROCESSING / CONNECTING (pre-SSE) ── */}
+          {(state.status === 'uploading' || state.status === 'processing' || state.status === 'connecting-bank' || state.status === 'fetching-transactions') && (
             <m.div
               key="uploading"
               initial={{ opacity: 0, y: 20 }}
@@ -390,11 +444,22 @@ export function HomeContent() {
             >
               <AnalysisProgress
                 currentStage=""
-                progressMessage="Enviando arquivos para analise..."
+                progressMessage={
+                  state.status === 'connecting-bank' ? 'Conectando ao banco...' :
+                  state.status === 'fetching-transactions' ? 'Obtendo transacoes bancarias...' :
+                  'Enviando arquivos para analise...'
+                }
                 filesProcessed={[]}
                 subscriptionsFound={0}
                 startTime={Date.now()}
               />
+              <div className="flex justify-center mt-3">
+                <ConnectionStatus
+                  status={connectionStatus}
+                  reconnectAttempt={reconnectAttempt}
+                  onRetry={retryConnection}
+                />
+              </div>
               <PrivacyBadge variant="inline" />
             </m.div>
           )}
@@ -416,6 +481,13 @@ export function HomeContent() {
                 subscriptionsFound={state.subscriptions.length}
                 startTime={state.startTime}
               />
+              <div className="flex justify-center mt-3">
+                <ConnectionStatus
+                  status={connectionStatus}
+                  reconnectAttempt={reconnectAttempt}
+                  onRetry={retryConnection}
+                />
+              </div>
 
               {/* Live counter */}
               {state.subscriptions.length > 0 && (

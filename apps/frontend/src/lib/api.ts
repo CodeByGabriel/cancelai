@@ -4,7 +4,7 @@
 
 import type { AnalysisResult, ApiResponse } from '@/types';
 
-// Em produção na Vercel, usa URL relativa (mesmo domínio)
+// Em produção no Railway, usa URL relativa (mesmo domínio) ou NEXT_PUBLIC_API_URL
 // Em desenvolvimento, usa a URL configurada ou localhost
 const API_URL = process.env.NEXT_PUBLIC_API_URL || (typeof window !== 'undefined' && window.location.hostname !== 'localhost' ? '' : 'http://localhost:3001');
 
@@ -87,6 +87,106 @@ export async function checkHealth(): Promise<boolean> {
     return response.ok;
   } catch {
     return false;
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+// Open Finance API
+// ══════════════════════════════════════════════════════════════
+
+/**
+ * Cria connect token para abrir o widget Pluggy Connect
+ */
+export async function createOpenFinanceLink(): Promise<ApiResponse<{ accessToken: string }>> {
+  try {
+    const response = await fetch(`${API_URL}/api/open-finance/link`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    const data = await response.json();
+    return data as ApiResponse<{ accessToken: string }>;
+  } catch (error) {
+    console.error('Erro ao criar link Open Finance:', error);
+    return {
+      success: false,
+      error: {
+        code: 'NETWORK_ERROR',
+        message: 'Erro de conexao. Verifique sua internet e tente novamente.',
+      },
+    };
+  }
+}
+
+/**
+ * Lista contas de uma conexao bancaria
+ */
+export async function getOpenFinanceAccounts(
+  itemId: string
+): Promise<ApiResponse<{ accounts: Array<{ id: string; name: string; type: string; subtype: string; number: string }> }>> {
+  try {
+    const response = await fetch(`${API_URL}/api/open-finance/accounts/${itemId}`);
+    const data = await response.json();
+    return data as ApiResponse<{ accounts: Array<{ id: string; name: string; type: string; subtype: string; number: string }> }>;
+  } catch (error) {
+    console.error('Erro ao buscar contas:', error);
+    return {
+      success: false,
+      error: {
+        code: 'NETWORK_ERROR',
+        message: 'Erro de conexao ao buscar contas bancarias.',
+      },
+    };
+  }
+}
+
+/**
+ * Inicia analise de transacoes via Open Finance
+ */
+export async function startOpenFinanceAnalysis(
+  accountId: string,
+  dateFrom: string,
+  dateTo: string,
+  bankName?: string,
+): Promise<ApiResponse<{ jobId: string; streamUrl: string }>> {
+  try {
+    const response = await fetch(`${API_URL}/api/open-finance/analyze`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ accountId, dateFrom, dateTo, bankName }),
+    });
+    const data = await response.json();
+    return data as ApiResponse<{ jobId: string; streamUrl: string }>;
+  } catch (error) {
+    console.error('Erro ao iniciar analise Open Finance:', error);
+    return {
+      success: false,
+      error: {
+        code: 'NETWORK_ERROR',
+        message: 'Erro de conexao. Tente o upload manual de extrato.',
+      },
+    };
+  }
+}
+
+/**
+ * Revoga conexao bancaria
+ */
+export async function revokeOpenFinanceConnection(itemId: string): Promise<ApiResponse<{ message: string }>> {
+  try {
+    const response = await fetch(`${API_URL}/api/open-finance/connection/${itemId}`, {
+      method: 'DELETE',
+    });
+    const data = await response.json();
+    return data as ApiResponse<{ message: string }>;
+  } catch (error) {
+    console.error('Erro ao revogar conexao:', error);
+    return {
+      success: false,
+      error: {
+        code: 'NETWORK_ERROR',
+        message: 'Erro ao revogar conexao bancaria.',
+      },
+    };
   }
 }
 

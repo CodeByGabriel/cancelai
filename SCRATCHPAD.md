@@ -2,17 +2,25 @@
 
 ## Status Atual
 
-- **Fase:** Expansao C (saude, seguros, lifestyle, midia, platform detector) — COMPLETO
-- **Ultima mudanca:** 2026-04-13 (re-auditoria de documentacao)
-- **Testes:** ~75 passing, 0 failing (58 unitarios + 6 accuracy + 5 property-based + extras)
-- **Build:** Backend (tsc) e Frontend (next build) compilam limpo
+- **Fase:** Todos os gaps fechados. Lint: 59→0 errors. Compliance: 94.2% → 100%
+- **Auditoria:** 172/172 itens OK. T14 (additionalProperties), T38 (dark mode), lint (59 erros) todos corrigidos. Relatorio em FINAL-AUDIT-REPORT.md
+- **Ultima mudanca:** 2026-04-14 (Pos-auditoria: 3 gaps fechados)
+- **Testes:** 113 passing, 0 failing (94 pre-existentes + 13 adapter + 6 integracao Open Finance)
+- **Build:** Backend (tsc) e Frontend (next build) compilam limpo. 158 kB First Load JS.
 - **Security audit:** SECURITY-AUDIT.md atualizado 2026-04-13 (3 novos findings: MED-5, LOW-4, LOW-5)
-- **Accuracy:** F1=0.966, Recall=1.000, Precision=0.933 (CI gates: F1>=0.85, R>=0.90, P>=0.80)
-- **Servicos:** 352 (`canonicalName:` entries em known-services-data.ts)
+- **Accuracy:** F1=1.000, Recall=1.000, Precision=1.000 (CI gates: F1>=0.85, R>=0.90, P>=0.80)
+- **Servicos:** 503 (`canonicalName:` entries em known-services-data.ts)
 - **Categorias:** 16 — streaming, music, gaming, software, education, fitness, food, transport, telecom, news, security, dating, finance, health, insurance, other
-- **Scoring ativo:** v3.0 6 sinais (scoring-stage.ts) — high >= 0.85, medium >= 0.60, low >= 0.40
+- **Scoring ativo:** v3.1 7 sinais (scoring-stage.ts) — stringSimilarity 0.15, tfidfBonus 0.05, recurrence 0.30, valueStability 0.20, knownService 0.15, habituality 0.10, streamMaturity 0.05
+- **Open Finance:** Pluggy SDK integrado. Adapter pattern isola agregador. Pipeline entry point runPipelineFromTransactions pula validation+parsing. Frontend com MethodSelector (tabs) e BankConnect. State machine estendida com connecting-bank e fetching-transactions.
 - **Dead code identificado:** subscription-detector.ts (legado, nao usado pelo pipeline), csv-parser.ts/pdf-parser.ts (legado, registry e o ativo), dist/deepseek-analyzer.* (artifacts stale)
-- **Status:** Fase C completa. 3 fases de expansao concluidas (A: 152→183, B: 183→273, C: 273→352). Docs re-auditados e atualizados.
+- **Status:** Plano mestre 100% executado (T1-T47). Todas as 6 fases completas.
+- **CI/CD:** GitHub Actions CI (build/lint/typecheck/test) + Deploy Railway automatico
+- **Infra:** trustProxy, pino-pretty dev/JSON prod, redact headers, graceful shutdown 10s + SSE drain
+- **SSE:** SSEManager com event IDs, heartbeat 15s, buffer 100 eventos, timeout prevention 4.5min, max 50 conexoes
+- **Security:** Rate limit granular (10/20/30/60 por rota), response schemas, error handler sem stack em prod, file validation AND logic, filename sanitizado em erros
+- **LGPD:** Consent service (POST/GET/DELETE), data retention 7d TTL, PII stripper, privacy page /privacidade, ROPA docs/ROPA.md. ConsentScope estendido com 'open_finance'.
+- **Lint:** 0 erros (59 pre-existentes corrigidos 2026-04-14)
 
 ## Decisoes Tomadas
 
@@ -28,7 +36,7 @@
 - Logica extraida (copiada) de `subscription-detector.ts` para stages — arquivo original mantido para backward compat
 - `analysis-service.ts` virou facade de 77 linhas consumindo `runPipeline()` via `for-await-of`
 - SSE via `reply.hijack()` + `reply.raw` (Node.js ServerResponse direto) — progressive enhancement
-- SSE NAO funciona em Vercel serverless (30s max); funciona em Railway/standalone
+- SSE funciona no Railway (processo persistente); NAO funciona em serverless (30s max)
 - Circuit breaker (`opossum`) para AI classification: timeout 8s, errorThreshold 50%, reset 30s
 - Fallback silencioso: se breaker aberto, copia `scoredSubscriptions` direto
 - Observer pattern (`LoggingObserver`) para logging sem afetar fluxo

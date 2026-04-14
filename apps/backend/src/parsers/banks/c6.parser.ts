@@ -26,9 +26,9 @@ const c6Parser: BankParserPlugin = {
     return DETECT.test(content);
   },
 
-  async parse(content: string, options: ParseOptions): Promise<readonly Transaction[]> {
-    if (options.format !== 'csv') return [];
-    return parseCSVWithMapping(content, CSV_COLUMNS, this.displayName);
+  parse(content: string, options: ParseOptions): Promise<readonly Transaction[]> {
+    if (options.format !== 'csv') return Promise.resolve([]);
+    return Promise.resolve(parseCSVWithMapping(content, CSV_COLUMNS, this.displayName));
   },
 };
 

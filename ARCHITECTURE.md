@@ -13,14 +13,15 @@ cancelai/
 │   ├── frontend/              # Next.js 14 (App Router)
 │   │   └── src/
 │   │       ├── app/               # Pages (layout.tsx, page.tsx, globals.css)
-│   │       ├── components/        # 16 React Components (Client/Server)
-│   │       ├── lib/               # api.ts, use-sse-stream.ts, utils.ts
+│   │       ├── components/        # 18 React Components (Client/Server) — inclui MethodSelector, BankConnect
+│   │       ├── lib/               # api.ts (+ Open Finance API), use-sse-stream.ts, utils.ts
 │   │       └── types/             # TypeScript types (state machine, SSE events)
 │   │
 │   └── backend/               # Fastify + TypeScript
 │       └── src/
 │           ├── config/            # Configuracao central + known-services-data (352 servicos)
-│           ├── controllers/       # Route handlers (analysis-controller.ts)
+│           ├── adapters/           # open-finance.adapter.ts (agregador → Transaction)
+│           ├── controllers/       # Route handlers (analysis-controller.ts, open-finance-controller.ts)
 │           ├── detector/          # Algoritmo legado (subscription-detector.ts) — NAO usado pelo pipeline
 │           ├── middleware/        # Rate limiting (smart-rate-limit.ts)
 │           ├── parsers/           # Sistema de plugins por banco
@@ -39,9 +40,8 @@ cancelai/
 │           ├── utils/             # Helpers (string.ts, date.ts, amount.ts, lru-cache.ts)
 │           └── types/             # Interfaces (todas readonly)
 │
-├── api/                       # Serverless entrypoint (Vercel Functions)
-│   └── index.ts                   # Adapta Fastify para serverless
-├── vercel.json                # Deploy config
+├── api/                       # Serverless entrypoint (legado, nao usado no Railway)
+│   └── index.ts                   # Adapta Fastify para serverless (legado)
 └── package.json               # Workspace root (engines: node >= 18)
 ```
 
@@ -54,6 +54,11 @@ cancelai/
 | `POST` | `/api/analyze` | Analisa extratos sincrono (multipart/form-data) |
 | `POST` | `/api/analyze/stream` | Cria job async, retorna jobId + streamUrl |
 | `GET` | `/api/analyze/:jobId/stream` | SSE stream de eventos do pipeline |
+| `POST` | `/api/open-finance/link` | Cria connect token para widget Pluggy |
+| `GET` | `/api/open-finance/accounts/:itemId` | Lista contas de uma conexao bancaria |
+| `POST` | `/api/open-finance/analyze` | Busca transacoes via Open Finance + cria job pipeline |
+| `GET` | `/api/open-finance/:jobId/stream` | SSE stream de eventos (Open Finance) |
+| `DELETE` | `/api/open-finance/connection/:itemId` | Revoga conexao bancaria |
 | `GET` | `/api/health` | Health check |
 | `GET` | `/api/info` | Limites e versao da API |
 
@@ -66,6 +71,8 @@ cancelai/
 | `ANALYSIS_FAILED` | Erro no processamento |
 | `INTERNAL_ERROR` | Erro inesperado |
 | `NETWORK_ERROR` | Frontend: erro de conexao |
+| `OPEN_FINANCE_NOT_CONFIGURED` | AGGREGATOR_CLIENT_ID/SECRET nao definidos |
+| `AGGREGATOR_ERROR` | Erro de comunicacao com o agregador (Pluggy) |
 
 ### Eventos SSE (streaming)
 
@@ -557,31 +564,21 @@ RATE_LIMIT_MAX=10            # Opcional - requests/min em producao (default: 10)
 
 ## Deploy
 
-### Vercel (Recomendado)
+### Railway (Producao)
 
-```json
-// vercel.json
-{
-  "rewrites": [
-    { "source": "/api/:path*", "destination": "/api/:path*" }
-  ],
-  "functions": {
-    "api/**/*.ts": {
-      "maxDuration": 30
-    }
-  }
-}
+Backend roda como processo Node.js persistente no Railway. SSE streaming funciona normalmente.
+
+```bash
+# Deploy via Railway CLI
+railway up --detach
 ```
 
-**Serverless entrypoint** (`api/index.ts`):
-- Cache de instancia Fastify para warm starts
-- Converte request/response via `fastify.inject()`
+Frontend (Next.js) e backend (Fastify) sao servicos separados no Railway.
 
-> **NOTA:** SSE streaming NAO funciona em Vercel serverless (30s max). Funciona em Railway/standalone.
-
-### Railway (Alternativa para backend standalone)
-
-Backend roda como processo Node.js persistente. SSE streaming funciona normalmente.
+**Variaveis de ambiente Railway:**
+- `RAILWAY_TOKEN`: Token de deploy (GitHub Actions secret)
+- `CORS_ORIGIN`: URL do frontend Railway
+- `NODE_ENV`: production
 
 ---
 
@@ -643,3 +640,60 @@ novoServico: {
 Criar `apps/backend/src/parsers/banks/meubanco.parser.ts` implementando `BankParserPlugin`.
 Adicionar `import './meubanco.parser.js';` em `banks/index.ts`.
 Veja parsers existentes como referencia.
+
+---
+
+## Open Finance Brasil (Fase 6)
+
+### Arquitetura
+
+```
+Frontend                         Backend
+┌──────────────┐                ┌─────────────────────┐
+│ MethodSelector│                │ open-finance-ctrl   │
+│ ┌────┬──────┐ │                │                     │
+│ │CSV │ Bank │ │  POST /link    │ open-finance.service│
+│ └────┴──────┘ │ ──────────►   │ (Pluggy SDK + CB)   │
+│               │                │         │           │
+│ BankConnect   │  POST /analyze │         ▼           │
+│ (widget)      │ ──────────►   │ open-finance.adapter│
+│               │                │ adaptTransactions() │
+│ useSSEStream  │  GET /stream   │         │           │
+│ (reutilizado) │ ◄──────────   │         ▼           │
+│               │    SSE         │ runPipelineFrom     │
+└──────────────┘                │ Transactions()      │
+                                │ (normalization→...→  │
+                                │  complete)           │
+                                └─────────────────────┘
+```
+
+### Decisoes
+
+- **Agregador:** Pluggy (BCB-autorizado, SDK TypeScript, 100+ bancos BR)
+- **Adapter pattern:** `adaptTransactions()` isola logica Pluggy → trocar agregador requer apenas novo adapter
+- **Pipeline entry point:** `runPipelineFromTransactions()` pula validation+parsing, inicia na normalizacao
+- **SSE reutilizado:** Frontend usa o mesmo `useSSEStream` hook para ambos os modos
+- **Circuit breaker:** `opossum` para chamadas ao Pluggy (timeout 15s, 50% threshold, reset 30s)
+- **Sem persistencia:** Connection IDs sao efemeros, nao armazenados (LGPD)
+- **Consent scope:** `open_finance` adicionado a `ConsentScope`
+
+### Variaveis de Ambiente
+
+```env
+AGGREGATOR_CLIENT_ID=xxx       # Pluggy Client ID — rotas retornam 501 sem isso
+AGGREGATOR_CLIENT_SECRET=xxx   # Pluggy Client Secret
+```
+
+### State Machine Frontend (estendida)
+
+```
+                    Upload path                    Open Finance path
+                    ──────────                     ─────────────────
+idle ─────────► uploading ──► processing ──►   idle ──► connecting-bank ──► fetching-transactions
+                                    │                                              │
+                                    ▼                                              ▼
+                              streaming ◄──────────────────── processing (reusado)
+                                    │
+                                    ▼
+                               complete
+```

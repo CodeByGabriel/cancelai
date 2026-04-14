@@ -85,7 +85,7 @@ export class AIClassificationStage implements PipelineStage {
           input: context.scoredSubscriptions.length,
           output: result.length,
           ambiguousAnalyzed: ambiguousCount,
-          circuitBreakerState: aiBreaker.status.toString(),
+          circuitBreakerState: String(aiBreaker.status),
         },
       };
     } catch (error) {

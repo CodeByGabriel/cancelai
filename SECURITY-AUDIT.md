@@ -1,7 +1,7 @@
 # Cancelai — Security Audit Report
 
-**Date:** 2026-02-14 (atualizado 2026-04-13)
-**Scope:** Full post-refactoring audit (Backend + Frontend)
+**Date:** 2026-02-14 (atualizado 2026-04-13, Fase 3 audit 2026-04-13)
+**Scope:** Full post-refactoring audit (Backend + Frontend) + Phase 3 Security Hardening + LGPD
 **Version:** 1.0.0
 
 ---
@@ -12,13 +12,18 @@ Audit performed after 5 phases of development (Pipeline, Parsers, Scoring, Front
 
 **Overall Risk: LOW** — The application has a minimal attack surface (file upload + analysis, no auth, no persistence). All critical findings have been addressed.
 
-| Severity | Found | Fixed | Accepted Risk | New (2026-04-13) |
-|----------|-------|-------|---------------|------------------|
-| Critical | 0     | -     | -             | 0                |
-| High     | 1     | 1     | 0             | 0                |
-| Medium   | 4+1   | 4     | 0             | 1 (MED-5)        |
-| Low      | 3+2   | 0     | 3             | 2 (LOW-4, LOW-5) |
-| Info     | 2     | 1     | 1             | 0                |
+| Severity | Found | Fixed | Accepted Risk |
+|----------|-------|-------|---------------|
+| Critical | 0     | -     | -             |
+| High     | 1     | 1     | 0             |
+| Medium   | 5     | 5     | 0             |
+| Low      | 5     | 2     | 3             |
+| Info     | 2     | 1     | 1             |
+
+**Phase 3 Fixes (2026-04-13):**
+- MED-5: File validation changed from OR to AND logic — FIXED
+- LOW-4: Rate limit cleanup interval now .unref()'d — FIXED
+- LOW-5: Raw filenames sanitized in error responses — FIXED
 
 ---
 
@@ -140,29 +145,26 @@ if (
 
 ## New Findings (2026-04-13 Re-audit)
 
-### MED-5: File Validation Uses OR Logic Instead of AND
+### MED-5: File Validation Uses OR Logic Instead of AND [FIXED]
 
-**File:** `analysis-controller.ts:490`
-**Issue:** `isAllowedFileType()` returns `validExtension || validMime` — a file passes if EITHER the extension OR the MIME type is valid. This means a file with a spoofed MIME type but wrong extension (or vice versa) will pass validation.
-**Impact:** Low in practice since files are processed in-memory only and not executed.
-**Recommendation:** Use AND logic with `application/octet-stream` fallback: `validExtension && (validMime || mimeType === 'application/octet-stream')`.
-**Status: Open**
+**File:** `analysis-controller.ts:616`
+**Issue:** `isAllowedFileType()` returned `validExtension || validMime`.
+**Fix applied (Phase 3):** Changed to `validExtension && (validMime || mimetype === 'application/octet-stream')` — requires valid extension AND (valid MIME or octet-stream for OFX/QFX browser compat).
+**Status: FIXED**
 
-### LOW-4: Rate Limit Cleanup Interval Not Unref'd
+### LOW-4: Rate Limit Cleanup Interval Not Unref'd [FIXED]
 
-**File:** `smart-rate-limit.ts:149`
-**Issue:** `setInterval(cleanupExpiredRecords, 60 * 1000)` never calls `.unref()`, unlike the job TTL cleanup timer in `analysis-controller.ts:67`. This keeps the Node.js process alive and prevents graceful shutdown via event loop draining.
-**Impact:** Low — process uses `SIGINT`/`SIGTERM` handlers with `process.exit()`.
-**Recommendation:** Add `.unref()` to match the pattern in `analysis-controller.ts`.
-**Status: Open**
+**File:** `smart-rate-limit.ts:177`
+**Issue:** `setInterval(cleanupExpiredRecords, 60 * 1000)` never called `.unref()`.
+**Fix applied (Phase 3):** Added `.unref()` to cleanup interval.
+**Status: FIXED**
 
-### LOW-5: Raw Filename in Error Responses
+### LOW-5: Raw Filename in Error Responses [FIXED]
 
-**File:** `analysis-controller.ts:437-438`
-**Issue:** When a file is rejected for invalid type, the raw `file.filename` (unsanitized) is included in the error response sent to the client. While the raw filename was removed from logs (HIGH-1 fix), it is still reflected in API response strings.
-**Impact:** Low — no direct XSS since API returns JSON, but user-controlled input is reflected without sanitization.
-**Recommendation:** Use `sanitizeFilename(file.filename)` in error messages.
-**Status: Open**
+**File:** `analysis-controller.ts`
+**Issue:** Raw `file.filename` was included in error responses without sanitization.
+**Fix applied (Phase 3):** All error messages now use `sanitizeFilename(file.filename)`.
+**Status: FIXED**
 
 ---
 
@@ -225,13 +227,37 @@ These are documented for future cleanup but do not affect security or functional
 
 ---
 
+## Phase 3 Security Hardening (2026-04-13)
+
+### Implemented
+
+| Feature | Status |
+|---------|--------|
+| Rate limiting granular por rota | 10/20/30/60 req/min por grupo |
+| X-RateLimit-Limit, X-RateLimit-Remaining headers | Todas as rotas /api |
+| Response schemas (JSON Schema) | /health, /info |
+| Error handler: sem stack traces em prod | `isProd` gate |
+| Error handler: detalhes de validacao em dev | `error.validation` |
+| File validation AND logic | extensao AND (MIME ou octet-stream) |
+| Filename sanitizado em error responses | `sanitizeFilename()` |
+| Rate limit cleanup .unref() | Corrigido |
+| Consent management (LGPD) | POST/GET/DELETE /api/consent |
+| Data retention service | 7-day TTL, auto-cleanup |
+| PII stripper | CPF, CNPJ, conta, cartao, saldo, email, telefone |
+| Privacy policy page | /privacidade (PT-BR) |
+| ROPA documentation | docs/ROPA.md (LGPD Art. 37) |
+
+---
+
 ## Verification
 
 | Check | Result |
 |-------|--------|
-| Backend tests | ~75 passing, 0 failing (unit + accuracy + property-based) |
+| Backend tests | 88 passing, 0 failing (unit + accuracy + property-based + SSE) |
 | Backend build (`tsc`) | Clean |
-| Frontend build (`next build`) | Clean, 165 kB First Load JS |
+| Frontend build (`next build`) | Clean, 156 kB First Load JS |
 | No hardcoded secrets | Confirmed |
 | No `any` types in new code | Confirmed |
 | All `.js` import extensions | Confirmed |
+| Privacy policy page | /privacidade accessible |
+| ROPA documentation | docs/ROPA.md complete |

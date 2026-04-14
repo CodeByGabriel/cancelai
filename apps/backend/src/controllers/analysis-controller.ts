@@ -19,10 +19,28 @@
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import type { MultipartFile } from '@fastify/multipart';
 import { config } from '../config/index.js';
-import { analyzeStatements } from '../services/index.js';
+import {
+  analyzeStatements,
+  SSEManager,
+  registerConsent,
+  revokeConsent,
+  getConsent,
+  serializeConsent,
+  type ConsentScope,
+} from '../services/index.js';
 import { runPipeline } from '../pipeline/index.js';
 import type { FileToProcess } from '../parsers/index.js';
 import type { ApiResponse, AnalysisResult } from '../types/index.js';
+
+/**
+ * SSE Manager — singleton, criado quando registerAnalysisRoutes é chamado.
+ * Exposto para uso no health check e graceful shutdown.
+ */
+let sseManager: SSEManager | null = null;
+
+export function getSSEManager(): SSEManager | null {
+  return sseManager;
+}
 
 /**
  * Gera ID único para rastreamento de requisição (sem dados sensíveis)
@@ -69,7 +87,10 @@ cleanupInterval.unref();
 /**
  * Registra as rotas de análise
  */
-export async function registerAnalysisRoutes(app: FastifyInstance): Promise<void> {
+export function registerAnalysisRoutes(app: FastifyInstance): void {
+  // Inicializa SSEManager com o logger do Fastify
+  sseManager = new SSEManager(app.log);
+
   /**
    * POST /api/analyze
    *
@@ -271,6 +292,16 @@ export async function registerAnalysisRoutes(app: FastifyInstance): Promise<void
    */
   app.get<{ Params: { jobId: string } }>(
     '/api/analyze/:jobId/stream',
+    {
+      schema: {
+        params: {
+          type: 'object' as const,
+          properties: { jobId: { type: 'string' as const } },
+          required: ['jobId'] as const,
+          additionalProperties: false,
+        },
+      },
+    },
     async (request, reply) => {
       const { jobId } = request.params;
       const job = jobs.get(jobId);
@@ -285,10 +316,24 @@ export async function registerAnalysisRoutes(app: FastifyInstance): Promise<void
         } satisfies ApiResponse<never>);
       }
 
+      // Verificar limite de conexões antes do hijack
+      if (sseManager) {
+        const metrics = sseManager.getMetrics();
+        if (metrics.activeConnections >= 50) {
+          return reply.status(503).send({
+            success: false,
+            error: {
+              code: 'TOO_MANY_CONNECTIONS',
+              message: 'Muitas conexões SSE ativas. Tente novamente em alguns segundos.',
+            },
+          } satisfies ApiResponse<never>);
+        }
+      }
+
       // Consumo único — remove do store
       jobs.delete(jobId);
 
-      reply.hijack();
+      void reply.hijack();
       reply.raw.writeHead(200, {
         'Content-Type': 'text/event-stream',
         'Cache-Control': 'no-cache',
@@ -302,20 +347,49 @@ export async function registerAnalysisRoutes(app: FastifyInstance): Promise<void
         'Access-Control-Allow-Origin': config.cors.origin,
       });
 
+      const connectionId = jobId;
+      const analysisId = jobId;
+
+      // Registrar conexão no SSEManager após hijack (heartbeats, timeout, tracking)
+      if (sseManager) {
+        sseManager.registerConnection(connectionId, analysisId, reply.raw);
+
+        // Replay de eventos se cliente reconectou com Last-Event-ID
+        const lastEventIdHeader = request.headers['last-event-id'];
+        if (typeof lastEventIdHeader === 'string') {
+          const lastEventId = parseInt(lastEventIdHeader, 10);
+          if (!isNaN(lastEventId)) {
+            sseManager.replayEvents(connectionId, analysisId, lastEventId);
+          }
+        }
+      }
+
       try {
         for await (const event of job.generator) {
           if (reply.raw.destroyed) break;
-          reply.raw.write(`event: ${event.type}\ndata: ${JSON.stringify(event)}\n\n`);
+
+          if (sseManager) {
+            sseManager.sendEvent(connectionId, event);
+          } else {
+            // Fallback sem SSEManager (não deveria acontecer)
+            reply.raw.write(`event: ${event.type}\ndata: ${JSON.stringify(event)}\n\n`);
+          }
         }
       } catch (error) {
         const message = error instanceof Error ? error.message : 'Erro no pipeline';
         if (!reply.raw.destroyed) {
-          reply.raw.write(
-            `event: error\ndata: ${JSON.stringify({ type: 'error', code: 'STREAM_ERROR', message, recoverable: false })}\n\n`
-          );
+          const errorEvent = { type: 'error', code: 'STREAM_ERROR', message, recoverable: false };
+          if (sseManager) {
+            sseManager.sendEvent(connectionId, errorEvent);
+          } else {
+            reply.raw.write(`event: error\ndata: ${JSON.stringify(errorEvent)}\n\n`);
+          }
         }
       } finally {
-        if (!reply.raw.destroyed) {
+        if (sseManager) {
+          sseManager.clearBuffer(analysisId);
+          sseManager.removeConnection(connectionId);
+        } else if (!reply.raw.destroyed) {
           reply.raw.end();
         }
       }
@@ -327,13 +401,63 @@ export async function registerAnalysisRoutes(app: FastifyInstance): Promise<void
    *
    * Endpoint de health check para monitoramento.
    */
-  app.get('/api/health', async (_request, reply) => {
-    return reply.status(200).send({
-      success: true,
+  app.get('/api/health', {
+    schema: {
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            success: { type: 'boolean' },
+            data: {
+              type: 'object',
+              properties: {
+                status: { type: 'string' },
+                version: { type: 'string' },
+                timestamp: { type: 'string' },
+                uptime: { type: 'number' },
+                memory: {
+                  type: 'object',
+                  properties: {
+                    heapUsed: { type: 'number' },
+                    heapTotal: { type: 'number' },
+                    rss: { type: 'number' },
+                    external: { type: 'number' },
+                  },
+                },
+                sse: {
+                  type: 'object',
+                  properties: {
+                    activeConnections: { type: 'number' },
+                    peakConnections: { type: 'number' },
+                    totalConnectionsServed: { type: 'number' },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  }, async (_request, reply) => {
+    const mem = process.memoryUsage();
+    const heapRatio = mem.heapUsed / mem.heapTotal;
+    const isHealthy = heapRatio < 0.9;
+    const sseMetrics = sseManager?.getMetrics();
+
+    return reply.status(isHealthy ? 200 : 503).send({
+      success: isHealthy,
       data: {
-        status: 'healthy',
+        status: isHealthy ? 'healthy' : 'degraded',
         version: config.version,
         timestamp: new Date().toISOString(),
+        uptime: process.uptime(),
+        memory: {
+          heapUsed: mem.heapUsed,
+          heapTotal: mem.heapTotal,
+          rss: mem.rss,
+          external: mem.external,
+        },
+        ...(sseMetrics && { sse: sseMetrics }),
       },
     });
   });
@@ -343,7 +467,27 @@ export async function registerAnalysisRoutes(app: FastifyInstance): Promise<void
    *
    * Retorna informações sobre limites e formatos aceitos.
    */
-  app.get('/api/info', async (_request, reply) => {
+  app.get('/api/info', {
+    schema: {
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            success: { type: 'boolean' },
+            data: {
+              type: 'object',
+              properties: {
+                version: { type: 'string' },
+                limits: { type: 'object' },
+                supportedBanks: { type: 'array', items: { type: 'string' } },
+                uploadFieldName: { type: 'string' },
+              },
+            },
+          },
+        },
+      },
+    },
+  }, async (_request, reply) => {
     return reply.status(200).send({
       success: true,
       data: {
@@ -368,6 +512,111 @@ export async function registerAnalysisRoutes(app: FastifyInstance): Promise<void
       },
     });
   });
+
+  // ============================================================
+  // CONSENT ROUTES — LGPD Compliance
+  // ============================================================
+
+  /**
+   * POST /api/consent
+   * Registra consentimento do usuário para processamento
+   */
+  app.post('/api/consent', {
+    schema: {
+      body: {
+        type: 'object' as const,
+        properties: {
+          sessionId: { type: 'string' as const },
+          scopes: { type: 'array' as const, items: { type: 'string' as const } },
+        },
+        required: ['sessionId', 'scopes'] as const,
+        additionalProperties: false,
+      },
+    },
+  }, async (request: FastifyRequest, reply: FastifyReply) => {
+    const body = request.body as { sessionId?: string; scopes?: ConsentScope[] } | null;
+
+    if (!body?.sessionId || !body.scopes || !Array.isArray(body.scopes)) {
+      return reply.status(400).send({
+        success: false,
+        error: { code: 'INVALID_BODY', message: 'sessionId e scopes são obrigatórios' },
+      });
+    }
+
+    const ipHash = request.ip?.substring(0, 8) ?? 'unknown';
+    const record = registerConsent(body.sessionId, body.scopes, ipHash);
+
+    return reply.status(201).send({
+      success: true,
+      data: serializeConsent(record),
+    });
+  });
+
+  /**
+   * GET /api/consent/:sessionId
+   * Consulta status do consentimento — LGPD Art. 18 (acesso pelo titular)
+   */
+  app.get<{ Params: { sessionId: string } }>(
+    '/api/consent/:sessionId',
+    {
+      schema: {
+        params: {
+          type: 'object' as const,
+          properties: { sessionId: { type: 'string' as const } },
+          required: ['sessionId'] as const,
+          additionalProperties: false,
+        },
+      },
+    },
+    async (request, reply) => {
+      const record = getConsent(request.params.sessionId);
+
+      if (!record) {
+        return reply.status(404).send({
+          success: false,
+          error: { code: 'CONSENT_NOT_FOUND', message: 'Consentimento não encontrado' },
+        });
+      }
+
+      return reply.status(200).send({
+        success: true,
+        data: serializeConsent(record),
+      });
+    },
+  );
+
+  /**
+   * DELETE /api/consent/:sessionId
+   * Revoga consentimento — LGPD Art. 8 §5
+   */
+  app.delete<{ Params: { sessionId: string } }>(
+    '/api/consent/:sessionId',
+    {
+      schema: {
+        params: {
+          type: 'object' as const,
+          properties: { sessionId: { type: 'string' as const } },
+          required: ['sessionId'] as const,
+          additionalProperties: false,
+        },
+      },
+    },
+    async (request, reply) => {
+      const revoked = revokeConsent(request.params.sessionId);
+
+      if (!revoked) {
+        return reply.status(404).send({
+          success: false,
+          error: { code: 'CONSENT_NOT_FOUND', message: 'Consentimento não encontrado' },
+        });
+      }
+
+      return reply.status(200).send({
+        success: true,
+        data: { message: 'Consentimento revogado com sucesso' },
+      });
+    },
+  );
 }
 
 /**
@@ -414,7 +663,7 @@ async function processUploadedFiles(
       }
 
       debugInfo.filesReceived++;
-      const file = part as MultipartFile;
+      const file: MultipartFile = part;
 
       // Log de debug do arquivo
       console.log(
@@ -434,7 +683,7 @@ async function processUploadedFiles(
       const isValidType = isAllowedFileType(file.filename, file.mimetype);
       if (!isValidType) {
         errors.push(
-          `Arquivo "${file.filename}" rejeitado: tipo "${file.mimetype}" não permitido. ` +
+          `Arquivo "${sanitizeFilename(file.filename)}" rejeitado: tipo "${file.mimetype}" não permitido. ` +
           `Aceitos: ${config.upload.allowedExtensions.join(', ')}`
         );
         // Consome o stream para evitar memory leak
@@ -448,7 +697,7 @@ async function processUploadedFiles(
       // SEGURANÇA: Valida tamanho
       if (buffer.length > config.server.maxFileSize) {
         errors.push(
-          `Arquivo "${file.filename}" rejeitado: tamanho ${(buffer.length / (1024 * 1024)).toFixed(1)}MB ` +
+          `Arquivo "${sanitizeFilename(file.filename)}" rejeitado: tamanho ${(buffer.length / (1024 * 1024)).toFixed(1)}MB ` +
           `excede limite de ${config.server.maxFileSize / (1024 * 1024)}MB`
         );
         continue;
@@ -456,7 +705,7 @@ async function processUploadedFiles(
 
       // SEGURANÇA: Valida que não está vazio
       if (buffer.length === 0) {
-        errors.push(`Arquivo "${file.filename}" rejeitado: arquivo vazio`);
+        errors.push(`Arquivo "${sanitizeFilename(file.filename)}" rejeitado: arquivo vazio`);
         continue;
       }
 
@@ -485,9 +734,8 @@ function isAllowedFileType(filename: string, mimetype: string): boolean {
   const validExtension = (config.upload.allowedExtensions as readonly string[]).includes(extWithDot);
   const validMime = (config.upload.allowedMimeTypes as readonly string[]).includes(mimetype);
 
-  // Aceita se extensão OU mimetype for válido
-  // (alguns browsers enviam mimetypes diferentes)
-  return validExtension || validMime;
+  // SEGURANÇA: Exige extensão válida E (MIME válido OU octet-stream para OFX/QFX compat)
+  return validExtension && (validMime || mimetype === 'application/octet-stream');
 }
 
 /**

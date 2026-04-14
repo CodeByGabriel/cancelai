@@ -15,6 +15,7 @@ export class ValidationStage implements PipelineStage {
     return context.filesValidated;
   }
 
+  // eslint-disable-next-line @typescript-eslint/require-await -- async required for AsyncGenerator return type
   async *execute(context: PipelineContext): AsyncGenerator<PipelineEvent> {
     const startTime = Date.now();
 

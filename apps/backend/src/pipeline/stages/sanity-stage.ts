@@ -7,7 +7,7 @@
  * Extraido de subscription-detector.ts linhas 194-285.
  */
 
-import type { Transaction, DetectedSubscription } from '../../types/index.js';
+import type { Transaction } from '../../types/index.js';
 import type { PipelineContext, PipelineEvent, PipelineStage, TransactionGroup, ConfidenceScores } from '../pipeline-events.js';
 import { daysBetween } from '../../utils/date.js';
 import { isAggregateValue } from './normalization-stage.js';
@@ -108,6 +108,7 @@ export function validateHighValueSubscription(
 export class SanityStage implements PipelineStage {
   readonly name = 'sanity';
 
+  // eslint-disable-next-line @typescript-eslint/require-await -- async required for AsyncGenerator return type
   async *execute(context: PipelineContext): AsyncGenerator<PipelineEvent> {
     const startTime = Date.now();
 

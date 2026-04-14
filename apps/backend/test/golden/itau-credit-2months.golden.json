@@ -12,7 +12,7 @@
   "snapshot": {
     "subscriptions": [
       {
-        "id": "c48a0ad2-a8ef-4835-b89c-39ba874ce135",
+        "id": "23404049-7507-4ac0-a19a-640a5ed6c0ff",
         "name": "Smart Fit",
         "originalNames": [
           "IZ*SmartFit"
@@ -33,7 +33,7 @@
           }
         ],
         "confidence": "high",
-        "confidenceScore": 0.9617,
+        "confidenceScore": 0.9117000000000001,
         "confidenceReasons": [
           "Padrao mensal consistente",
           "Valores muito consistentes",
@@ -47,7 +47,7 @@
         "priceRangeFlag": "normal"
       },
       {
-        "id": "dd3e87ae-a324-4f63-8617-0038f5a7bb95",
+        "id": "82497cb3-a830-47ad-b20b-b5d259fb6e5e",
         "name": "Netflix",
         "originalNames": [
           "NETFLIX.COM"
@@ -68,7 +68,7 @@
           }
         ],
         "confidence": "high",
-        "confidenceScore": 0.9617,
+        "confidenceScore": 0.9117000000000001,
         "confidenceReasons": [
           "Padrao mensal consistente",
           "Valores muito consistentes",
@@ -82,7 +82,7 @@
         "priceRangeFlag": "normal"
       },
       {
-        "id": "765da5b9-45be-479e-a617-6550ac73ba0b",
+        "id": "020021d3-844b-4af2-9571-0c7e0453d3d9",
         "name": "Globoplay",
         "originalNames": [
           "GLOBOPLAY"
@@ -103,7 +103,7 @@
           }
         ],
         "confidence": "high",
-        "confidenceScore": 0.9617,
+        "confidenceScore": 0.9117000000000001,
         "confidenceReasons": [
           "Padrao mensal consistente",
           "Valores muito consistentes",
@@ -117,7 +117,7 @@
         "priceRangeFlag": "normal"
       },
       {
-        "id": "b21fea80-5045-4614-bd1e-fd4068acd707",
+        "id": "d8f439b0-0ba9-457d-826d-ee64f98022a7",
         "name": "Deezer",
         "originalNames": [
           "DEEZER"
@@ -138,13 +138,12 @@
           }
         ],
         "confidence": "high",
-        "confidenceScore": 0.9392,
+        "confidenceScore": 0.8892,
         "confidenceReasons": [
           "Padrao mensal consistente",
           "Valores muito consistentes",
           "Servico de assinatura conhecido",
-          "Consistencia temporal alta",
-          "Confianca muito alta"
+          "Consistencia temporal alta"
         ],
         "category": "music",
         "cancelInstructions": "https://www.deezer.com/account/subscription",
@@ -152,7 +151,7 @@
         "priceRangeFlag": "normal"
       },
       {
-        "id": "3fe24e56-3a09-426c-91d1-5e95e890ed5a",
+        "id": "d7d631e9-0e7b-411f-9aa9-e21cbbccbffb",
         "name": "Max (HBO)",
         "originalNames": [
           "PAG*Max"
@@ -173,7 +172,7 @@
           }
         ],
         "confidence": "high",
-        "confidenceScore": 0.9617,
+        "confidenceScore": 0.9117000000000001,
         "confidenceReasons": [
           "Padrao mensal consistente",
           "Valores muito consistentes",
@@ -187,7 +186,7 @@
         "priceRangeFlag": "normal"
       },
       {
-        "id": "7ac1563c-27e1-43f6-8774-10a65966ff73",
+        "id": "918358e9-e031-44db-b7d2-d09b0c02bdf7",
         "name": "NordVPN",
         "originalNames": [
           "NORDVPN.COM"
@@ -208,65 +207,33 @@
           }
         ],
         "confidence": "high",
-        "confidenceScore": 0.9392,
+        "confidenceScore": 0.8892,
         "confidenceReasons": [
           "Padrao mensal consistente",
           "Valores muito consistentes",
           "Servico popular reconhecido",
-          "Consistencia temporal alta",
-          "Confianca muito alta"
+          "Consistencia temporal alta"
         ],
         "category": "security",
         "cancelInstructions": "https://my.nordaccount.com/dashboard/nordvpn/",
         "detectedPeriod": "monthly",
         "priceRangeFlag": "promo"
-      },
-      {
-        "id": "726da341-fc51-487b-91ee-87c5b1640737",
-        "name": "Raia Farma",
-        "originalNames": [
-          "RAIA FARMA",
-          "ARAUJO FARMA"
-        ],
-        "monthlyAmount": 30.05,
-        "annualAmount": 360.6,
-        "occurrences": 2,
-        "transactions": [
-          {
-            "date": "2024-12-28T03:00:00.000Z",
-            "amount": 31.2,
-            "description": "ARAUJO FARMA"
-          },
-          {
-            "date": "2024-11-04T03:00:00.000Z",
-            "amount": 28.9,
-            "description": "RAIA FARMA"
-          }
-        ],
-        "confidence": "medium",
-        "confidenceScore": 0.6089,
-        "confidenceReasons": [
-          "Padrao bimestral detectado",
-          "Valores muito consistentes",
-          "Consistencia temporal alta"
-        ],
-        "detectedPeriod": "bimonthly"
       }
     ],
     "summary": {
-      "totalMonthlySpending": 327.45,
-      "totalAnnualSpending": 3929.4,
-      "subscriptionCount": 7,
+      "totalMonthlySpending": 297.4,
+      "totalAnnualSpending": 3568.8,
+      "subscriptionCount": 6,
       "highConfidenceCount": 6,
-      "mediumConfidenceCount": 1,
+      "mediumConfidenceCount": 0,
       "lowConfidenceCount": 0,
       "periodStart": "2024-11-01T03:00:00.000Z",
       "periodEnd": "2024-12-29T03:00:00.000Z",
       "transactionsAnalyzed": 58
     },
     "metadata": {
-      "processedAt": "2026-02-14T12:15:06.647Z",
-      "processingTimeMs": 32,
+      "processedAt": "2026-04-14T01:58:33.219Z",
+      "processingTimeMs": 6,
       "filesProcessed": 1,
       "bankFormatsDetected": [
         "Itaú"

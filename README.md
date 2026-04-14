@@ -404,26 +404,14 @@ const LIMITS = {
 
 ## Deploy
 
-### Frontend (Vercel)
+### Frontend e Backend (Railway)
 
 ```bash
-cd apps/frontend
-vercel deploy
+# Deploy via Railway CLI (ambos os servicos)
+railway up --detach
 ```
 
-Configure a variavel de ambiente:
-- `NEXT_PUBLIC_API_URL`: URL do backend
-
-### Backend (Railway/Fly.io)
-
-```bash
-cd apps/backend
-# Railway
-railway deploy
-
-# Fly.io
-fly deploy
-```
+Ou via GitHub Actions (push para main faz deploy automatico).
 
 Configure as variaveis de ambiente:
 - `PORT`: Porta do servidor (default: 3001)
@@ -447,7 +435,7 @@ Configure as variaveis de ambiente:
 
 1. **SSR/SSG**: Melhor SEO para landing page
 2. **App Router**: Estrutura moderna e organizada
-3. **Vercel**: Deploy trivial e otimizado
+3. **Railway**: Deploy simples com suporte a SSE streaming
 4. **DX**: Hot reload rapido, TypeScript nativo
 
 ### Por que nao usar banco de dados?

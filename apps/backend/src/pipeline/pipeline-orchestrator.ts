@@ -17,7 +17,7 @@ import type {
   PipelineStage,
 } from './pipeline-events.js';
 import type { FileToProcess } from '../parsers/index.js';
-import type { AnalysisResult } from '../types/index.js';
+import type { AnalysisResult, Transaction } from '../types/index.js';
 import { config } from '../config/index.js';
 import { roundToTwo } from '../utils/amount.js';
 import { getDateRange } from '../utils/date.js';
@@ -195,7 +195,7 @@ export async function* runPipeline(
 /**
  * Constroi o AnalysisResult final a partir do contexto
  */
-function buildAnalysisResult(context: PipelineContext): AnalysisResult {
+export function buildAnalysisResult(context: PipelineContext): AnalysisResult {
   const subscriptions = context.finalSubscriptions.length > 0
     ? context.finalSubscriptions
     : context.scoredSubscriptions;
@@ -248,4 +248,107 @@ function buildAnalysisResult(context: PipelineContext): AnalysisResult {
   }
 
   return result;
+}
+
+/**
+ * Stages que devem ser pulados para transacoes pre-parseadas (Open Finance).
+ * Validation e Parsing sao especificos para arquivos — transacoes do agregador
+ * ja vem parseadas e validadas pela API do Pluggy.
+ */
+const SKIP_STAGES = new Set(['validation', 'parsing']);
+
+/**
+ * Executa o pipeline a partir de transacoes pre-parseadas (Open Finance).
+ *
+ * Pula os stages de validation e parsing (transacoes ja vem do agregador)
+ * e inicia a partir da normalizacao. Reutiliza toda a infra de SSE.
+ *
+ * Uso identico ao runPipeline:
+ *   for await (const event of runPipelineFromTransactions(txs, bank, id)) {
+ *     reply.raw.write(`event: ${event.type}\ndata: ${JSON.stringify(event)}\n\n`);
+ *   }
+ */
+export async function* runPipelineFromTransactions(
+  transactions: readonly Transaction[],
+  bankName: string,
+  requestId: string,
+): AsyncGenerator<PipelineEvent> {
+  const { context, abort } = createPipelineContext([], requestId);
+
+  // Popula contexto como se parsing tivesse ocorrido com sucesso
+  context.transactions = [...transactions];
+  context.banksDetected = [bankName];
+  context.parseResults = [{
+    success: true,
+    transactions,
+    bankDetected: bankName,
+    errors: [],
+    warnings: [],
+  }];
+  context.filesValidated = true;
+
+  const timeoutId = setTimeout(() => abort.abort(), GLOBAL_TIMEOUT_MS);
+
+  try {
+    for (const stage of STAGES) {
+      if (SKIP_STAGES.has(stage.name)) continue;
+
+      if (context.signal.aborted) {
+        yield {
+          type: 'error',
+          code: 'TIMEOUT',
+          message: `Pipeline excedeu timeout global de ${GLOBAL_TIMEOUT_MS / 1000}s`,
+          recoverable: false,
+        };
+        return;
+      }
+
+      if (stage.canSkip?.(context)) {
+        continue;
+      }
+
+      for await (const event of stage.execute(context)) {
+        yield event;
+
+        if (event.type === 'error' && !event.recoverable) {
+          return;
+        }
+      }
+
+      if (stage.name === 'normalization' && context.validTransactions.length === 0) {
+        context.info.push(
+          'Nenhuma transacao valida para deteccao de assinaturas.',
+          'Pagamentos via Pix, parcelamentos e transferencias foram filtrados.'
+        );
+        break;
+      }
+    }
+
+    const result = buildAnalysisResult(context);
+
+    yield {
+      type: 'complete',
+      result,
+      durationMs: Date.now() - context.startTime,
+    };
+  } catch (error) {
+    yield {
+      type: 'error',
+      code: 'PIPELINE_ERROR',
+      message: error instanceof Error ? error.message : 'Erro desconhecido no pipeline',
+      recoverable: false,
+    };
+  } finally {
+    clearTimeout(timeoutId);
+
+    try {
+      const cleanup = new CleanupStage();
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      for await (const _event of cleanup.execute(context)) {
+        // Eventos do cleanup no finally sao descartados
+      }
+    } catch {
+      // Erros do cleanup sao engolidos
+    }
+  }
 }

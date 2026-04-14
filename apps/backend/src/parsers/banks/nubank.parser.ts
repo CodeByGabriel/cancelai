@@ -6,7 +6,7 @@ import type { BankParserPlugin, FileMetadata, ParseOptions } from '../registry/b
 import type { Transaction } from '../../types/index.js';
 import { registry } from '../registry/parser-registry.js';
 import { parseCSVWithMapping } from '../formats/csv-format.js';
-import { parsePDFWithPattern, parseNubankDate, parseStandardDate } from '../formats/pdf-format.js';
+import { parsePDFWithPattern, parseNubankDate } from '../formats/pdf-format.js';
 
 const DETECT = /nubank|nu pagamentos|nu bank/i;
 
@@ -33,14 +33,14 @@ const nubankParser: BankParserPlugin = {
     return DETECT.test(content);
   },
 
-  async parse(content: string, options: ParseOptions): Promise<readonly Transaction[]> {
+  parse(content: string, options: ParseOptions): Promise<readonly Transaction[]> {
     if (options.format === 'csv') {
-      return parseCSVWithMapping(content, CSV_COLUMNS, this.displayName);
+      return Promise.resolve(parseCSVWithMapping(content, CSV_COLUMNS, this.displayName));
     }
     if (options.format === 'pdf') {
-      return parsePDFWithPattern(content, PDF_PATTERN, parseNubankDate, this.displayName, PDF_FALLBACK);
+      return Promise.resolve(parsePDFWithPattern(content, PDF_PATTERN, parseNubankDate, this.displayName, PDF_FALLBACK));
     }
-    return [];
+    return Promise.resolve([]);
   },
 };
 

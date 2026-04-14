@@ -11,7 +11,7 @@
   "snapshot": {
     "subscriptions": [
       {
-        "id": "06ea3bfa-924b-43db-b460-87d052309461",
+        "id": "5fe731c5-c45b-46e7-85df-74db938f13f3",
         "name": "Adobe Creative Cloud",
         "originalNames": [
           "ADOBE CREATIVE"
@@ -32,13 +32,12 @@
           }
         ],
         "confidence": "high",
-        "confidenceScore": 0.9318000000000001,
+        "confidenceScore": 0.8818,
         "confidenceReasons": [
           "Padrao mensal consistente",
           "Valores muito consistentes",
           "Servico popular reconhecido",
-          "Consistencia temporal alta",
-          "Confianca muito alta"
+          "Consistencia temporal alta"
         ],
         "category": "software",
         "cancelInstructions": "https://account.adobe.com/plans",
@@ -46,7 +45,7 @@
         "priceRangeFlag": "normal"
       },
       {
-        "id": "9672c98a-6209-4cc9-ada4-3fca42f07cf5",
+        "id": "ff52eb52-e542-4d21-8375-bff93ddc9b36",
         "name": "Netflix",
         "originalNames": [
           "NETFLIX.COM"
@@ -67,13 +66,12 @@
           }
         ],
         "confidence": "high",
-        "confidenceScore": 0.9318000000000001,
+        "confidenceScore": 0.8818,
         "confidenceReasons": [
           "Padrao mensal consistente",
           "Valores muito consistentes",
           "Servico popular reconhecido",
-          "Consistencia temporal alta",
-          "Confianca muito alta"
+          "Consistencia temporal alta"
         ],
         "category": "streaming",
         "cancelInstructions": "https://www.netflix.com/cancelplan",
@@ -81,7 +79,7 @@
         "priceRangeFlag": "normal"
       },
       {
-        "id": "b3f1f6bc-324b-4882-8aea-718de69958ff",
+        "id": "09aaa002-d73c-4a7a-a0eb-288b949d9ec6",
         "name": "Duolingo Plus",
         "originalNames": [
           "PAG*Duolingo"
@@ -102,13 +100,12 @@
           }
         ],
         "confidence": "high",
-        "confidenceScore": 0.9318000000000001,
+        "confidenceScore": 0.8818,
         "confidenceReasons": [
           "Padrao mensal consistente",
           "Valores muito consistentes",
           "Servico popular reconhecido",
-          "Consistencia temporal alta",
-          "Confianca muito alta"
+          "Consistencia temporal alta"
         ],
         "category": "education",
         "cancelInstructions": "https://www.duolingo.com/settings/subscription",
@@ -116,7 +113,7 @@
         "priceRangeFlag": "normal"
       },
       {
-        "id": "b5193395-4e9f-4c92-850d-93ceb0f6c3e7",
+        "id": "2365b7f5-f267-4054-9463-2d0b8b04eb48",
         "name": "Spotify",
         "originalNames": [
           "SPOTIFY"
@@ -137,13 +134,12 @@
           }
         ],
         "confidence": "high",
-        "confidenceScore": 0.9318000000000001,
+        "confidenceScore": 0.8818,
         "confidenceReasons": [
           "Padrao mensal consistente",
           "Valores muito consistentes",
           "Servico popular reconhecido",
-          "Consistencia temporal alta",
-          "Confianca muito alta"
+          "Consistencia temporal alta"
         ],
         "category": "music",
         "cancelInstructions": "https://www.spotify.com/br/account/subscription/",
@@ -151,7 +147,7 @@
         "priceRangeFlag": "normal"
       },
       {
-        "id": "f593e494-9b84-4310-bbac-32d0ab368837",
+        "id": "a664598f-e52b-48cc-98a5-64ce88ee4a35",
         "name": "Amazon Prime",
         "originalNames": [
           "AMAZON PRIME"
@@ -172,13 +168,12 @@
           }
         ],
         "confidence": "high",
-        "confidenceScore": 0.9318000000000001,
+        "confidenceScore": 0.8818,
         "confidenceReasons": [
           "Padrao mensal consistente",
           "Valores muito consistentes",
           "Servico popular reconhecido",
-          "Consistencia temporal alta",
-          "Confianca muito alta"
+          "Consistencia temporal alta"
         ],
         "category": "streaming",
         "cancelInstructions": "https://www.amazon.com.br/hz/mycd/myx",
@@ -198,8 +193,8 @@
       "transactionsAnalyzed": 45
     },
     "metadata": {
-      "processedAt": "2026-02-14T12:15:06.654Z",
-      "processingTimeMs": 4,
+      "processedAt": "2026-04-14T01:58:33.227Z",
+      "processingTimeMs": 5,
       "filesProcessed": 1,
       "bankFormatsDetected": [
         "Bradesco"

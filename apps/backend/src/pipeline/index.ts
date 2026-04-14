@@ -1,7 +1,7 @@
 /**
  * Barrel export para o pipeline
  */
-export { runPipeline, createPipelineContext } from './pipeline-orchestrator.js';
+export { runPipeline, runPipelineFromTransactions, createPipelineContext, buildAnalysisResult } from './pipeline-orchestrator.js';
 export type {
   PipelineContext,
   PipelineEvent,

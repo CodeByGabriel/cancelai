@@ -33,6 +33,8 @@ export const KNOWN_SERVICES_DATA: Record<string, KnownService> = {
     ],
     billingDescriptors: [
       'PAG*NETFLIX', 'GOOGLE*NETFLIX', 'MERCPAGO*NETFLIX',
+      'NETFLIX.COM', 'NETFLIX COM', 'NETFLIX',
+      'CARTAO NETFLIX.COM', 'NETFLIX.COM LOS GATO', 'NETFLIX.COM AMSTERDA',
     ],
     category: 'streaming',
     cancelUrl: 'https://www.netflix.com/cancelplan',
@@ -70,6 +72,8 @@ export const KNOWN_SERVICES_DATA: Record<string, KnownService> = {
     ],
     billingDescriptors: [
       'PAG*DISNEYPLUS', 'GOOGLE*DISNEYPLUS', 'MERCPAGO*DISNEY',
+      'DISNEYPLUS.COM', 'DISNEYPLUS COM', 'DISNEY PLUS',
+      'CARTAO DISNEYPLUS.CO', 'DISNEYPLUS.COM SAO P',
     ],
     category: 'streaming',
     cancelUrl: 'https://www.disneyplus.com/account',
@@ -87,6 +91,8 @@ export const KNOWN_SERVICES_DATA: Record<string, KnownService> = {
     ],
     billingDescriptors: [
       'PAG*MAX', 'GOOGLE*MAX', 'MERCPAGO*HBOMAX', 'PAG*HBOMAX',
+      'HBO MAX', 'HBOMAX.COM', 'MAX STREAMING',
+      'CARTAO HBOMAX.COM', 'HBO MAX SAO PAULO BR',
     ],
     category: 'streaming',
     cancelUrl: 'https://www.max.com/account',
@@ -106,6 +112,8 @@ export const KNOWN_SERVICES_DATA: Record<string, KnownService> = {
     billingDescriptors: [
       'PAG*GLOBOPLAY', 'PG *GLOBOPLAY', 'PG *GLOBO',
       'MERCPAGO*GLOBOPLAY', 'GOOGLE*GLOBOPLAY',
+      'GLOBOPLAY', 'GLOBO PLAY', 'GLOBO COMUNICACAO',
+      'CARTAO GLOBOPLAY', 'GLOBOPLAY SAO PAULO',
     ],
     category: 'streaming',
     cancelUrl: 'https://globoplay.globo.com/minha-conta/',
@@ -452,6 +460,8 @@ export const KNOWN_SERVICES_DATA: Record<string, KnownService> = {
     ],
     billingDescriptors: [
       'PAG*SPOTIFY', 'GOOGLE*SPOTIFY', 'MERCPAGO*SPOTIFY',
+      'SPOTIFY.COM', 'SPOTIFY COM', 'SPOTIFY AB',
+      'CARTAO SPOTIFY.COM', 'SPOTIFY.COM STOCKHOL', 'SPOTIFY SAO PAULO BR',
     ],
     category: 'music',
     cancelUrl: 'https://www.spotify.com/br/account/subscription/',
@@ -468,6 +478,8 @@ export const KNOWN_SERVICES_DATA: Record<string, KnownService> = {
     ],
     billingDescriptors: [
       'PAG*DEEZER', 'GOOGLE*DEEZER', 'MERCPAGO*DEEZER',
+      'DEEZER.COM', 'DEEZER COM', 'DEEZER SA',
+      'CARTAO DEEZER.COM', 'DEEZER.COM PARIS FR',
     ],
     category: 'music',
     cancelUrl: 'https://www.deezer.com/account/subscription',
@@ -500,6 +512,8 @@ export const KNOWN_SERVICES_DATA: Record<string, KnownService> = {
     ],
     billingDescriptors: [
       'GOOGLE*YOUTUBE', 'GOOGLE*YOUTUBEPREMIUM',
+      'YOUTUBE PREMIUM', 'YOUTUBE.COM PREMIUM',
+      'CARTAO YOUTUBE PREM', 'YOUTUBE PREMIUM GOOG',
     ],
     category: 'music',
     cancelUrl: 'https://www.youtube.com/paid_memberships',
@@ -830,7 +844,11 @@ export const KNOWN_SERVICES_DATA: Record<string, KnownService> = {
       'microsoft 365', 'office 365', 'ms 365', 'microsoft*office',
       'microsoft corporation', 'office.com', 'microsoft*', 'ms office',
     ],
-    billingDescriptors: ['MICROSOFT*365', 'MICROSOFT*OFFICE'],
+    billingDescriptors: [
+      'MICROSOFT*365', 'MICROSOFT*OFFICE',
+      'MICROSOFT 365', 'OFFICE 365', 'MS 365',
+      'CARTAO MICROSOFT*365', 'MICROSOFT SAO PAULO',
+    ],
     category: 'software',
     cancelUrl: 'https://account.microsoft.com/services/',
     cancelMethod: 'web',
@@ -859,7 +877,8 @@ export const KNOWN_SERVICES_DATA: Record<string, KnownService> = {
     ],
     billingDescriptors: [
       'GOOGLE*CANVA', 'PG *CANVA', 'PAG*CANVA', 'MERCPAGO*CANVA',
-      'CANVA', 'CANVA PTY',
+      'CANVA', 'CANVA PTY', 'CANVA.COM', 'CANVA PRO',
+      'CARTAO CANVA PTY LTD', 'CANVA PTY LTD SYDNE',
     ],
     category: 'software',
     cancelUrl: 'https://www.canva.com/settings/billing',
@@ -2051,6 +2070,8 @@ export const KNOWN_SERVICES_DATA: Record<string, KnownService> = {
     ],
     billingDescriptors: [
       'PAG*SMARTFIT', 'PG *SMARTFIT', 'PG *SMART FIT', 'MERCPAGO*SMARTFIT',
+      'SMART FIT', 'SMARTFIT', 'SMARTFIT MENSALIDADE',
+      'CARTAO SMARTFIT', 'SMARTFIT SAO PAULO B',
     ],
     category: 'fitness',
     cancelMethod: 'phone',
@@ -2441,6 +2462,8 @@ export const KNOWN_SERVICES_DATA: Record<string, KnownService> = {
     ],
     billingDescriptors: [
       'PAG*IFOOD', 'PG *IFOOD', 'MERCPAGO*IFOOD', 'MOVILE*IFOOD',
+      'IFOOD', 'IFOOD CLUBE', 'IFOOD.COM.BR',
+      'CARTAO IFOOD', 'IFOOD SAO PAULO BR',
     ],
     category: 'food',
     cancelUrl: 'https://www.ifood.com.br/clube',
@@ -2582,7 +2605,11 @@ export const KNOWN_SERVICES_DATA: Record<string, KnownService> = {
   uberOne: {
     canonicalName: 'Uber One',
     aliases: ['uber one', 'uberone', 'uber one br', 'uber assinatura'],
-    billingDescriptors: ['UBER*ONE', 'UBER*UBERONE'],
+    billingDescriptors: [
+      'UBER*ONE', 'UBER*UBERONE',
+      'UBER ONE', 'UBER ASSINATURA',
+      'CARTAO UBER ONE', 'UBER ONE SAO PAULO',
+    ],
     category: 'transport',
     cancelMethod: 'app',
     cancelInstructions: 'No app Uber: Menu > Uber One > Gerenciar assinatura > Cancelar.',
@@ -2623,6 +2650,7 @@ export const KNOWN_SERVICES_DATA: Record<string, KnownService> = {
     ],
     billingDescriptors: [
       'SEMPARAR', 'SEM PARAR', 'PAG*SEMPARAR',
+      'CARTAO SEM PARAR', 'SEM PARAR SAO PAULO', 'SEMPARAR LTDA',
     ],
     category: 'transport',
     cancelUrl: 'https://www.semparar.com.br/',
@@ -3644,7 +3672,7 @@ export const KNOWN_SERVICES_DATA: Record<string, KnownService> = {
     canonicalName: 'Kwai',
     aliases: ['kwai', 'kwai+', 'kwai*'],
     billingDescriptors: ['GOOGLE*KWAI'],
-    category: 'other',
+    category: 'streaming',
     typicalPriceRange: { min: 0, max: 30 },
   },
 
@@ -3688,7 +3716,7 @@ export const KNOWN_SERVICES_DATA: Record<string, KnownService> = {
     canonicalName: 'TAG Livros',
     aliases: ['tag livros', 'tag experiencias', 'tag editora'],
     billingDescriptors: ['TAG EXPERIENCIAS', 'TAG LIVROS'],
-    category: 'other',
+    category: 'education',
     typicalPriceRange: { min: 60, max: 80 },
   },
 
@@ -3696,7 +3724,7 @@ export const KNOWN_SERVICES_DATA: Record<string, KnownService> = {
     canonicalName: 'Leiturinha',
     aliases: ['leiturinha', 'clube leiturinha'],
     billingDescriptors: ['LEITURINHA'],
-    category: 'other',
+    category: 'education',
     typicalPriceRange: { min: 40, max: 100 },
   },
 
@@ -3775,6 +3803,1638 @@ export const KNOWN_SERVICES_DATA: Record<string, KnownService> = {
     category: 'streaming',
     status: 'discontinued',
     typicalPriceRange: { min: 10, max: 20 },
+    currency: 'BRL',
+  },
+
+  // ══════════════════════════════════════════════════════════════
+  // FASE 4 — EXPANSÃO (150+ novos serviços)
+  // ══════════════════════════════════════════════════════════════
+
+  // ── SAÚDE / DENTAL ────────────────────────────────────────────
+
+  preventSenior: {
+    canonicalName: 'Prevent Senior',
+    aliases: ['prevent senior', 'preventsenior', 'prev senior'],
+    billingDescriptors: ['PREVENT SENIOR', 'PAG*PREVENT SENIOR'],
+    category: 'health',
+    cancelMethod: 'phone',
+    cancelInstructions: 'Ligue para a central de atendimento: 0800 770 5674. Solicite cancelamento do plano.',
+    typicalPriceRange: { min: 300, max: 1500 },
+    currency: 'BRL',
+  },
+
+  goldenCross: {
+    canonicalName: 'Golden Cross',
+    aliases: ['golden cross', 'goldencross'],
+    billingDescriptors: ['GOLDEN CROSS', 'PAG*GOLDEN CROSS'],
+    category: 'health',
+    cancelMethod: 'phone',
+    typicalPriceRange: { min: 250, max: 1200 },
+    currency: 'BRL',
+  },
+
+  cabergs: {
+    canonicalName: 'CABERGS Saúde',
+    aliases: ['cabergs', 'cabergs saude'],
+    billingDescriptors: ['CABERGS'],
+    category: 'health',
+    cancelMethod: 'phone',
+    typicalPriceRange: { min: 200, max: 800 },
+    currency: 'BRL',
+  },
+
+  planoDentalAmil: {
+    canonicalName: 'Amil Dental Empresas',
+    aliases: ['amil dental empresas', 'amil odonto empresas'],
+    billingDescriptors: ['AMIL DENTAL EMP', 'PAG*AMIL DENTAL'],
+    category: 'health',
+    cancelMethod: 'phone',
+    typicalPriceRange: { min: 30, max: 120 },
+    currency: 'BRL',
+  },
+
+  portoDental: {
+    canonicalName: 'Porto Dental',
+    aliases: ['porto dental', 'porto seguro dental', 'porto odonto'],
+    billingDescriptors: ['PORTO DENTAL', 'PORTO SEG DENTAL'],
+    category: 'health',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 30, max: 100 },
+    currency: 'BRL',
+  },
+
+  mediService: {
+    canonicalName: 'MediService',
+    aliases: ['mediservice', 'medi service'],
+    billingDescriptors: ['MEDISERVICE'],
+    category: 'health',
+    cancelMethod: 'phone',
+    typicalPriceRange: { min: 200, max: 1000 },
+    currency: 'BRL',
+  },
+
+  notredameDental: {
+    canonicalName: 'NotreDame Intermédica Dental',
+    aliases: ['notredame dental', 'intermedica dental', 'gndi dental'],
+    billingDescriptors: ['GNDI DENTAL', 'NOTREDAME DENTAL'],
+    category: 'health',
+    cancelMethod: 'phone',
+    typicalPriceRange: { min: 25, max: 90 },
+    currency: 'BRL',
+  },
+
+  drConsulta: {
+    canonicalName: 'dr.consulta',
+    aliases: ['dr consulta', 'drconsulta', 'dr.consulta'],
+    billingDescriptors: ['DR CONSULTA', 'PAG*DRCONSULTA'],
+    category: 'health',
+    cancelUrl: 'https://www.drconsulta.com/',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 30, max: 150 },
+    currency: 'BRL',
+  },
+
+  doctoralia: {
+    canonicalName: 'Doctoralia',
+    aliases: ['doctoralia', 'doctoralia br'],
+    billingDescriptors: ['DOCTORALIA', 'PAG*DOCTORALIA'],
+    category: 'health',
+    cancelUrl: 'https://www.doctoralia.com.br/',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 50, max: 300 },
+    currency: 'BRL',
+  },
+
+  conexaSaude: {
+    canonicalName: 'Conexa Saúde',
+    aliases: ['conexa saude', 'conexa', 'conexasaude'],
+    billingDescriptors: ['CONEXA SAUDE', 'PAG*CONEXA'],
+    category: 'health',
+    cancelUrl: 'https://www.conexasaude.com.br/',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 30, max: 100 },
+    currency: 'BRL',
+  },
+
+  klubnSaude: {
+    canonicalName: 'Klubn Saúde',
+    aliases: ['klubn', 'klubn saude'],
+    billingDescriptors: ['KLUBN', 'PAG*KLUBN'],
+    category: 'health',
+    cancelMethod: 'app',
+    typicalPriceRange: { min: 20, max: 60 },
+    currency: 'BRL',
+  },
+
+  sulamericaDental: {
+    canonicalName: 'SulAmérica Dental Plus',
+    aliases: ['sulamerica dental plus', 'sulamerica odonto plus'],
+    billingDescriptors: ['SULAMERICA DENTAL P', 'PAG*SULAMERICA DENT'],
+    category: 'health',
+    cancelMethod: 'phone',
+    typicalPriceRange: { min: 40, max: 120 },
+    currency: 'BRL',
+  },
+
+  interDental: {
+    canonicalName: 'Inter Dental',
+    aliases: ['inter dental', 'banco inter dental'],
+    billingDescriptors: ['INTER DENTAL'],
+    category: 'health',
+    cancelMethod: 'app',
+    typicalPriceRange: { min: 15, max: 50 },
+    currency: 'BRL',
+  },
+
+  // ── SEGUROS ───────────────────────────────────────────────────
+
+  portoPet: {
+    canonicalName: 'Porto Seguro Pet Premium',
+    aliases: ['porto pet premium', 'porto seguro pet premium'],
+    billingDescriptors: ['PORTO PET PREM'],
+    category: 'insurance',
+    cancelMethod: 'phone',
+    typicalPriceRange: { min: 60, max: 200 },
+    currency: 'BRL',
+  },
+
+  prudential: {
+    canonicalName: 'Prudential',
+    aliases: ['prudential', 'prudential do brasil'],
+    billingDescriptors: ['PRUDENTIAL', 'PRUDENTIAL BR'],
+    category: 'insurance',
+    cancelMethod: 'phone',
+    typicalPriceRange: { min: 50, max: 500 },
+    currency: 'BRL',
+  },
+
+  metlife: {
+    canonicalName: 'MetLife',
+    aliases: ['metlife', 'metlife br', 'metlife brasil'],
+    billingDescriptors: ['METLIFE', 'METLIFE BRASIL'],
+    category: 'insurance',
+    cancelMethod: 'phone',
+    typicalPriceRange: { min: 30, max: 400 },
+    currency: 'BRL',
+  },
+
+  tokioMarine: {
+    canonicalName: 'Tokio Marine',
+    aliases: ['tokio marine', 'tokiomarine'],
+    billingDescriptors: ['TOKIO MARINE'],
+    category: 'insurance',
+    cancelMethod: 'phone',
+    typicalPriceRange: { min: 80, max: 600 },
+    currency: 'BRL',
+  },
+
+  hdiSeguros: {
+    canonicalName: 'HDI Seguros',
+    aliases: ['hdi seguros', 'hdi', 'hdi seg'],
+    billingDescriptors: ['HDI SEGUROS', 'HDI SEG'],
+    category: 'insurance',
+    cancelMethod: 'phone',
+    typicalPriceRange: { min: 80, max: 500 },
+    currency: 'BRL',
+  },
+
+  sompoSeguros: {
+    canonicalName: 'Sompo Seguros',
+    aliases: ['sompo seguros', 'sompo', 'maritsuru'],
+    billingDescriptors: ['SOMPO SEGUROS', 'SOMPO SEG'],
+    category: 'insurance',
+    cancelMethod: 'phone',
+    typicalPriceRange: { min: 50, max: 400 },
+    currency: 'BRL',
+  },
+
+  travelAce: {
+    canonicalName: 'Travel Ace',
+    aliases: ['travel ace', 'travelace', 'travel ace assist'],
+    billingDescriptors: ['TRAVEL ACE', 'TRAVELACE'],
+    category: 'insurance',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 15, max: 80 },
+    currency: 'BRL',
+  },
+
+  assistCard: {
+    canonicalName: 'Assist Card',
+    aliases: ['assist card', 'assistcard'],
+    billingDescriptors: ['ASSIST CARD', 'ASSISTCARD'],
+    category: 'insurance',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 15, max: 100 },
+    currency: 'BRL',
+  },
+
+  zurichSeguros: {
+    canonicalName: 'Zurich Seguros',
+    aliases: ['zurich seguros', 'zurich', 'zurich seg'],
+    billingDescriptors: ['ZURICH SEGUROS', 'ZURICH SEG'],
+    category: 'insurance',
+    cancelMethod: 'phone',
+    typicalPriceRange: { min: 60, max: 400 },
+    currency: 'BRL',
+  },
+
+  bradescoSeguros: {
+    canonicalName: 'Bradesco Seguros',
+    aliases: ['bradesco seguros', 'bradesco seg', 'bradesco auto'],
+    billingDescriptors: ['BRADESCO SEG', 'BRADESCO SEGUROS'],
+    category: 'insurance',
+    cancelMethod: 'phone',
+    typicalPriceRange: { min: 50, max: 500 },
+    currency: 'BRL',
+  },
+
+  itauSeguros: {
+    canonicalName: 'Itaú Seguros',
+    aliases: ['itau seguros', 'itau seg'],
+    billingDescriptors: ['ITAU SEG', 'ITAU SEGUROS'],
+    category: 'insurance',
+    cancelMethod: 'phone',
+    typicalPriceRange: { min: 40, max: 400 },
+    currency: 'BRL',
+  },
+
+  // ── EDUCAÇÃO (concursos, idiomas) ─────────────────────────────
+
+  alfacon: {
+    canonicalName: 'AlfaCon',
+    aliases: ['alfacon', 'alfa concursos', 'alfacon concursos'],
+    billingDescriptors: ['ALFACON', 'PAG*ALFACON', 'HTM*ALFACON'],
+    category: 'education',
+    cancelUrl: 'https://www.alfaconcursos.com.br/',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 30, max: 200 },
+    currency: 'BRL',
+  },
+
+  cers: {
+    canonicalName: 'CERS',
+    aliases: ['cers', 'cers online', 'cers cursos'],
+    billingDescriptors: ['CERS', 'PAG*CERS', 'HTM*CERS'],
+    category: 'education',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 40, max: 250 },
+    currency: 'BRL',
+  },
+
+  mapasConcursos: {
+    canonicalName: 'Mapas Mentais Concursos',
+    aliases: ['mapas concursos', 'mapas mentais'],
+    billingDescriptors: ['MAPAS CONCURSOS', 'HTM*MAPAS'],
+    category: 'education',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 20, max: 100 },
+    currency: 'BRL',
+  },
+
+  direcaoConcursos: {
+    canonicalName: 'Direção Concursos',
+    aliases: ['direcao concursos', 'direcao', 'direcaoconcursos'],
+    billingDescriptors: ['DIRECAO CONCURSOS', 'HTM*DIRECAO', 'PAG*DIRECAO'],
+    category: 'education',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 30, max: 200 },
+    currency: 'BRL',
+  },
+
+  exponencialConcursos: {
+    canonicalName: 'Exponencial Concursos',
+    aliases: ['exponencial concursos', 'exponencial'],
+    billingDescriptors: ['EXPONENCIAL', 'HTM*EXPONENCIAL'],
+    category: 'education',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 25, max: 150 },
+    currency: 'BRL',
+  },
+
+  italki: {
+    canonicalName: 'italki',
+    aliases: ['italki', 'italki.com'],
+    billingDescriptors: ['ITALKI', 'PAG*ITALKI'],
+    category: 'education',
+    cancelUrl: 'https://www.italki.com/',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 30, max: 200 },
+    currency: 'BRL',
+  },
+
+  kumon: {
+    canonicalName: 'Kumon',
+    aliases: ['kumon', 'kumon brasil'],
+    billingDescriptors: ['KUMON', 'PAG*KUMON'],
+    category: 'education',
+    cancelMethod: 'phone',
+    typicalPriceRange: { min: 200, max: 400 },
+    currency: 'BRL',
+  },
+
+  ccaa: {
+    canonicalName: 'CCAA',
+    aliases: ['ccaa', 'ccaa idiomas'],
+    billingDescriptors: ['CCAA', 'PAG*CCAA'],
+    category: 'education',
+    cancelMethod: 'phone',
+    typicalPriceRange: { min: 200, max: 500 },
+    currency: 'BRL',
+  },
+
+  fisk: {
+    canonicalName: 'Fisk',
+    aliases: ['fisk', 'fisk centro de ensino', 'fisk idiomas'],
+    billingDescriptors: ['FISK', 'PAG*FISK'],
+    category: 'education',
+    cancelMethod: 'phone',
+    typicalPriceRange: { min: 150, max: 400 },
+    currency: 'BRL',
+  },
+
+  yduqs: {
+    canonicalName: 'Yduqs (Estácio)',
+    aliases: ['yduqs', 'estacio', 'estacio de sa', 'universidade estacio'],
+    billingDescriptors: ['ESTACIO', 'YDUQS', 'PAG*ESTACIO'],
+    category: 'education',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 200, max: 1500 },
+    currency: 'BRL',
+  },
+
+  anhanguera: {
+    canonicalName: 'Anhanguera',
+    aliases: ['anhanguera', 'faculdade anhanguera'],
+    billingDescriptors: ['ANHANGUERA', 'PAG*ANHANGUERA'],
+    category: 'education',
+    cancelMethod: 'phone',
+    typicalPriceRange: { min: 200, max: 1200 },
+    currency: 'BRL',
+  },
+
+  unopar: {
+    canonicalName: 'Unopar',
+    aliases: ['unopar', 'universidade unopar'],
+    billingDescriptors: ['UNOPAR', 'PAG*UNOPAR'],
+    category: 'education',
+    cancelMethod: 'phone',
+    typicalPriceRange: { min: 150, max: 800 },
+    currency: 'BRL',
+  },
+
+  kultivi: {
+    canonicalName: 'Kultivi',
+    aliases: ['kultivi', 'kultivi pro'],
+    billingDescriptors: ['KULTIVI', 'PAG*KULTIVI'],
+    category: 'education',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 10, max: 50 },
+    currency: 'BRL',
+  },
+
+  hotmartEdu: {
+    canonicalName: 'Hotmart Sparkle',
+    aliases: ['hotmart sparkle', 'sparkle'],
+    billingDescriptors: ['HTM*SPARKLE'],
+    category: 'education',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 20, max: 100 },
+    currency: 'BRL',
+  },
+
+  cnaOnline: {
+    canonicalName: 'CNA Online',
+    aliases: ['cna online', 'cna go online'],
+    billingDescriptors: ['CNA ONLINE', 'PAG*CNA ONLINE'],
+    category: 'education',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 60, max: 200 },
+    currency: 'BRL',
+  },
+
+  ebacOnline: {
+    canonicalName: 'EBAC Online',
+    aliases: ['ebac', 'ebac online', 'escola britanica de artes'],
+    billingDescriptors: ['EBAC', 'PAG*EBAC', 'STRIPE*EBAC'],
+    category: 'education',
+    cancelUrl: 'https://ebaconline.com.br/',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 100, max: 400 },
+    currency: 'BRL',
+  },
+
+  // ── SOFTWARE / DEVTOOLS ───────────────────────────────────────
+
+  githubCopilot: {
+    canonicalName: 'GitHub Copilot',
+    aliases: ['github copilot', 'gh copilot', 'copilot'],
+    billingDescriptors: ['GITHUB COPILOT', 'GITHUB INC COPILOT'],
+    category: 'software',
+    cancelUrl: 'https://github.com/settings/copilot',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 10, max: 40 },
+    currency: 'USD',
+    iofApplicable: true,
+  },
+
+  vercelPro: {
+    canonicalName: 'Vercel Pro',
+    aliases: ['vercel pro', 'vercel'],
+    billingDescriptors: ['VERCEL INC', 'STRIPE*VERCEL'],
+    category: 'software',
+    cancelUrl: 'https://vercel.com/account',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 20, max: 50 },
+    currency: 'USD',
+    iofApplicable: true,
+  },
+
+  renderPro: {
+    canonicalName: 'Render',
+    aliases: ['render', 'render.com'],
+    billingDescriptors: ['RENDER INC', 'STRIPE*RENDER'],
+    category: 'software',
+    cancelUrl: 'https://render.com/',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 7, max: 100 },
+    currency: 'USD',
+    iofApplicable: true,
+  },
+
+  linode: {
+    canonicalName: 'Linode (Akamai)',
+    aliases: ['linode', 'linode akamai', 'akamai cloud'],
+    billingDescriptors: ['LINODE', 'AKAMAI CLOUD'],
+    category: 'software',
+    cancelUrl: 'https://cloud.linode.com/',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 5, max: 200 },
+    currency: 'USD',
+    iofApplicable: true,
+  },
+
+  vultr: {
+    canonicalName: 'Vultr',
+    aliases: ['vultr', 'vultr.com', 'vultr holdings'],
+    billingDescriptors: ['VULTR', 'VULTR HOLDINGS'],
+    category: 'software',
+    cancelUrl: 'https://my.vultr.com/',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 5, max: 200 },
+    currency: 'USD',
+    iofApplicable: true,
+  },
+
+  postman: {
+    canonicalName: 'Postman',
+    aliases: ['postman', 'postman inc'],
+    billingDescriptors: ['POSTMAN INC', 'STRIPE*POSTMAN'],
+    category: 'software',
+    cancelUrl: 'https://www.postman.com/',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 14, max: 50 },
+    currency: 'USD',
+    iofApplicable: true,
+  },
+
+  pipedrive: {
+    canonicalName: 'Pipedrive',
+    aliases: ['pipedrive', 'pipedrive crm'],
+    billingDescriptors: ['PIPEDRIVE', 'STRIPE*PIPEDRIVE'],
+    category: 'software',
+    cancelUrl: 'https://www.pipedrive.com/',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 50, max: 400 },
+    currency: 'BRL',
+  },
+
+  hubspotBr: {
+    canonicalName: 'HubSpot Starter',
+    aliases: ['hubspot starter', 'hubspot br'],
+    billingDescriptors: ['HUBSPOT STARTER'],
+    category: 'software',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 50, max: 400 },
+    currency: 'USD',
+    iofApplicable: true,
+  },
+
+  mondayCom: {
+    canonicalName: 'Monday.com',
+    aliases: ['monday', 'monday.com'],
+    billingDescriptors: ['MONDAY.COM', 'STRIPE*MONDAY'],
+    category: 'software',
+    cancelUrl: 'https://monday.com/',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 30, max: 200 },
+    currency: 'USD',
+    iofApplicable: true,
+  },
+
+  miroPro: {
+    canonicalName: 'Miro Business',
+    aliases: ['miro business', 'miro board'],
+    billingDescriptors: ['MIRO BUSINESS'],
+    category: 'software',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 16, max: 100 },
+    currency: 'USD',
+    iofApplicable: true,
+  },
+
+  airtable: {
+    canonicalName: 'Airtable',
+    aliases: ['airtable', 'airtable.com'],
+    billingDescriptors: ['AIRTABLE', 'STRIPE*AIRTABLE'],
+    category: 'software',
+    cancelUrl: 'https://airtable.com/',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 20, max: 100 },
+    currency: 'USD',
+    iofApplicable: true,
+  },
+
+  zapier: {
+    canonicalName: 'Zapier',
+    aliases: ['zapier', 'zapier.com'],
+    billingDescriptors: ['ZAPIER', 'STRIPE*ZAPIER'],
+    category: 'software',
+    cancelUrl: 'https://zapier.com/',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 20, max: 200 },
+    currency: 'USD',
+    iofApplicable: true,
+  },
+
+  makeIntegr: {
+    canonicalName: 'Make (Integromat)',
+    aliases: ['make', 'integromat', 'make.com'],
+    billingDescriptors: ['MAKE.COM', 'INTEGROMAT', 'STRIPE*MAKE'],
+    category: 'software',
+    cancelUrl: 'https://www.make.com/',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 9, max: 100 },
+    currency: 'USD',
+    iofApplicable: true,
+  },
+
+  webflow: {
+    canonicalName: 'Webflow',
+    aliases: ['webflow', 'webflow.com'],
+    billingDescriptors: ['WEBFLOW', 'STRIPE*WEBFLOW'],
+    category: 'software',
+    cancelUrl: 'https://webflow.com/',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 14, max: 100 },
+    currency: 'USD',
+    iofApplicable: true,
+  },
+
+  wix: {
+    canonicalName: 'Wix',
+    aliases: ['wix', 'wix.com', 'wix premium'],
+    billingDescriptors: ['WIX.COM', 'WIX PREMIUM'],
+    category: 'software',
+    cancelUrl: 'https://www.wix.com/',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 15, max: 100 },
+    currency: 'USD',
+    iofApplicable: true,
+  },
+
+  squarespace: {
+    canonicalName: 'Squarespace',
+    aliases: ['squarespace', 'squarespace.com'],
+    billingDescriptors: ['SQUARESPACE', 'STRIPE*SQUARESPACE'],
+    category: 'software',
+    cancelUrl: 'https://www.squarespace.com/',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 16, max: 65 },
+    currency: 'USD',
+    iofApplicable: true,
+  },
+
+  calendly: {
+    canonicalName: 'Calendly',
+    aliases: ['calendly', 'calendly.com'],
+    billingDescriptors: ['CALENDLY', 'STRIPE*CALENDLY'],
+    category: 'software',
+    cancelUrl: 'https://calendly.com/',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 10, max: 60 },
+    currency: 'USD',
+    iofApplicable: true,
+  },
+
+  loom2: {
+    canonicalName: 'Loom Business',
+    aliases: ['loom business', 'loom team'],
+    billingDescriptors: ['LOOM BUSINESS'],
+    category: 'software',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 15, max: 50 },
+    currency: 'USD',
+    iofApplicable: true,
+  },
+
+  onePassword2: {
+    canonicalName: '1Password Teams',
+    aliases: ['1password teams', '1password business'],
+    billingDescriptors: ['1PASSWORD TEAMS', '1PASSWORD BUSINESS'],
+    category: 'software',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 8, max: 20 },
+    currency: 'USD',
+    iofApplicable: true,
+  },
+
+  twilioSendgrid: {
+    canonicalName: 'Twilio SendGrid',
+    aliases: ['twilio', 'sendgrid', 'twilio sendgrid'],
+    billingDescriptors: ['TWILIO', 'SENDGRID'],
+    category: 'software',
+    cancelUrl: 'https://www.twilio.com/',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 15, max: 200 },
+    currency: 'USD',
+    iofApplicable: true,
+  },
+
+  mongodbAtlas: {
+    canonicalName: 'MongoDB Atlas',
+    aliases: ['mongodb atlas', 'mongodb', 'mongo db'],
+    billingDescriptors: ['MONGODB INC', 'MONGODB ATLAS'],
+    category: 'software',
+    cancelUrl: 'https://cloud.mongodb.com/',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 10, max: 200 },
+    currency: 'USD',
+    iofApplicable: true,
+  },
+
+  elasticCloud: {
+    canonicalName: 'Elastic Cloud',
+    aliases: ['elastic cloud', 'elasticsearch', 'elastic'],
+    billingDescriptors: ['ELASTIC CLOUD', 'ELASTICSEARCH'],
+    category: 'software',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 16, max: 300 },
+    currency: 'USD',
+    iofApplicable: true,
+  },
+
+  datadog: {
+    canonicalName: 'Datadog',
+    aliases: ['datadog', 'datadog inc'],
+    billingDescriptors: ['DATADOG', 'DATADOG INC'],
+    category: 'software',
+    cancelUrl: 'https://www.datadoghq.com/',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 15, max: 500 },
+    currency: 'USD',
+    iofApplicable: true,
+  },
+
+  sentryIo: {
+    canonicalName: 'Sentry',
+    aliases: ['sentry', 'sentry.io'],
+    billingDescriptors: ['SENTRY', 'STRIPE*SENTRY'],
+    category: 'software',
+    cancelUrl: 'https://sentry.io/',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 26, max: 200 },
+    currency: 'USD',
+    iofApplicable: true,
+  },
+
+  nuvemshop: {
+    canonicalName: 'Nuvemshop',
+    aliases: ['nuvemshop', 'nuvem shop', 'tiendanube'],
+    billingDescriptors: ['NUVEMSHOP', 'PAG*NUVEMSHOP'],
+    category: 'software',
+    cancelUrl: 'https://www.nuvemshop.com.br/',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 50, max: 300 },
+    currency: 'BRL',
+  },
+
+  shopify: {
+    canonicalName: 'Shopify',
+    aliases: ['shopify', 'shopify.com'],
+    billingDescriptors: ['SHOPIFY', 'SHOPIFY INC'],
+    category: 'software',
+    cancelUrl: 'https://www.shopify.com/',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 30, max: 400 },
+    currency: 'USD',
+    iofApplicable: true,
+  },
+
+  // ── GAMING ────────────────────────────────────────────────────
+
+  boosteroid: {
+    canonicalName: 'Boosteroid',
+    aliases: ['boosteroid', 'boosteroid cloud'],
+    billingDescriptors: ['BOOSTEROID', 'PAG*BOOSTEROID'],
+    category: 'gaming',
+    cancelUrl: 'https://boosteroid.com/',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 30, max: 80 },
+    currency: 'BRL',
+  },
+
+  xboxLiveGold: {
+    canonicalName: 'Xbox Live Gold',
+    aliases: ['xbox live gold', 'xbox gold'],
+    billingDescriptors: ['XBOX LIVE GOLD', 'MICROSOFT XBOX GOLD'],
+    category: 'gaming',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 30, max: 60 },
+    currency: 'BRL',
+  },
+
+  appleArcade2: {
+    canonicalName: 'Apple Arcade Family',
+    aliases: ['apple arcade family', 'apple arcade familia'],
+    billingDescriptors: ['APPLE.COM/BILL ARCADE FAM'],
+    category: 'gaming',
+    cancelMethod: 'app',
+    typicalPriceRange: { min: 20, max: 35 },
+    currency: 'BRL',
+  },
+
+  gog: {
+    canonicalName: 'GOG Galaxy',
+    aliases: ['gog', 'gog.com', 'gog galaxy'],
+    billingDescriptors: ['GOG.COM', 'GOG SP'],
+    category: 'gaming',
+    cancelUrl: 'https://www.gog.com/',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 20, max: 60 },
+    currency: 'USD',
+    iofApplicable: true,
+  },
+
+  playstationNow: {
+    canonicalName: 'PlayStation Now (Premium)',
+    aliases: ['playstation now', 'ps now', 'ps premium'],
+    billingDescriptors: ['PLAYSTATION NOW', 'SONY PS NOW'],
+    category: 'gaming',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 40, max: 80 },
+    currency: 'BRL',
+  },
+
+  xcloud: {
+    canonicalName: 'Xbox Cloud Gaming',
+    aliases: ['xbox cloud', 'xcloud', 'xbox cloud gaming'],
+    billingDescriptors: ['XBOX CLOUD', 'MICROSOFT XCLOUD'],
+    category: 'gaming',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 30, max: 50 },
+    currency: 'BRL',
+  },
+
+  lunaAmazon: {
+    canonicalName: 'Amazon Luna',
+    aliases: ['amazon luna', 'luna', 'amzn luna'],
+    billingDescriptors: ['AMZN*LUNA', 'AMAZON LUNA'],
+    category: 'gaming',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 15, max: 40 },
+    currency: 'USD',
+    iofApplicable: true,
+  },
+
+  // ── FITNESS ───────────────────────────────────────────────────
+
+  smartFitBlack: {
+    canonicalName: 'Smart Fit Black',
+    aliases: ['smart fit black', 'smartfit black'],
+    billingDescriptors: ['SMART FIT BLACK', 'SMARTFIT BLACK'],
+    category: 'fitness',
+    cancelMethod: 'app',
+    typicalPriceRange: { min: 120, max: 200 },
+    currency: 'BRL',
+  },
+
+  bodytechPremium: {
+    canonicalName: 'Bodytech Premium',
+    aliases: ['bodytech premium', 'bodytech vip'],
+    billingDescriptors: ['BODYTECH PREM', 'BODYTECH VIP'],
+    category: 'fitness',
+    cancelMethod: 'phone',
+    typicalPriceRange: { min: 200, max: 500 },
+    currency: 'BRL',
+  },
+
+  myFitnessPal: {
+    canonicalName: 'MyFitnessPal',
+    aliases: ['myfitnesspal', 'my fitness pal', 'myfitnesspal premium'],
+    billingDescriptors: ['MYFITNESSPAL', 'GOOGLE*MYFITNESSPAL', 'APPLE.COM/BILL MYFIT'],
+    category: 'fitness',
+    cancelUrl: 'https://www.myfitnesspal.com/',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 40, max: 80 },
+    currency: 'BRL',
+  },
+
+  nike2: {
+    canonicalName: 'Nike Run Club Premium',
+    aliases: ['nike run club premium', 'nike run premium'],
+    billingDescriptors: ['NIKE RUN CLUB PREM'],
+    category: 'fitness',
+    cancelMethod: 'app',
+    typicalPriceRange: { min: 15, max: 40 },
+    currency: 'BRL',
+  },
+
+  freeletics: {
+    canonicalName: 'Freeletics',
+    aliases: ['freeletics', 'freeletics coach'],
+    billingDescriptors: ['FREELETICS', 'GOOGLE*FREELETICS'],
+    category: 'fitness',
+    cancelUrl: 'https://www.freeletics.com/',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 30, max: 100 },
+    currency: 'BRL',
+  },
+
+  fititPro: {
+    canonicalName: 'FitIt Pro',
+    aliases: ['fitit', 'fitit pro'],
+    billingDescriptors: ['FITIT', 'PAG*FITIT'],
+    category: 'fitness',
+    cancelMethod: 'app',
+    typicalPriceRange: { min: 10, max: 30 },
+    currency: 'BRL',
+  },
+
+  appleWatch: {
+    canonicalName: 'Apple Fitness+',
+    aliases: ['apple fitness', 'apple fitness+', 'apple fitness plus'],
+    billingDescriptors: ['APPLE.COM/BILL FITNESS'],
+    category: 'fitness',
+    cancelMethod: 'app',
+    typicalPriceRange: { min: 20, max: 40 },
+    currency: 'BRL',
+  },
+
+  fitnessPlus: {
+    canonicalName: 'Gympass Total',
+    aliases: ['gympass total', 'wellhub total'],
+    billingDescriptors: ['GYMPASS TOTAL', 'WELLHUB TOTAL'],
+    category: 'fitness',
+    cancelMethod: 'app',
+    typicalPriceRange: { min: 100, max: 300 },
+    currency: 'BRL',
+  },
+
+  // ── FOOD / DELIVERY ───────────────────────────────────────────
+
+  helloFresh: {
+    canonicalName: 'HelloFresh',
+    aliases: ['hellofresh', 'hello fresh'],
+    billingDescriptors: ['HELLOFRESH', 'PAG*HELLOFRESH'],
+    category: 'food',
+    cancelUrl: 'https://www.hellofresh.com.br/',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 100, max: 400 },
+    currency: 'BRL',
+  },
+
+  livUp: {
+    canonicalName: 'Liv Up',
+    aliases: ['liv up', 'livup'],
+    billingDescriptors: ['LIV UP', 'LIVUP', 'PAG*LIVUP'],
+    category: 'food',
+    cancelUrl: 'https://www.livup.com.br/',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 80, max: 300 },
+    currency: 'BRL',
+  },
+
+  clubeW: {
+    canonicalName: 'Clube Wine',
+    aliases: ['clube wine', 'wine.com.br clube'],
+    billingDescriptors: ['CLUBE WINE', 'WINE.COM.BR CLUB'],
+    category: 'food',
+    cancelUrl: 'https://www.wine.com.br/',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 60, max: 200 },
+    currency: 'BRL',
+  },
+
+  freshmart: {
+    canonicalName: 'FreshMart',
+    aliases: ['freshmart', 'fresh mart'],
+    billingDescriptors: ['FRESHMART', 'PAG*FRESHMART'],
+    category: 'food',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 50, max: 200 },
+    currency: 'BRL',
+  },
+
+  sushiNow: {
+    canonicalName: 'Sushi Now Club',
+    aliases: ['sushi now', 'sushinow', 'sushi now club'],
+    billingDescriptors: ['SUSHI NOW', 'PAG*SUSHINOW'],
+    category: 'food',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 60, max: 150 },
+    currency: 'BRL',
+  },
+
+  greenPeople: {
+    canonicalName: 'Green People',
+    aliases: ['green people', 'greenpeople'],
+    billingDescriptors: ['GREEN PEOPLE', 'PAG*GREENPEOPLE'],
+    category: 'food',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 100, max: 300 },
+    currency: 'BRL',
+  },
+
+  zeDeliveryPlus: {
+    canonicalName: 'Zé Delivery+',
+    aliases: ['ze delivery plus', 'ze delivery+', 'ze delivery premium'],
+    billingDescriptors: ['ZE DELIVERY PLUS', 'PAG*ZEDELIVERYP'],
+    category: 'food',
+    cancelMethod: 'app',
+    typicalPriceRange: { min: 10, max: 30 },
+    currency: 'BRL',
+  },
+
+  // ── MUSIC ─────────────────────────────────────────────────────
+
+  tidalHifi: {
+    canonicalName: 'TIDAL HiFi Plus',
+    aliases: ['tidal hifi', 'tidal hifi plus', 'tidal hi-fi'],
+    billingDescriptors: ['TIDAL HIFI', 'STRIPE*TIDAL'],
+    category: 'music',
+    cancelUrl: 'https://tidal.com/',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 20, max: 50 },
+    currency: 'BRL',
+  },
+
+  soundcloudGo: {
+    canonicalName: 'SoundCloud Go+',
+    aliases: ['soundcloud go', 'soundcloud go+', 'soundcloud plus'],
+    billingDescriptors: ['SOUNDCLOUD GO', 'STRIPE*SOUNDCLOUD'],
+    category: 'music',
+    cancelUrl: 'https://soundcloud.com/',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 15, max: 30 },
+    currency: 'BRL',
+  },
+
+  resso: {
+    canonicalName: 'Resso',
+    aliases: ['resso', 'resso music'],
+    billingDescriptors: ['RESSO', 'GOOGLE*RESSO'],
+    category: 'music',
+    cancelMethod: 'app',
+    typicalPriceRange: { min: 10, max: 25 },
+    currency: 'BRL',
+  },
+
+  anghami: {
+    canonicalName: 'Anghami',
+    aliases: ['anghami', 'anghami plus'],
+    billingDescriptors: ['ANGHAMI', 'GOOGLE*ANGHAMI'],
+    category: 'music',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 10, max: 25 },
+    currency: 'BRL',
+  },
+
+  mubert: {
+    canonicalName: 'Mubert',
+    aliases: ['mubert', 'mubert pro'],
+    billingDescriptors: ['MUBERT', 'STRIPE*MUBERT'],
+    category: 'music',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 10, max: 50 },
+    currency: 'USD',
+    iofApplicable: true,
+  },
+
+  // ── STREAMING ─────────────────────────────────────────────────
+
+  britbox: {
+    canonicalName: 'BritBox',
+    aliases: ['britbox', 'brit box'],
+    billingDescriptors: ['BRITBOX', 'GOOGLE*BRITBOX', 'APPLE.COM/BILL BRITBOX'],
+    category: 'streaming',
+    cancelUrl: 'https://www.britbox.com/',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 20, max: 40 },
+    currency: 'BRL',
+  },
+
+  acornTv: {
+    canonicalName: 'Acorn TV',
+    aliases: ['acorn tv', 'acorntv'],
+    billingDescriptors: ['ACORN TV', 'GOOGLE*ACORNTV'],
+    category: 'streaming',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 15, max: 30 },
+    currency: 'BRL',
+  },
+
+  vix: {
+    canonicalName: 'ViX Premium',
+    aliases: ['vix premium', 'vix+', 'vix plus'],
+    billingDescriptors: ['VIX PREMIUM', 'GOOGLE*VIX'],
+    category: 'streaming',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 15, max: 40 },
+    currency: 'BRL',
+  },
+
+  kocowa: {
+    canonicalName: 'Kocowa+',
+    aliases: ['kocowa', 'kocowa+', 'kocowa plus'],
+    billingDescriptors: ['KOCOWA', 'STRIPE*KOCOWA'],
+    category: 'streaming',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 15, max: 30 },
+    currency: 'USD',
+    iofApplicable: true,
+  },
+
+  filmicaza: {
+    canonicalName: 'FilmiCaza',
+    aliases: ['filmicaza', 'filmi caza'],
+    billingDescriptors: ['FILMICAZA', 'PAG*FILMICAZA'],
+    category: 'streaming',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 10, max: 25 },
+    currency: 'BRL',
+  },
+
+  // ── TELECOM ───────────────────────────────────────────────────
+
+  algarTelecom: {
+    canonicalName: 'Algar Telecom',
+    aliases: ['algar telecom', 'algar'],
+    billingDescriptors: ['ALGAR TELECOM', 'ALGAR TEL'],
+    category: 'telecom',
+    cancelMethod: 'phone',
+    typicalPriceRange: { min: 60, max: 300 },
+    currency: 'BRL',
+  },
+
+  desktopFibra: {
+    canonicalName: 'Desktop Fibra',
+    aliases: ['desktop fibra', 'desktop isp'],
+    billingDescriptors: ['DESKTOP FIBRA', 'DESKTOP TEL'],
+    category: 'telecom',
+    cancelMethod: 'phone',
+    typicalPriceRange: { min: 70, max: 200 },
+    currency: 'BRL',
+  },
+
+  americanet: {
+    canonicalName: 'Americanet',
+    aliases: ['americanet', 'america net'],
+    billingDescriptors: ['AMERICANET', 'AMERICA NET'],
+    category: 'telecom',
+    cancelMethod: 'phone',
+    typicalPriceRange: { min: 50, max: 200 },
+    currency: 'BRL',
+  },
+
+  copel: {
+    canonicalName: 'Copel Telecom',
+    aliases: ['copel telecom', 'copel fibra'],
+    billingDescriptors: ['COPEL TELECOM', 'COPEL FIBRA'],
+    category: 'telecom',
+    cancelMethod: 'phone',
+    typicalPriceRange: { min: 70, max: 200 },
+    currency: 'BRL',
+  },
+
+  unifique: {
+    canonicalName: 'Unifique',
+    aliases: ['unifique', 'unifique telecom'],
+    billingDescriptors: ['UNIFIQUE', 'UNIFIQUE TELECOM'],
+    category: 'telecom',
+    cancelMethod: 'phone',
+    typicalPriceRange: { min: 60, max: 200 },
+    currency: 'BRL',
+  },
+
+  // ── NEWS / MÍDIA ──────────────────────────────────────────────
+
+  cnnBrasil: {
+    canonicalName: 'CNN Brasil',
+    aliases: ['cnn brasil', 'cnn br'],
+    billingDescriptors: ['CNN BRASIL', 'PAG*CNNBRASIL'],
+    category: 'news',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 10, max: 30 },
+    currency: 'BRL',
+  },
+
+  bandNews: {
+    canonicalName: 'BandNews+',
+    aliases: ['bandnews', 'bandnews+', 'band news'],
+    billingDescriptors: ['BANDNEWS', 'PAG*BANDNEWS'],
+    category: 'news',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 10, max: 25 },
+    currency: 'BRL',
+  },
+
+  bloombergLinea: {
+    canonicalName: 'Bloomberg Línea',
+    aliases: ['bloomberg linea', 'bloomberg'],
+    billingDescriptors: ['BLOOMBERG LINEA', 'BLOOMBERG'],
+    category: 'news',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 30, max: 100 },
+    currency: 'USD',
+    iofApplicable: true,
+  },
+
+  theInformation: {
+    canonicalName: 'The Information',
+    aliases: ['the information', 'theinformation'],
+    billingDescriptors: ['THE INFORMATION', 'STRIPE*THE INFOR'],
+    category: 'news',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 30, max: 50 },
+    currency: 'USD',
+    iofApplicable: true,
+  },
+
+  noticias: {
+    canonicalName: 'Nexo Jornal',
+    aliases: ['nexo jornal', 'nexo', 'nexo jornalismo'],
+    billingDescriptors: ['NEXO JORNAL', 'PAG*NEXO'],
+    category: 'news',
+    cancelUrl: 'https://www.nexojornal.com.br/',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 15, max: 40 },
+    currency: 'BRL',
+  },
+
+  piauiRevista: {
+    canonicalName: 'Piauí',
+    aliases: ['piaui', 'revista piaui'],
+    billingDescriptors: ['PIAUI', 'PAG*PIAUI'],
+    category: 'news',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 15, max: 40 },
+    currency: 'BRL',
+  },
+
+  // ── SECURITY / VPN ────────────────────────────────────────────
+
+  windscribe: {
+    canonicalName: 'Windscribe',
+    aliases: ['windscribe', 'windscribe vpn'],
+    billingDescriptors: ['WINDSCRIBE', 'STRIPE*WINDSCRIBE'],
+    category: 'security',
+    cancelUrl: 'https://windscribe.com/',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 5, max: 15 },
+    currency: 'USD',
+    iofApplicable: true,
+  },
+
+  ivpn: {
+    canonicalName: 'IVPN',
+    aliases: ['ivpn', 'ivpn.net'],
+    billingDescriptors: ['IVPN', 'STRIPE*IVPN'],
+    category: 'security',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 6, max: 15 },
+    currency: 'USD',
+    iofApplicable: true,
+  },
+
+  mozillaVpn: {
+    canonicalName: 'Mozilla VPN',
+    aliases: ['mozilla vpn', 'firefox vpn'],
+    billingDescriptors: ['MOZILLA VPN', 'STRIPE*MOZILLA'],
+    category: 'security',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 5, max: 13 },
+    currency: 'USD',
+    iofApplicable: true,
+  },
+
+  // ── DATING ────────────────────────────────────────────────────
+
+  pof: {
+    canonicalName: 'Plenty of Fish',
+    aliases: ['plenty of fish', 'pof', 'pof.com'],
+    billingDescriptors: ['POF.COM', 'GOOGLE*PLENTY OF'],
+    category: 'dating',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 20, max: 60 },
+    currency: 'BRL',
+  },
+
+  par: {
+    canonicalName: 'Par Perfeito',
+    aliases: ['par perfeito', 'parperfeito'],
+    billingDescriptors: ['PAR PERFEITO', 'PARPERFEITO'],
+    category: 'dating',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 30, max: 80 },
+    currency: 'BRL',
+  },
+
+  innerCircle: {
+    canonicalName: 'Inner Circle',
+    aliases: ['inner circle', 'innercircle'],
+    billingDescriptors: ['INNER CIRCLE', 'STRIPE*INNERCIRCLE'],
+    category: 'dating',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 30, max: 100 },
+    currency: 'BRL',
+  },
+
+  // ── TRANSPORT ─────────────────────────────────────────────────
+
+  easyPark: {
+    canonicalName: 'EasyPark',
+    aliases: ['easypark', 'easy park'],
+    billingDescriptors: ['EASYPARK', 'PAG*EASYPARK'],
+    category: 'transport',
+    cancelMethod: 'app',
+    typicalPriceRange: { min: 10, max: 50 },
+    currency: 'BRL',
+  },
+
+  zonaAzulDigital: {
+    canonicalName: 'Zona Azul Digital',
+    aliases: ['zona azul digital', 'zona azul sp', 'zonaazuldigital'],
+    billingDescriptors: ['ZONA AZUL DIG', 'ZONA AZUL DIGITAL'],
+    category: 'transport',
+    cancelMethod: 'app',
+    typicalPriceRange: { min: 5, max: 30 },
+    currency: 'BRL',
+  },
+
+  gringo: {
+    canonicalName: 'Gringo App',
+    aliases: ['gringo', 'gringo app', 'gringo multas'],
+    billingDescriptors: ['GRINGO APP', 'PAG*GRINGO'],
+    category: 'transport',
+    cancelUrl: 'https://www.gringo.com.vc/',
+    cancelMethod: 'app',
+    typicalPriceRange: { min: 10, max: 30 },
+    currency: 'BRL',
+  },
+
+  carguruBr: {
+    canonicalName: 'Turbi',
+    aliases: ['turbi', 'turbi car'],
+    billingDescriptors: ['TURBI', 'PAG*TURBI'],
+    category: 'transport',
+    cancelMethod: 'app',
+    typicalPriceRange: { min: 50, max: 300 },
+    currency: 'BRL',
+  },
+
+  flixbus: {
+    canonicalName: 'FlixBus',
+    aliases: ['flixbus', 'flix bus'],
+    billingDescriptors: ['FLIXBUS', 'PAG*FLIXBUS'],
+    category: 'transport',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 20, max: 150 },
+    currency: 'BRL',
+  },
+
+  // ── FINANCE ───────────────────────────────────────────────────
+
+  warrenbr: {
+    canonicalName: 'Warren',
+    aliases: ['warren', 'warren investimentos', 'warren brasil'],
+    billingDescriptors: ['WARREN', 'WARREN INVEST'],
+    category: 'finance',
+    cancelUrl: 'https://warren.com.br/',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 10, max: 50 },
+    currency: 'BRL',
+  },
+
+  xpInvest: {
+    canonicalName: 'XP Investimentos',
+    aliases: ['xp investimentos', 'xp invest', 'xp inc'],
+    billingDescriptors: ['XP INVESTIMENTOS', 'XP INVEST'],
+    category: 'finance',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 10, max: 100 },
+    currency: 'BRL',
+  },
+
+  btgPactualDigital: {
+    canonicalName: 'BTG Pactual Digital',
+    aliases: ['btg pactual', 'btg digital', 'btg pactual digital'],
+    billingDescriptors: ['BTG PACTUAL', 'BTG DIGITAL'],
+    category: 'finance',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 10, max: 50 },
+    currency: 'BRL',
+  },
+
+  toro: {
+    canonicalName: 'Toro Investimentos',
+    aliases: ['toro investimentos', 'toro invest'],
+    billingDescriptors: ['TORO INVEST', 'TORO INVESTIMENTOS'],
+    category: 'finance',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 20, max: 80 },
+    currency: 'BRL',
+  },
+
+  gorila: {
+    canonicalName: 'Gorila Invest',
+    aliases: ['gorila', 'gorila invest'],
+    billingDescriptors: ['GORILA', 'GORILA INVEST'],
+    category: 'finance',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 30, max: 100 },
+    currency: 'BRL',
+  },
+
+  // ── OUTROS / NICHO ────────────────────────────────────────────
+
+  dogHero: {
+    canonicalName: 'DogHero',
+    aliases: ['doghero', 'dog hero'],
+    billingDescriptors: ['DOGHERO', 'PAG*DOGHERO'],
+    category: 'other',
+    cancelUrl: 'https://www.doghero.com.br/',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 30, max: 150 },
+    currency: 'BRL',
+  },
+
+  cobasi: {
+    canonicalName: 'Cobasi Assinatura',
+    aliases: ['cobasi', 'cobasi assinatura', 'cobasi club'],
+    billingDescriptors: ['COBASI', 'COBASI ASSINAT', 'PAG*COBASI'],
+    category: 'other',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 30, max: 100 },
+    currency: 'BRL',
+  },
+
+  petz: {
+    canonicalName: 'Petz Assinatura',
+    aliases: ['petz', 'petz assinatura', 'petz club'],
+    billingDescriptors: ['PETZ', 'PETZ ASSINAT', 'PAG*PETZ'],
+    category: 'other',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 30, max: 100 },
+    currency: 'BRL',
+  },
+
+  tagCuradoria: {
+    canonicalName: 'TAG Curadoria',
+    aliases: ['tag curadoria', 'tag ineditos'],
+    billingDescriptors: ['TAG CURADORIA', 'PAG*TAGCURADORIA'],
+    category: 'education',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 60, max: 120 },
+    currency: 'BRL',
+  },
+
+  nerd: {
+    canonicalName: 'Nerd ao Cubo',
+    aliases: ['nerd ao cubo', 'nerdbox', 'nerd ao cubo box'],
+    billingDescriptors: ['NERD AO CUBO', 'PAG*NERDAOCUBO'],
+    category: 'other',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 60, max: 150 },
+    currency: 'BRL',
+  },
+
+  clubeBarba: {
+    canonicalName: 'Clube da Barba',
+    aliases: ['clube da barba', 'clube barba'],
+    billingDescriptors: ['CLUBE DA BARBA', 'PAG*CLUBEBARBA'],
+    category: 'other',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 40, max: 100 },
+    currency: 'BRL',
+  },
+
+  aLoja: {
+    canonicalName: 'A Loja do Café',
+    aliases: ['a loja do cafe', 'loja do cafe', 'clube cafe'],
+    billingDescriptors: ['LOJA DO CAFE', 'PAG*LOJADOCAFE'],
+    category: 'food',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 50, max: 150 },
+    currency: 'BRL',
+  },
+
+  uatt: {
+    canonicalName: 'Uatt?',
+    aliases: ['uatt', 'uatt?', 'uatt box'],
+    billingDescriptors: ['UATT', 'PAG*UATT'],
+    category: 'other',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 60, max: 130 },
+    currency: 'BRL',
+  },
+
+  coworkingPass: {
+    canonicalName: 'Spaces (IWG)',
+    aliases: ['spaces', 'spaces coworking', 'spaces iwg'],
+    billingDescriptors: ['SPACES COWORK', 'IWG SPACES'],
+    category: 'other',
+    cancelMethod: 'phone',
+    typicalPriceRange: { min: 500, max: 2000 },
+    currency: 'BRL',
+  },
+
+  justworks: {
+    canonicalName: 'JustWorks',
+    aliases: ['justworks', 'just works'],
+    billingDescriptors: ['JUSTWORKS'],
+    category: 'software',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 50, max: 100 },
+    currency: 'USD',
+    iofApplicable: true,
+  },
+
+  gupy: {
+    canonicalName: 'Gupy',
+    aliases: ['gupy', 'gupy rh', 'gupy.io'],
+    billingDescriptors: ['GUPY', 'PAG*GUPY'],
+    category: 'software',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 200, max: 800 },
+    currency: 'BRL',
+  },
+
+  pipefy: {
+    canonicalName: 'Pipefy',
+    aliases: ['pipefy', 'pipefy.com'],
+    billingDescriptors: ['PIPEFY', 'STRIPE*PIPEFY'],
+    category: 'software',
+    cancelUrl: 'https://www.pipefy.com/',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 30, max: 200 },
+    currency: 'USD',
+    iofApplicable: true,
+  },
+
+  totvs: {
+    canonicalName: 'TOTVS',
+    aliases: ['totvs', 'totvs protheus', 'totvs rm'],
+    billingDescriptors: ['TOTVS', 'TOTVS SA'],
+    category: 'software',
+    cancelMethod: 'phone',
+    typicalPriceRange: { min: 200, max: 2000 },
+    currency: 'BRL',
+  },
+
+  sap: {
+    canonicalName: 'SAP Business One',
+    aliases: ['sap', 'sap business one', 'sap b1'],
+    billingDescriptors: ['SAP', 'SAP BRASIL'],
+    category: 'software',
+    cancelMethod: 'phone',
+    typicalPriceRange: { min: 500, max: 5000 },
+    currency: 'BRL',
+  },
+
+  zendesk: {
+    canonicalName: 'Zendesk',
+    aliases: ['zendesk', 'zendesk.com'],
+    billingDescriptors: ['ZENDESK', 'ZENDESK INC'],
+    category: 'software',
+    cancelUrl: 'https://www.zendesk.com/',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 20, max: 200 },
+    currency: 'USD',
+    iofApplicable: true,
+  },
+
+  intercom: {
+    canonicalName: 'Intercom',
+    aliases: ['intercom', 'intercom.io'],
+    billingDescriptors: ['INTERCOM', 'STRIPE*INTERCOM'],
+    category: 'software',
+    cancelUrl: 'https://www.intercom.com/',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 74, max: 400 },
+    currency: 'USD',
+    iofApplicable: true,
+  },
+
+  freshworks: {
+    canonicalName: 'Freshworks',
+    aliases: ['freshworks', 'freshdesk', 'freshsales'],
+    billingDescriptors: ['FRESHWORKS', 'FRESHDESK'],
+    category: 'software',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 15, max: 200 },
+    currency: 'USD',
+    iofApplicable: true,
+  },
+
+  amplitude: {
+    canonicalName: 'Amplitude',
+    aliases: ['amplitude', 'amplitude.com'],
+    billingDescriptors: ['AMPLITUDE', 'STRIPE*AMPLITUDE'],
+    category: 'software',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 50, max: 500 },
+    currency: 'USD',
+    iofApplicable: true,
+  },
+
+  mixpanel: {
+    canonicalName: 'Mixpanel',
+    aliases: ['mixpanel', 'mixpanel.com'],
+    billingDescriptors: ['MIXPANEL', 'STRIPE*MIXPANEL'],
+    category: 'software',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 25, max: 300 },
+    currency: 'USD',
+    iofApplicable: true,
+  },
+
+  contaAzulPro: {
+    canonicalName: 'Conta Azul Pro',
+    aliases: ['conta azul pro', 'contaazul pro'],
+    billingDescriptors: ['CONTA AZUL PRO', 'PAG*CONTAAZULPRO'],
+    category: 'software',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 100, max: 400 },
+    currency: 'BRL',
+  },
+
+  seguroViagem: {
+    canonicalName: 'Seguros Promo',
+    aliases: ['seguros promo', 'segurospromo'],
+    billingDescriptors: ['SEGUROS PROMO', 'PAG*SEGUROSPROMO'],
+    category: 'insurance',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 15, max: 80 },
+    currency: 'BRL',
+  },
+
+  mosaico: {
+    canonicalName: 'Zoom (Comparador)',
+    aliases: ['zoom comparador', 'zoom.com.br'],
+    billingDescriptors: ['ZOOM.COM.BR'],
+    category: 'software',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 10, max: 30 },
+    currency: 'BRL',
+  },
+
+  hostgator: {
+    canonicalName: 'HostGator',
+    aliases: ['hostgator', 'host gator'],
+    billingDescriptors: ['HOSTGATOR', 'PAG*HOSTGATOR'],
+    category: 'software',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 10, max: 80 },
+    currency: 'BRL',
+  },
+
+  locaweb: {
+    canonicalName: 'Locaweb',
+    aliases: ['locaweb', 'locaweb hosting'],
+    billingDescriptors: ['LOCAWEB', 'LOCAWEB SA'],
+    category: 'software',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 15, max: 100 },
+    currency: 'BRL',
+  },
+
+  umbler: {
+    canonicalName: 'Umbler',
+    aliases: ['umbler', 'umbler.com'],
+    billingDescriptors: ['UMBLER', 'PAG*UMBLER'],
+    category: 'software',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 10, max: 60 },
+    currency: 'BRL',
+  },
+
+  kinghost: {
+    canonicalName: 'KingHost',
+    aliases: ['kinghost', 'king host'],
+    billingDescriptors: ['KINGHOST', 'PAG*KINGHOST'],
+    category: 'software',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 15, max: 80 },
     currency: 'BRL',
   },
 } as const;

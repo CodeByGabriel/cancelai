@@ -28,8 +28,8 @@ export function ResultsSummary({ summary, metadata }: ResultsSummaryProps) {
       <div className="relative overflow-hidden bg-gradient-to-br from-red-600 via-red-500 to-orange-500 rounded-3xl p-6 sm:p-8 text-white shadow-xl shadow-red-500/25">
         {/* Background pattern */}
         <div className="absolute inset-0 opacity-10">
-          <div className="absolute -right-10 -top-10 w-40 h-40 rounded-full bg-white" />
-          <div className="absolute -left-5 -bottom-5 w-32 h-32 rounded-full bg-white" />
+          <div className="absolute -right-10 -top-10 w-40 h-40 rounded-full bg-white dark:bg-white" />
+          <div className="absolute -left-5 -bottom-5 w-32 h-32 rounded-full bg-white dark:bg-white" />
         </div>
 
         <div className="relative">

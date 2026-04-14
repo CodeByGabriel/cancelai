@@ -198,13 +198,13 @@ export class CSVParser extends BaseBankParser {
     return ext.endsWith('.csv') || ext.endsWith('.txt');
   }
 
-  async parse(content: string | Buffer, filename: string): Promise<ParseResult> {
+  parse(content: string | Buffer, _filename: string): Promise<ParseResult> {
     try {
       const contentStr = typeof content === 'string' ? content : content.toString('utf-8');
 
       // SEGURANÇA: Limita tamanho do conteúdo para prevenir DoS
       if (contentStr.length > 10 * 1024 * 1024) {
-        return this.createErrorResult(['Arquivo muito grande (máximo 10MB)']);
+        return Promise.resolve(this.createErrorResult(['Arquivo muito grande (máximo 10MB)']));
       }
 
       // Detecta o delimitador
@@ -221,7 +221,7 @@ export class CSVParser extends BaseBankParser {
       }) as Record<string, string>[];
 
       if (records.length === 0) {
-        return this.createErrorResult(['Arquivo CSV vazio ou sem dados válidos']);
+        return Promise.resolve(this.createErrorResult(['Arquivo CSV vazio ou sem dados válidos']));
       }
 
       // Detecta o banco baseado no conteúdo
@@ -232,10 +232,10 @@ export class CSVParser extends BaseBankParser {
       const columnIndexes = this.findColumnIndexes(headers, bankMapping);
 
       if (!columnIndexes.date || !columnIndexes.description || !columnIndexes.amount) {
-        return this.createErrorResult([
+        return Promise.resolve(this.createErrorResult([
           'Não foi possível identificar as colunas necessárias (data, descrição, valor)',
           `Colunas encontradas: ${headers.join(', ')}`,
-        ]);
+        ]));
       }
 
       // Processa as transações
@@ -258,7 +258,7 @@ export class CSVParser extends BaseBankParser {
       // NOTA: 0 transações NÃO é necessariamente um erro
       // O extrato pode ser válido mas conter apenas Pix ou transferências
       if (transactions.length === 0) {
-        return {
+        return Promise.resolve({
           success: true, // Parse foi bem-sucedido, apenas não encontrou transações reconhecíveis
           transactions: [],
           bankDetected: this.detectBankName(contentStr, records),
@@ -268,18 +268,18 @@ export class CSVParser extends BaseBankParser {
             'Nenhuma transação reconhecível encontrada no arquivo.',
             'Pagamentos via Pix e transferências avulsas podem não ser detectados.',
           ],
-        };
+        });
       }
 
       // Atualiza o nome do parser com o banco detectado
       const result = this.createSuccessResult(transactions, warnings);
-      return {
+      return Promise.resolve({
         ...result,
         bankDetected: this.detectBankName(contentStr, records),
-      };
+      });
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Erro desconhecido';
-      return this.createErrorResult([`Erro ao processar CSV: ${message}`]);
+      return Promise.resolve(this.createErrorResult([`Erro ao processar CSV: ${message}`]));
     }
   }
 
@@ -296,7 +296,7 @@ export class CSVParser extends BaseBankParser {
     for (const delimiter of delimiters) {
       // Escapa caracteres especiais de regex (especialmente | que significa OR)
       const escapedDelimiter = delimiter.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      const count = (firstLines.match(new RegExp(escapedDelimiter, 'g')) || []).length;
+      const count = (firstLines.match(new RegExp(escapedDelimiter, 'g')) ?? []).length;
       if (count > maxCount) {
         maxCount = count;
         bestDelimiter = delimiter;

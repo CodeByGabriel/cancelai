@@ -72,7 +72,7 @@ export function FileUpload({ onFilesSelected, status, error }: FileUploadProps) 
           isProcessing && 'opacity-50 cursor-not-allowed'
         )}
       >
-        <input {...getInputProps()} />
+        <input {...getInputProps()} aria-label="Selecionar arquivos de extrato bancário" />
 
         <div className="flex flex-col items-center text-center">
           {isProcessing ? (
@@ -83,7 +83,7 @@ export function FileUpload({ onFilesSelected, status, error }: FileUploadProps) 
             </div>
           )}
 
-          <h3 className="text-lg font-semibold text-foreground mb-2">
+          <p className="text-lg font-semibold text-foreground mb-2">
             {isDragActive
               ? 'Solte os arquivos aqui'
               : isProcessing
@@ -91,7 +91,7 @@ export function FileUpload({ onFilesSelected, status, error }: FileUploadProps) 
                 ? 'Enviando...'
                 : 'Analisando...'
               : 'Arraste seus extratos aqui'}
-          </h3>
+          </p>
 
           <p className="text-foreground-muted mb-4">
             {isProcessing
@@ -99,7 +99,7 @@ export function FileUpload({ onFilesSelected, status, error }: FileUploadProps) 
               : 'ou clique para selecionar arquivos'}
           </p>
 
-          <div className="flex flex-wrap gap-2 justify-center text-xs text-foreground-faint">
+          <div className="flex flex-wrap gap-2 justify-center text-xs text-foreground-muted">
             <span className="px-2 py-1 bg-elevated rounded">PDF</span>
             <span className="px-2 py-1 bg-elevated rounded">CSV</span>
             <span className="px-2 py-1 bg-elevated rounded">Até 10MB</span>

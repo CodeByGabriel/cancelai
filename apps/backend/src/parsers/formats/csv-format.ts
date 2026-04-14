@@ -22,7 +22,7 @@ export function detectDelimiter(content: string): string {
 
   for (const delimiter of delimiters) {
     const escapedDelimiter = delimiter.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const count = (firstLines.match(new RegExp(escapedDelimiter, 'g')) || []).length;
+    const count = (firstLines.match(new RegExp(escapedDelimiter, 'g')) ?? []).length;
     if (count > maxCount) {
       maxCount = count;
       bestDelimiter = delimiter;

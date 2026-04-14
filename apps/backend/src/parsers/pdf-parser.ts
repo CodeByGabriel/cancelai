@@ -325,6 +325,7 @@ export class PDFParser extends BaseBankParser {
         // Remove múltiplos espaços
         .replace(/\s+/g, ' ')
         // Remove caracteres de controle
+        // eslint-disable-next-line no-control-regex -- intentional: stripping control chars from raw PDF text
         .replace(/[\x00-\x1F\x7F]/g, '')
         // Remove códigos numéricos longos (códigos de autorização)
         .replace(/\b\d{8,}\b/g, '')

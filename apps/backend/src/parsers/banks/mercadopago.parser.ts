@@ -34,14 +34,14 @@ const mercadopagoParser: BankParserPlugin = {
     return DETECT.test(content);
   },
 
-  async parse(content: string, options: ParseOptions): Promise<readonly Transaction[]> {
+  parse(content: string, options: ParseOptions): Promise<readonly Transaction[]> {
     if (options.format === 'csv') {
-      return parseCSVWithMapping(content, CSV_COLUMNS, this.displayName);
+      return Promise.resolve(parseCSVWithMapping(content, CSV_COLUMNS, this.displayName));
     }
     if (options.format === 'pdf') {
-      return parsePDFWithPattern(content, PDF_PATTERN, parseStandardDate, this.displayName, PDF_FALLBACK);
+      return Promise.resolve(parsePDFWithPattern(content, PDF_PATTERN, parseStandardDate, this.displayName, PDF_FALLBACK));
     }
-    return [];
+    return Promise.resolve([]);
   },
 };
 

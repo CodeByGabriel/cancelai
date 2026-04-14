@@ -10,6 +10,7 @@
 
 import type { Transaction, DetectedInstallment } from '../../types/index.js';
 import type { PipelineContext, PipelineEvent, PipelineStage } from '../pipeline-events.js';
+import { DEBITO_AUTOMATICO_PATTERNS } from '../../config/index.js';
 
 // ═══════════════════════════════════════════════════════════════
 // PATTERNS — extraidos de subscription-detector.ts
@@ -65,7 +66,17 @@ export function isInstallment(description: string): boolean {
 }
 
 export function isTransferOrPix(description: string): boolean {
+  // Debito automatico NAO e transfer — e provavel assinatura
+  if (isDebitoAutomatico(description)) return false;
   return TRANSFER_PATTERNS.some((pattern) => pattern.test(description));
+}
+
+/**
+ * Detecta padroes de debito automatico que indicam alta probabilidade de assinatura.
+ * Exemplos: "DA NETFLIX", "DEB.AUT SPOTIFY", "DEBITO AUTOMATICO SMART FIT"
+ */
+export function isDebitoAutomatico(description: string): boolean {
+  return DEBITO_AUTOMATICO_PATTERNS.some((pattern) => pattern.test(description));
 }
 
 /**
@@ -108,6 +119,7 @@ function toInstallment(t: Transaction): DetectedInstallment {
 export class NormalizationStage implements PipelineStage {
   readonly name = 'normalization';
 
+  // eslint-disable-next-line @typescript-eslint/require-await -- async required for AsyncGenerator return type
   async *execute(context: PipelineContext): AsyncGenerator<PipelineEvent> {
     const startTime = Date.now();
 

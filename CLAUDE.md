@@ -64,6 +64,8 @@ new RegExp(delimiter.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g')
 DEEPSEEK_API_KEY=sk-xxx      # OPCIONAL — sem ela, IA desativa silenciosamente
 CORS_ORIGIN=http://localhost:3000
 NODE_ENV=development          # "production" ativa rate limiting
+AGGREGATOR_CLIENT_ID=xxx     # OPCIONAL — Pluggy Client ID (Open Finance)
+AGGREGATOR_CLIENT_SECRET=xxx # OPCIONAL — Pluggy Client Secret (Open Finance)
 ```
 
 ## Referencia

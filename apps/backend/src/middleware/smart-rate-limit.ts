@@ -55,7 +55,7 @@ const usageStore = new Map<string, ClientUsage>();
  * DESENVOLVIMENTO: Limites relaxados para não atrapalhar testes
  */
 const LIMITS_PRODUCTION = {
-  // Requisições por janela de tempo (1 minuto)
+  // Requisições por janela de tempo (1 minuto) — default para rotas sem config específica
   maxRequestsPerWindow: parseInt(process.env['RATE_LIMIT_MAX'] ?? '15', 10),
 
   // Tamanho máximo de upload acumulado por janela (50MB)
@@ -70,6 +70,34 @@ const LIMITS_PRODUCTION = {
   // Limiar para considerar "suspeito" (requests por segundo)
   suspiciousThreshold: 10,
 } as const;
+
+/**
+ * Limites granulares por grupo de rota (produção)
+ * Cada grupo tem seu próprio counter e janela
+ */
+const ROUTE_LIMITS: Record<string, number> = {
+  'POST:/api/analyze': 10,       // Upload pesado — 10 req/min
+  'GET:/api/analyze/stream': 20,  // SSE — 20 req/min
+  'GET:/api/health': 60,          // Monitoring — 60 req/min
+  'GET:/api/info': 60,            // Info — 60 req/min
+  'default': 30,                  // Demais rotas — 30 req/min
+};
+
+/**
+ * Determina o limite de rate para a rota atual
+ */
+function getRouteLimitKey(method: string, url: string): string {
+  if (method === 'POST' && url.startsWith('/api/analyze')) return 'POST:/api/analyze';
+  if (method === 'GET' && url.includes('/stream')) return 'GET:/api/analyze/stream';
+  if (method === 'GET' && url === '/api/health') return 'GET:/api/health';
+  if (method === 'GET' && url === '/api/info') return 'GET:/api/info';
+  return 'default';
+}
+
+function getRouteMaxRequests(method: string, url: string): number {
+  const key = getRouteLimitKey(method, url);
+  return ROUTE_LIMITS[key] ?? ROUTE_LIMITS['default']!;
+}
 
 const LIMITS_DEVELOPMENT = {
   // Em desenvolvimento: limites muito altos
@@ -145,8 +173,9 @@ function cleanupExpiredRecords(): void {
   }
 }
 
-// Limpa registros expirados a cada minuto
-setInterval(cleanupExpiredRecords, 60 * 1000);
+// Limpa registros expirados a cada minuto (unref para não bloquear graceful shutdown)
+const cleanupTimer = setInterval(cleanupExpiredRecords, 60 * 1000);
+cleanupTimer.unref();
 
 /**
  * Verifica se o cliente está dentro dos limites
@@ -156,7 +185,7 @@ setInterval(cleanupExpiredRecords, 60 * 1000);
 function checkRateLimit(
   clientKey: string,
   uploadSize: number = 0
-): { allowed: boolean; reason?: string; retryAfter?: number } {
+): { allowed: boolean; reason?: string; retryAfter?: number; currentCount?: number } {
   const limits = getLimits();
   const now = Date.now();
 
@@ -238,7 +267,7 @@ function checkRateLimit(
     };
   }
 
-  return { allowed: true };
+  return { allowed: true, currentCount: usage.requestCount };
 }
 
 /**
@@ -248,10 +277,10 @@ function checkRateLimit(
  * - Em DESENVOLVIMENTO: Rate limiting é DESATIVADO (bypass completo)
  * - Em PRODUÇÃO: Rate limiting é ATIVO com proteção completa
  */
-export async function smartRateLimitHook(
+export function smartRateLimitHook(
   request: FastifyRequest,
   reply: FastifyReply
-): Promise<void> {
+): void {
   // ==========================================================
   // BYPASS PARA DESENVOLVIMENTO
   // Em ambiente de desenvolvimento, NÃO aplicar rate limiting
@@ -270,20 +299,25 @@ export async function smartRateLimitHook(
   // Estima tamanho do upload pelo Content-Length
   const contentLength = parseInt(request.headers['content-length'] ?? '0', 10);
 
+  const routeMax = getRouteMaxRequests(request.method, request.url);
   const result = checkRateLimit(clientKey, contentLength);
+
+  // Adiciona headers de rate limit na resposta (mesmo quando permitido)
+  const remaining = Math.max(0, routeMax - (result.currentCount ?? 0));
+  void reply
+    .header('X-RateLimit-Limit', routeMax.toString())
+    .header('X-RateLimit-Remaining', remaining.toString());
 
   if (!result.allowed) {
     // Log para monitoramento (sem dados sensíveis)
-    // Mostra apenas o IP (sem hash do user-agent)
     console.warn(
       `[RateLimit] Cliente bloqueado: ${clientKey.split(':')[0]} - ${result.reason}`
     );
 
     // Resposta com status HTTP 429 (Too Many Requests)
-    reply
+    void reply
       .code(429)
       .header('Retry-After', result.retryAfter?.toString() ?? '60')
-      .header('X-RateLimit-Limit', LIMITS_PRODUCTION.maxRequestsPerWindow.toString())
       .header('X-RateLimit-Reset', result.retryAfter?.toString() ?? '60')
       .send({
         success: false,
@@ -308,19 +342,16 @@ export async function smartRateLimitHook(
  * é aplicado dentro do hook para manter a lógica centralizada
  */
 export function registerSmartRateLimit(app: FastifyInstance): void {
-  // Aplica o hook apenas para rotas de análise
+  // Aplica rate limiting granular a TODAS as rotas /api/*
   app.addHook('preHandler', async (request, reply) => {
-    // Aplica rate limit para POST /api/analyze e GET /api/analyze/:jobId/stream
-    if (
-      (request.method === 'POST' && request.url.startsWith('/api/analyze')) ||
-      (request.method === 'GET' && request.url.includes('/stream'))
-    ) {
-      try {
-        await smartRateLimitHook(request, reply);
-      } catch {
-        // Erro já foi tratado e resposta enviada
-        return;
-      }
+    // Só aplica em rotas /api (exclui rota raiz /)
+    if (!request.url.startsWith('/api')) return;
+
+    try {
+      smartRateLimitHook(request, reply);
+    } catch {
+      // Erro já foi tratado e resposta enviada
+      return;
     }
   });
 

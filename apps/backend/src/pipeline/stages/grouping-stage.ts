@@ -153,6 +153,7 @@ function groupTransactionsBySimilarity(transactions: Transaction[]): Transaction
 export class GroupingStage implements PipelineStage {
   readonly name = 'grouping';
 
+  // eslint-disable-next-line @typescript-eslint/require-await -- async required for AsyncGenerator return type
   async *execute(context: PipelineContext): AsyncGenerator<PipelineEvent> {
     const startTime = Date.now();
 

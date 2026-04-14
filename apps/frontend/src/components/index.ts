@@ -13,3 +13,4 @@ export { SubscriptionTags } from './SubscriptionTags';
 export { PrivacyBadge } from './PrivacyBadge';
 export { Providers } from './Providers';
 export { ThemeToggle } from './ThemeToggle';
+export { ConnectionStatus } from './ConnectionStatus';

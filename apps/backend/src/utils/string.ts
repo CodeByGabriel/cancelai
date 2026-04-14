@@ -32,6 +32,7 @@ const AUTH_CODE_REGEX = /\b(?=[A-Z0-9]*\d)[A-Z0-9]{6,}\b/g;
 const DATE_REGEX = /\d{2}\/\d{2}(?:\/\d{2,4})?/g;
 const TIME_REGEX = /\d{2}:\d{2}(?::\d{2})?/g;
 const INSTALLMENT_REGEX = /\b(?:PARC(?:ELA)?\.?\s*\d+\s*(?:\/|DE)\s*\d+|\d+\s*[Xx]\s|\d+\/\d+)\b/gi;
+const TRAILING_REF_REGEX = /\s*\d{6,}\s*$/;
 const SPECIAL_CHARS_REGEX = /[^\w\s]/g;
 const MULTI_SPACE_REGEX = /\s+/g;
 
@@ -78,6 +79,9 @@ export function normalizeDescription(description: string): string {
 
   // Remove codigos alfanumericos 6+ chars (auth codes, IDs)
   result = result.replace(AUTH_CODE_REGEX, '');
+
+  // Remove numeros de referencia no final (6+ digitos)
+  result = result.replace(TRAILING_REF_REGEX, '');
 
   // Remove datas embutidas
   result = result.replace(DATE_REGEX, '');

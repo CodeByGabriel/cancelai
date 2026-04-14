@@ -1,10 +1,11 @@
 /**
- * Serverless Entrypoint - Vercel
+ * Serverless Entrypoint - LEGADO (nao usado no Railway)
  *
- * Este arquivo permite que o Fastify rode como Serverless Function na Vercel.
- * Todas as rotas são encaminhadas para a instância do Fastify.
+ * Este arquivo era usado para rodar Fastify como Serverless Function.
+ * No Railway, o backend roda como processo Node.js persistente via server.ts.
+ * Mantido para referencia — nao e executado em producao.
  *
- * IMPORTANTE: Não altera nenhuma lógica do servidor original.
+ * IMPORTANTE: Nao altera nenhuma logica do servidor original.
  */
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';

@@ -11,24 +11,45 @@ import helmet from '@fastify/helmet';
 import multipart from '@fastify/multipart';
 
 import { config } from './config/index.js';
-import { registerAnalysisRoutes } from './controllers/index.js';
+import { registerAnalysisRoutes, getSSEManager, registerOpenFinanceRoutes } from './controllers/index.js';
 import { registerSmartRateLimit } from './middleware/index.js';
 
 /**
  * Cria e configura a instância do Fastify
- * Exportado para uso em serverless (Vercel)
+ * Exportado para uso em serverless (Railway)
  */
 export async function buildServer() {
+  const isProd = process.env['NODE_ENV'] === 'production';
+
   const app = Fastify({
+    // SEGURANÇA: Necessário para Railway/proxies reversos — request.ip retorna IP real
+    trustProxy: true,
     logger: {
-      level: process.env['NODE_ENV'] === 'production' ? 'info' : 'debug',
+      level: isProd ? 'info' : 'debug',
+      // Dev: pino-pretty colorido. Prod: JSON puro (parseável por log aggregators)
+      ...(!isProd && {
+        transport: {
+          target: 'pino-pretty',
+          options: { colorize: true },
+        },
+      }),
+      // SEGURANÇA: Redige headers sensíveis automaticamente
+      redact: {
+        paths: [
+          'req.headers.authorization',
+          'req.headers.cookie',
+          'req.headers["x-api-key"]',
+        ],
+        censor: '[REDACTED]',
+      },
       // SEGURANÇA: Não loga body das requisições (contém dados sensíveis)
       serializers: {
         req(request) {
           return {
             method: request.method,
             url: request.url,
-            // Não inclui body ou headers com dados sensíveis
+            hostname: request.hostname,
+            remoteAddress: request.ip,
           };
         },
       },
@@ -69,7 +90,7 @@ export async function buildServer() {
 
   await app.register(cors, {
     origin: corsOrigin,
-    methods: ['GET', 'POST', 'OPTIONS'],
+    methods: ['GET', 'POST', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Accept'],
     credentials: false, // Não precisamos de cookies/auth
     maxAge: 86400, // Cache do preflight por 24h
@@ -101,7 +122,10 @@ export async function buildServer() {
   // ============================================================
 
   // Registra rotas de análise
-  await registerAnalysisRoutes(app);
+  registerAnalysisRoutes(app);
+
+  // Registra rotas de Open Finance
+  registerOpenFinanceRoutes(app);
 
   // Rota raiz
   app.get('/', async (_request, reply) => {
@@ -117,18 +141,19 @@ export async function buildServer() {
   // ERROR HANDLERS
   // ============================================================
 
-  // Handler para erros não tratados
+  // Handler centralizado de erros — NUNCA expõe stack traces em produção
   app.setErrorHandler((error, request, reply) => {
-    // SEGURANÇA: Log interno sem expor ao cliente
+    // SEGURANÇA: Log completo internamente (com stack trace via Pino)
     app.log.error(error, `Error processing ${request.method} ${request.url}`);
 
-    // Erros conhecidos do Fastify
+    // Erros de validação do Fastify (JSON Schema)
     if (error.validation) {
       return reply.status(400).send({
         success: false,
         error: {
           code: 'VALIDATION_ERROR',
           message: 'Dados da requisição inválidos',
+          ...(!isProd && { details: error.validation }),
         },
       });
     }
@@ -146,12 +171,13 @@ export async function buildServer() {
       });
     }
 
-    // Erro genérico
-    return reply.status(500).send({
+    // Erro genérico — NUNCA stack traces em produção
+    return reply.status(error.statusCode ?? 500).send({
       success: false,
       error: {
         code: 'INTERNAL_ERROR',
-        message: 'Erro interno do servidor',
+        message: isProd ? 'Erro interno do servidor' : error.message,
+        ...(!isProd && { stack: error.stack }),
       },
     });
   });
@@ -177,42 +203,49 @@ async function start() {
   try {
     const app = await buildServer();
 
+    // Graceful shutdown — drena conexões antes de encerrar
+    const shutdown = async (signal: string) => {
+      app.log.info({ signal }, 'Shutdown signal received, draining connections...');
+
+      // Notifica todas as conexões SSE antes de fechar
+      const manager = getSSEManager();
+      if (manager) {
+        manager.shutdownAll();
+      }
+
+      const forceExit = setTimeout(() => {
+        app.log.error('Graceful shutdown timed out (10s), forcing exit');
+        process.exit(1);
+      }, 10_000);
+
+      try {
+        await app.close();
+        clearTimeout(forceExit);
+        app.log.info('Server shut down gracefully');
+        process.exit(0);
+      } catch (err: unknown) {
+        clearTimeout(forceExit);
+        app.log.error({ err }, 'Error during shutdown');
+        process.exit(1);
+      }
+    };
+
+    process.on('SIGINT', () => { void shutdown('SIGINT'); });
+    process.on('SIGTERM', () => { void shutdown('SIGTERM'); });
+
     await app.listen({
       port: config.server.port,
       host: config.server.host,
     });
 
-    console.log(`
-╔═══════════════════════════════════════════════════════════╗
-║                                                           ║
-║   🚀 Cancelaí Backend v${config.version}                         ║
-║                                                           ║
-║   Servidor rodando em:                                    ║
-║   http://${config.server.host}:${config.server.port}                              ║
-║                                                           ║
-║   Endpoints:                                              ║
-║   POST /api/analyze  - Analisa extratos                   ║
-║   GET  /api/health   - Health check                       ║
-║   GET  /api/info     - Informações da API                 ║
-║                                                           ║
-╚═══════════════════════════════════════════════════════════╝
-    `);
+    app.log.info(
+      `Cancelai Backend v${config.version} running on http://${config.server.host}:${config.server.port}`
+    );
   } catch (error) {
     console.error('Erro ao iniciar servidor:', error);
     process.exit(1);
   }
 }
 
-// Graceful shutdown
-process.on('SIGINT', () => {
-  console.log('\nEncerrando servidor...');
-  process.exit(0);
-});
-
-process.on('SIGTERM', () => {
-  console.log('\nEncerrando servidor...');
-  process.exit(0);
-});
-
 // Inicia o servidor
-start();
+void start();

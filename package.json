@@ -11,16 +11,19 @@
     "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
     "dev:backend": "npm run dev -w apps/backend",
     "dev:frontend": "npm run dev -w apps/frontend",
-    "build": "npm run build -w apps/backend && npm run build -w apps/frontend",
-    "build:backend": "npm run build -w apps/backend",
-    "build:frontend": "npm run build -w apps/frontend",
-    "test": "npm run test -w apps/backend",
-    "lint": "npm run lint -w apps/backend && npm run lint -w apps/frontend"
+    "build": "turbo build",
+    "build:backend": "turbo build --filter=@cancelai/backend",
+    "build:frontend": "turbo build --filter=@cancelai/frontend",
+    "test": "turbo test",
+    "lint": "turbo lint",
+    "typecheck": "turbo typecheck"
   },
   "devDependencies": {
     "concurrently": "^8.2.2",
+    "turbo": "^2.9.6",
     "typescript": "^5.3.3"
   },
+  "packageManager": "npm@10.9.2",
   "engines": {
     "node": ">=18.0.0"
   }

@@ -154,6 +154,7 @@ export interface PipelineStage {
 
 export interface ConfidenceScores {
   readonly stringSimilarityScore: number;
+  readonly tfidfBonus: number;
   readonly recurrenceScore: number;
   readonly valueStabilityScore: number;
   readonly knownServiceBonus: number;

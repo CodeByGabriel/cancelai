@@ -11,7 +11,7 @@
   "snapshot": {
     "subscriptions": [
       {
-        "id": "8d9d2dae-d534-4346-918b-eab6557cf2a0",
+        "id": "219a017a-4780-471d-b3e1-b47cf0cfa949",
         "name": "Wellhub (ex-Gympass)",
         "originalNames": [
           "GYMPASS WELLHUB"
@@ -37,7 +37,7 @@
           }
         ],
         "confidence": "high",
-        "confidenceScore": 0.9551999999999999,
+        "confidenceScore": 0.9052,
         "confidenceReasons": [
           "Padrao mensal consistente",
           "Valores muito consistentes",
@@ -51,7 +51,7 @@
         "priceRangeFlag": "normal"
       },
       {
-        "id": "17cdeb9f-ecfc-454e-b5aa-66e88a39ef28",
+        "id": "b7643463-6120-4f7a-85a4-2f0141bbe382",
         "name": "Netflix",
         "originalNames": [
           "NETFLIX.COM"
@@ -77,7 +77,7 @@
           }
         ],
         "confidence": "high",
-        "confidenceScore": 0.9551999999999999,
+        "confidenceScore": 0.9052,
         "confidenceReasons": [
           "Padrao mensal consistente",
           "Valores muito consistentes",
@@ -91,7 +91,7 @@
         "priceRangeFlag": "normal"
       },
       {
-        "id": "a5c7f6cb-17ac-4f42-aef1-0c05164f0355",
+        "id": "79edb498-1a49-4488-a085-9e64e21f20cc",
         "name": "Canva Pro",
         "originalNames": [
           "PAG*Canva"
@@ -117,7 +117,7 @@
           }
         ],
         "confidence": "high",
-        "confidenceScore": 0.9551999999999999,
+        "confidenceScore": 0.9052,
         "confidenceReasons": [
           "Padrao mensal consistente",
           "Valores muito consistentes",
@@ -131,7 +131,7 @@
         "priceRangeFlag": "promo"
       },
       {
-        "id": "89c7b9bd-efcc-4c4e-bc6b-260e6ca7f18b",
+        "id": "5b0143b9-bc06-464e-85b7-e6356e604aa7",
         "name": "Max (HBO)",
         "originalNames": [
           "HBO MAX"
@@ -157,7 +157,7 @@
           }
         ],
         "confidence": "high",
-        "confidenceScore": 0.9551999999999999,
+        "confidenceScore": 0.9052,
         "confidenceReasons": [
           "Padrao mensal consistente",
           "Valores muito consistentes",
@@ -171,7 +171,7 @@
         "priceRangeFlag": "normal"
       },
       {
-        "id": "cd79d08d-ff9d-46c4-83a4-899648d8eb56",
+        "id": "a430a051-449d-4375-85b0-8d49a17a2d08",
         "name": "YouTube Premium",
         "originalNames": [
           "GOOGLE*YouTubePr"
@@ -197,7 +197,7 @@
           }
         ],
         "confidence": "high",
-        "confidenceScore": 0.9551999999999999,
+        "confidenceScore": 0.9052,
         "confidenceReasons": [
           "Padrao mensal consistente",
           "Valores muito consistentes",
@@ -223,8 +223,8 @@
       "transactionsAnalyzed": 65
     },
     "metadata": {
-      "processedAt": "2026-02-14T12:15:06.661Z",
-      "processingTimeMs": 4,
+      "processedAt": "2026-04-14T01:58:33.234Z",
+      "processingTimeMs": 5,
       "filesProcessed": 1,
       "bankFormatsDetected": [
         "Banco Inter"

@@ -21,9 +21,6 @@ export function parseAmount(amountStr: string): number | null {
 
   let cleaned = amountStr.trim();
 
-  // Verifica se é negativo (entre parênteses ou com sinal)
-  const _isNegative = cleaned.includes('-') || (cleaned.startsWith('(') && cleaned.endsWith(')'));
-
   // Remove símbolos de moeda e parênteses
   cleaned = cleaned
     .replace(/R\$\s*/gi, '')

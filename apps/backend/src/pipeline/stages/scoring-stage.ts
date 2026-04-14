@@ -19,7 +19,7 @@ import type {
   Transaction,
 } from '../../types/index.js';
 import type { PipelineContext, PipelineEvent, PipelineStage, TransactionGroup, ConfidenceScores } from '../pipeline-events.js';
-import { SCORING_WEIGHTS_V2, CONFIDENCE_THRESHOLDS_V2, RECURRENCE_PERIODS } from '../../config/index.js';
+import { SCORING_WEIGHTS_V2, CONFIDENCE_THRESHOLDS_V2, RECURRENCE_PERIODS, UTILITIES_EXCLUSION, RETAIL_EXCLUSION } from '../../config/index.js';
 import { extractServiceName, capitalizeServiceName } from '../../utils/string.js';
 import { daysBetween } from '../../utils/date.js';
 import { calculateAverage, roundToTwo } from '../../utils/amount.js';
@@ -31,6 +31,8 @@ import {
   type KnownService,
 } from '../../services/known-services.js';
 import { validateGroupSanity, validateHighValueSubscription } from './sanity-stage.js';
+import { isDebitoAutomatico } from './normalization-stage.js';
+import { buildCorpus, tfidfCosineSimilarity, type TfidfCorpus } from '../../detector/tfidf-scorer.js';
 
 // ═══════════════════════════════════════════════════════════════
 // TIPOS INTERNOS
@@ -114,11 +116,32 @@ function calculateKnownServiceBonus(
   return Math.min(1, bonus);
 }
 
+function calculateTfidfBonus(
+  group: TransactionGroup,
+  knownService: KnownService | null,
+  stringSimilarityScore: number,
+  corpus: TfidfCorpus,
+): number {
+  // TF-IDF so atua na zona ambigua de Jaro-Winkler
+  if (stringSimilarityScore < 0.6 || stringSimilarityScore > 0.85) return 0;
+  if (!knownService) return 0;
+
+  // Compara nome normalizado do grupo contra aliases do servico
+  let bestScore = 0;
+  for (const alias of knownService.aliases) {
+    const score = tfidfCosineSimilarity(group.normalizedName, alias, corpus);
+    if (score > bestScore) bestScore = score;
+  }
+
+  return bestScore;
+}
+
 function calculateAllScores(
   group: TransactionGroup,
   dates: Date[],
   amounts: number[],
   knownService: KnownService | null,
+  corpus: TfidfCorpus,
 ): ConfidenceScores {
   const stringSimilarityScore = group.stringSimilarityScore;
   const recurrenceScore = calculateRecurrenceScore(dates, group);
@@ -126,9 +149,11 @@ function calculateAllScores(
   const knownServiceBonus = calculateKnownServiceBonus(knownService, calculateAverage(amounts));
   const habitualityScore = group.habitualityScore ?? 0;
   const streamMaturity = group.streamMaturity ?? 0;
+  const tfidfBonus = calculateTfidfBonus(group, knownService, stringSimilarityScore, corpus);
 
   const finalScore =
     stringSimilarityScore * SCORING_WEIGHTS_V2.stringSimilarity +
+    tfidfBonus * SCORING_WEIGHTS_V2.tfidfBonus +
     recurrenceScore * SCORING_WEIGHTS_V2.recurrence +
     valueStabilityScore * SCORING_WEIGHTS_V2.valueStability +
     knownServiceBonus * SCORING_WEIGHTS_V2.knownService +
@@ -137,6 +162,7 @@ function calculateAllScores(
 
   return {
     stringSimilarityScore,
+    tfidfBonus,
     recurrenceScore,
     valueStabilityScore,
     knownServiceBonus,
@@ -228,6 +254,7 @@ function generateId(): string {
 function analyzeGroupWithScore(
   group: TransactionGroup,
   allTransactions: readonly Transaction[],
+  corpus: TfidfCorpus,
 ): DetectedSubscription | null {
   const { transactions } = group;
 
@@ -235,10 +262,24 @@ function analyzeGroupWithScore(
   const amounts = transactions.map((t) => t.amount);
 
   const serviceName = extractServiceName(group.normalizedName);
+
+  // Utilities exclusion: concessionarias (agua, luz, gas) nao sao assinaturas cancelaveis
+  const normalizedForExclCheck = group.normalizedName.toLowerCase();
+  const isUtility = (UTILITIES_EXCLUSION as readonly string[]).some(
+    (u) => normalizedForExclCheck.includes(u),
+  );
+  if (isUtility) return null;
+
+  // Retail exclusion: varejo recorrente nao e assinatura
+  const isRetail = (RETAIL_EXCLUSION as readonly string[]).some(
+    (r) => normalizedForExclCheck.includes(r),
+  );
+  if (isRetail) return null;
+
   const knownService = findKnownService(serviceName);
   const platformHint = !knownService ? detectPlatformHint(serviceName) : null;
 
-  const scores = calculateAllScores(group, dates, amounts, knownService);
+  const scores = calculateAllScores(group, dates, amounts, knownService, corpus);
 
   const highValueCheck = validateHighValueSubscription(group, scores);
   if (!highValueCheck.valid) {
@@ -246,6 +287,24 @@ function analyzeGroupWithScore(
   }
 
   let finalScore = highValueCheck.adjustedScore ?? scores.finalScore;
+
+  // Debito automatico boost: "DA", "DEB.AUT" indicam alta probabilidade de assinatura
+  const hasDebitoAutomatico = Array.from(group.originalNames).some((n) => isDebitoAutomatico(n));
+  if (hasDebitoAutomatico) {
+    finalScore = Math.min(1, finalScore + 0.10 * SCORING_WEIGHTS_V2.knownService);
+  }
+
+  // Trial→paid: primeiro valor muito menor que os demais
+  let priceRangeFlag: string | undefined;
+  if (amounts.length >= 3) {
+    const sortedByDate = [...transactions].sort((a, b) => a.date.getTime() - b.date.getTime());
+    const firstAmount = sortedByDate[0]!.amount;
+    const restAmounts = sortedByDate.slice(1).map((t) => t.amount);
+    const restAvg = calculateAverage(restAmounts);
+    if (restAvg > 0 && firstAmount < restAvg * 0.5) {
+      priceRangeFlag = 'promo';
+    }
+  }
 
   // Platform hint fallback: small boost when billing platform detected
   // but specific service is unknown (e.g. APPLE.COM/BILL, GOOGLE*, STRIPE*)
@@ -288,6 +347,7 @@ function analyzeGroupWithScore(
     ...(knownService?.category ? { category: knownService.category } : platformHint?.category ? { category: platformHint.category } : {}),
     ...(knownService && { cancelInstructions: getCancelInstructions(knownService) }),
     ...(group.detectedPeriod && group.detectedPeriod !== 'unknown' && { detectedPeriod: group.detectedPeriod }),
+    ...(priceRangeFlag && { priceRangeFlag: priceRangeFlag as 'promo' }),
   };
 
   return subscription;
@@ -300,6 +360,7 @@ function analyzeGroupWithScore(
 export class ScoringStage implements PipelineStage {
   readonly name = 'scoring';
 
+  // eslint-disable-next-line @typescript-eslint/require-await -- async required for AsyncGenerator return type
   async *execute(context: PipelineContext): AsyncGenerator<PipelineEvent> {
     const startTime = Date.now();
 
@@ -309,6 +370,10 @@ export class ScoringStage implements PipelineStage {
       timestamp: startTime,
     };
 
+    // Build TF-IDF corpus from all group normalized names
+    const corpusDocs = context.groups.map((g) => g.normalizedName);
+    const corpus = buildCorpus(corpusDocs);
+
     const subscriptions: DetectedSubscription[] = [];
 
     for (const group of context.groups) {
@@ -317,7 +382,7 @@ export class ScoringStage implements PipelineStage {
         continue;
       }
 
-      const subscription = analyzeGroupWithScore(group, context.transactions);
+      const subscription = analyzeGroupWithScore(group, context.transactions, corpus);
       if (subscription) {
         subscriptions.push(subscription);
       }

@@ -43,7 +43,7 @@ import {
   extractServiceName,
   capitalizeServiceName,
 } from '../utils/string.js';
-import { isMonthlyPattern, getDateRange, daysBetween } from '../utils/date.js';
+import { getDateRange, daysBetween } from '../utils/date.js';
 import { isWithinTolerance, calculateAverage, roundToTwo } from '../utils/amount.js';
 import {
   findKnownService,
@@ -123,11 +123,11 @@ const AGGREGATE_PATTERNS = [
  * Exemplos: "PARC 01/12", "PARCELA 3/6", "2/5"
  */
 const INSTALLMENT_PATTERNS = [
-  /\bPARC\s*\d+\s*[\/\\]\s*\d+/i,      // PARC 01/12, PARC01/06
-  /\bPARCEL\w*\s*\d+\s*[\/\\]\s*\d+/i, // PARCELA 1/3, PARCELAMENTO 2/6
+  /\bPARC\s*\d+\s*[/\\]\s*\d+/i,      // PARC 01/12, PARC01/06
+  /\bPARCEL\w*\s*\d+\s*[/\\]\s*\d+/i, // PARCELA 1/3, PARCELAMENTO 2/6
   /\bPARCELA\b/i,                       // PARCELA simples
   /\bPARCELADO\b/i,                     // PARCELADO
-  /\b\d+\s*[\/\\]\s*\d+\s*(PARC|X)\b/i, // 01/12 PARC, 3/6X
+  /\b\d+\s*[/\\]\s*\d+\s*(PARC|X)\b/i, // 01/12 PARC, 3/6X
   /\b\d+\s*DE\s*\d+\b/i,                // 1 DE 12
 ];
 
@@ -291,7 +291,7 @@ function validateHighValueSubscription(
 /**
  * Detecta assinaturas recorrentes a partir de transações
  */
-export async function detectSubscriptions(
+export function detectSubscriptions(
   transactions: Transaction[]
 ): Promise<AnalysisResult> {
   const startTime = Date.now();
@@ -300,7 +300,7 @@ export async function detectSubscriptions(
   const debits = transactions.filter((t) => t.type === 'debit');
 
   if (debits.length === 0) {
-    return createEmptyResult(startTime, transactions.length);
+    return Promise.resolve(createEmptyResult(startTime, transactions.length));
   }
 
   // VALIDAÇÃO: Remove transações que não são assinaturas
@@ -308,7 +308,7 @@ export async function detectSubscriptions(
   const validDebits = filterInvalidTransactions(debits);
 
   if (validDebits.length === 0) {
-    return createEmptyResult(startTime, transactions.length);
+    return Promise.resolve(createEmptyResult(startTime, transactions.length));
   }
 
   // 1. Agrupa transações por descrição similar
@@ -349,11 +349,11 @@ export async function detectSubscriptions(
   // 6. Monta metadados
   const metadata = createMetadata(startTime, transactions);
 
-  return {
+  return Promise.resolve({
     subscriptions,
     summary,
     metadata,
-  };
+  });
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -434,7 +434,7 @@ function groupTransactionsBySimilarity(
  */
 function analyzeGroupWithScore(
   group: TransactionGroup,
-  allTransactions: readonly Transaction[]
+  _allTransactions: readonly Transaction[]
 ): DetectedSubscription | null {
   const { transactions } = group;
 

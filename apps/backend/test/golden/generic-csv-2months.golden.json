@@ -11,7 +11,7 @@
   "snapshot": {
     "subscriptions": [
       {
-        "id": "2660e13f-551b-4664-b97a-ecbd0a549982",
+        "id": "32efd612-81fb-4a56-88c3-a8ead7bfa03a",
         "name": "Alura",
         "originalNames": [
           "PAG*ALURA"
@@ -32,7 +32,7 @@
           }
         ],
         "confidence": "high",
-        "confidenceScore": 0.9617,
+        "confidenceScore": 0.9117000000000001,
         "confidenceReasons": [
           "Padrao mensal consistente",
           "Valores muito consistentes",
@@ -46,7 +46,7 @@
         "priceRangeFlag": "normal"
       },
       {
-        "id": "c534e401-c1dc-4eed-8820-5ab0abced4fd",
+        "id": "bb9cf1fb-27e8-4674-b5d3-618969f289e9",
         "name": "Netflix",
         "originalNames": [
           "NETFLIX.COM"
@@ -67,7 +67,7 @@
           }
         ],
         "confidence": "high",
-        "confidenceScore": 0.9617,
+        "confidenceScore": 0.9117000000000001,
         "confidenceReasons": [
           "Padrao mensal consistente",
           "Valores muito consistentes",
@@ -81,7 +81,7 @@
         "priceRangeFlag": "normal"
       },
       {
-        "id": "b3f7b65b-b36a-4a41-b735-edafc075d931",
+        "id": "6afa3e42-6fad-4e80-aa01-460d1cd5371b",
         "name": "Crunchyroll",
         "originalNames": [
           "CRUNCHYROLL"
@@ -102,7 +102,7 @@
           }
         ],
         "confidence": "high",
-        "confidenceScore": 0.9617,
+        "confidenceScore": 0.9117000000000001,
         "confidenceReasons": [
           "Padrao mensal consistente",
           "Valores muito consistentes",
@@ -116,7 +116,7 @@
         "priceRangeFlag": "normal"
       },
       {
-        "id": "0c119b6a-ffa0-468f-84d3-df9ec1269d5c",
+        "id": "5a1225c0-f565-460a-8c25-02eaebdfa2d1",
         "name": "Spotify",
         "originalNames": [
           "SPOTIFY BRASIL"
@@ -137,7 +137,7 @@
           }
         ],
         "confidence": "high",
-        "confidenceScore": 0.9617,
+        "confidenceScore": 0.9117000000000001,
         "confidenceReasons": [
           "Padrao mensal consistente",
           "Valores muito consistentes",
@@ -151,7 +151,7 @@
         "priceRangeFlag": "normal"
       },
       {
-        "id": "355ad1cb-00b7-42e3-b358-995ed25571f6",
+        "id": "31443999-e03d-47a0-bb46-6463f138eec0",
         "name": "OneDrive",
         "originalNames": [
           "GOOGLE*One"
@@ -172,65 +172,33 @@
           }
         ],
         "confidence": "high",
-        "confidenceScore": 0.9392,
+        "confidenceScore": 0.8892,
         "confidenceReasons": [
           "Padrao mensal consistente",
           "Valores muito consistentes",
           "Servico de assinatura conhecido",
-          "Consistencia temporal alta",
-          "Confianca muito alta"
+          "Consistencia temporal alta"
         ],
         "category": "software",
         "cancelInstructions": "https://account.microsoft.com/services/",
         "detectedPeriod": "monthly",
         "priceRangeFlag": "promo"
-      },
-      {
-        "id": "3ffc3640-0a0b-4f68-94dc-0f9448aee3c0",
-        "name": "Renner Roupas",
-        "originalNames": [
-          "RENNER ROUPAS",
-          "MARISA ROUPAS"
-        ],
-        "monthlyAmount": 102.45,
-        "annualAmount": 1229.4,
-        "occurrences": 2,
-        "transactions": [
-          {
-            "date": "2024-12-21T03:00:00.000Z",
-            "amount": 95,
-            "description": "MARISA ROUPAS"
-          },
-          {
-            "date": "2024-11-19T03:00:00.000Z",
-            "amount": 109.9,
-            "description": "RENNER ROUPAS"
-          }
-        ],
-        "confidence": "medium",
-        "confidenceScore": 0.665,
-        "confidenceReasons": [
-          "Padrao mensal consistente",
-          "Valores similares",
-          "Consistencia temporal alta"
-        ],
-        "detectedPeriod": "monthly"
       }
     ],
     "summary": {
-      "totalMonthlySpending": 305.05,
-      "totalAnnualSpending": 3660.6,
-      "subscriptionCount": 6,
+      "totalMonthlySpending": 202.6,
+      "totalAnnualSpending": 2431.2,
+      "subscriptionCount": 5,
       "highConfidenceCount": 5,
-      "mediumConfidenceCount": 1,
+      "mediumConfidenceCount": 0,
       "lowConfidenceCount": 0,
       "periodStart": "2024-11-01T03:00:00.000Z",
       "periodEnd": "2024-12-28T03:00:00.000Z",
       "transactionsAnalyzed": 56
     },
     "metadata": {
-      "processedAt": "2026-02-14T12:15:06.691Z",
-      "processingTimeMs": 27,
+      "processedAt": "2026-04-14T01:58:33.267Z",
+      "processingTimeMs": 31,
       "filesProcessed": 1,
       "bankFormatsDetected": [
         "Mercado Pago"
