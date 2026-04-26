@@ -138,9 +138,10 @@ const getTransactionsBreaker = createBreaker(
     const allTransactions: PluggyTransaction[] = [];
     let page = 1;
     const pageSize = 500;
+    const MAX_PAGES = 50;
     let hasMore = true;
 
-    while (hasMore) {
+    while (hasMore && page <= MAX_PAGES) {
       const response = await client.fetchTransactions(accountId, {
         from: dateRange.from.toISOString().split('T')[0]!,
         to: dateRange.to.toISOString().split('T')[0]!,

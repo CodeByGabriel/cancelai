@@ -91,8 +91,6 @@ function generateDeduplicationKey(transaction: Transaction): string {
   return `${dateStr}|${amountStr}|${descNorm}`;
 }
 
-export { CSVParser } from './csv-parser.js';
-export { PDFParser } from './pdf-parser.js';
 export type { BankParser } from './base.js';
 export { registry } from './registry/index.js';
 export type { BankParserPlugin } from './registry/index.js';

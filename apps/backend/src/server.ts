@@ -98,7 +98,7 @@ export async function buildServer() {
     maxAge: 86400, // Cache do preflight por 24h
   });
 
-  console.log(`[CORS] Origens permitidas:`, corsOrigin);
+  app.log.info({ corsOrigin }, '[CORS] Origens permitidas');
 
   // SEGURANÇA: Rate limiting inteligente
   // Usa implementação customizada que considera:
@@ -244,7 +244,8 @@ async function start() {
       `Cancelai Backend v${config.version} running on http://${config.server.host}:${config.server.port}`
     );
   } catch (error) {
-    console.error('Erro ao iniciar servidor:', error);
+    // Antes do logger estar disponível: stderr direto é o último recurso
+    process.stderr.write(`Erro ao iniciar servidor: ${error instanceof Error ? error.stack ?? error.message : String(error)}\n`);
     process.exit(1);
   }
 }

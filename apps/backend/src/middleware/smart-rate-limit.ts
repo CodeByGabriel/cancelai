@@ -297,9 +297,11 @@ export function smartRateLimitHook(
     .header('X-RateLimit-Remaining', remaining.toString());
 
   if (!result.allowed) {
-    // Log para monitoramento (sem dados sensíveis)
-    console.warn(
-      `[RateLimit] Cliente bloqueado: ${clientKey.split(':')[0]} - ${result.reason}`
+    // Log para monitoramento (sem dados sensíveis) — usa request.log para
+    // herdar redact e correlation por requestId definidos em server.ts
+    request.log.warn(
+      { ip: clientKey.split(':')[0], reason: result.reason },
+      '[RateLimit] Cliente bloqueado',
     );
 
     // Resposta com status HTTP 429 (Too Many Requests)
@@ -345,11 +347,18 @@ export function registerSmartRateLimit(app: FastifyInstance): void {
 
   // Log informativo sobre o estado do rate limiting
   if (isProduction()) {
-    console.log('[RateLimit] Rate limiting ATIVO (produção)');
-    console.log(`[RateLimit] Limites: ${LIMITS_PRODUCTION.maxRequestsPerWindow} req/min, ${LIMITS_PRODUCTION.maxUploadBytesPerWindow / (1024 * 1024)}MB/min`);
+    app.log.info(
+      {
+        maxRequestsPerWindow: LIMITS_PRODUCTION.maxRequestsPerWindow,
+        maxUploadMB: LIMITS_PRODUCTION.maxUploadBytesPerWindow / (1024 * 1024),
+      },
+      '[RateLimit] Rate limiting ATIVO (produção)',
+    );
   } else {
-    console.log('[RateLimit] Rate limiting DESATIVADO (desenvolvimento)');
-    console.log('[RateLimit] Para ativar, defina NODE_ENV=production');
+    app.log.info(
+      { devMultiplier: DEV_MULTIPLIER },
+      '[RateLimit] Rate limiting ATIVO em modo desenvolvimento (limites multiplicados)',
+    );
   }
 }
 
@@ -387,6 +396,5 @@ export function getRateLimitStats(): {
 export function clearRateLimitStore(): void {
   if (!isProduction()) {
     usageStore.clear();
-    console.log('[RateLimit] Store limpo (desenvolvimento)');
   }
 }

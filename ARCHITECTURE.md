@@ -282,8 +282,6 @@ parsers/
 
 **Fluxo:** `parsing-stage.ts` → `registry.parseFile()` → detecta banco → plugin especifico → transacoes
 
-> **NOTA:** `csv-parser.ts` e `pdf-parser.ts` na raiz de `parsers/` sao codigo legado mantido para backward compat. O pipeline ativo usa o registry.
-
 ### Adicionar Banco Novo
 
 Criar `apps/backend/src/parsers/banks/meubanco.parser.ts`:
