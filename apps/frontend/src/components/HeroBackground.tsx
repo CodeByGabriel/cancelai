@@ -1,23 +1,30 @@
 'use client';
 
+import dynamic from 'next/dynamic';
+import { useReducedMotion } from 'motion/react';
+import { useTheme } from 'next-themes';
+import { CssMeshFallback } from './CssMeshFallback';
+
+// ssr: false e obrigatorio — WebGL nao existe no server.
+// Loading fallback evita flash branco durante o lazy-load do shader.
+const ShaderMesh = dynamic(() => import('./ShaderMesh'), {
+  ssr: false,
+  loading: () => <CssMeshFallback />,
+});
+
+// Paleta warm-analoga (60deg do circulo cromatico). Cream/amber/mint produz
+// interpolacao suave; complementares produzem marrom feio na zona de mistura.
+const PALETTE = {
+  light: ['#FAF7F2', '#FEF3C7', '#FDE68A', '#22c55e'],
+  dark: ['#13110F', '#1C1815', '#2D1F0E', '#065F46'],
+} as const;
+
 export function HeroBackground() {
-  return (
-    <>
-      <div
-        className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] rounded-full blur-[120px] opacity-20 pointer-events-none"
-        style={{ background: 'radial-gradient(circle, #22c55e 0%, transparent 70%)' }}
-        aria-hidden="true"
-      />
-      <div
-        className="absolute top-1/4 right-1/4 w-[400px] h-[300px] rounded-full blur-[100px] opacity-10 pointer-events-none"
-        style={{ background: 'radial-gradient(circle, #06b6d4 0%, transparent 70%)' }}
-        aria-hidden="true"
-      />
-      <div
-        className="absolute bottom-1/4 left-1/3 w-[500px] h-[300px] rounded-full blur-[120px] pointer-events-none"
-        style={{ opacity: 0.07, background: 'radial-gradient(circle, #f59e0b 0%, transparent 70%)' }}
-        aria-hidden="true"
-      />
-    </>
-  );
+  const reduceMotion = useReducedMotion();
+  const { resolvedTheme } = useTheme();
+
+  if (reduceMotion) return <CssMeshFallback />;
+
+  const palette = resolvedTheme === 'dark' ? PALETTE.dark : PALETTE.light;
+  return <ShaderMesh palette={palette} />;
 }

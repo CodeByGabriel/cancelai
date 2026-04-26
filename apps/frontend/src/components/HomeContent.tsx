@@ -148,7 +148,7 @@ function FaqItem({ question, answer }: { question: string; answer: string }) {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="rounded-xl overflow-hidden bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors duration-200">
+    <div className="rounded-xl overflow-hidden backdrop-blur-sm bg-white/50 dark:bg-white/5 border border-white/30 dark:border-white/10 hover:bg-white/70 dark:hover:bg-white/10 transition-all duration-300">
       <button
         onClick={() => setOpen(!open)}
         className="w-full flex items-center justify-between p-6 text-left"
@@ -324,18 +324,22 @@ export function HomeContent() {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.25 }}
             >
-              {/* Hero — dark clean com CSS glow spots sutis */}
-              <section className="relative overflow-hidden text-white py-24 md:py-36 px-4 min-h-[70vh]" style={{ backgroundColor: '#09090b' }}>
+              {/* Hero — always-dark warm com shader de fundo + loss framing */}
+              <section className="relative overflow-hidden bg-[#13110F] text-white py-24 md:py-36 px-4 min-h-[70vh]">
                 <HeroBackground />
-                {/* Noise overlay sutil */}
+                {/* Overlay para legibilidade — warm-black */}
+                <div className="absolute inset-0 bg-[#13110F]/60 z-[1]" aria-hidden="true" />
+                {/* Noise overlay (gradient sem grain bandeia em telas 8-bit) */}
                 <div className="noise-overlay" aria-hidden="true" />
+                {/* Focal point amber atras do titulo */}
+                <div className="hero-focal" aria-hidden="true" />
 
                 <div className="relative z-10 max-w-4xl mx-auto text-center">
                   <h1 className="font-display text-5xl md:text-7xl font-semibold text-white mb-6 leading-[1.05]" style={{ letterSpacing: '-0.035em' }}>
                     Você está
-                    <span className="block sm:inline text-green-400"> perdendo dinheiro</span>
+                    <span className="block sm:inline gradient-text-amber-green"> perdendo dinheiro</span>
                   </h1>
-                  <p className="font-body text-lg md:text-xl text-zinc-400 max-w-xl mx-auto mb-10">
+                  <p className="font-body text-lg md:text-xl text-white/70 max-w-xl mx-auto mb-10">
                     com assinaturas que esqueceu de cancelar.
                   </p>
 
@@ -352,7 +356,7 @@ export function HomeContent() {
                         <p className="font-mono tabular-nums slashed-zero text-4xl md:text-5xl font-bold text-white tracking-tight">
                           {value}
                         </p>
-                        <p className="text-[10px] uppercase tracking-[0.2em] text-zinc-500 mt-2">
+                        <p className="text-[10px] uppercase tracking-[0.2em] text-white/40 mt-2">
                           {label}
                         </p>
                       </div>
@@ -360,14 +364,14 @@ export function HomeContent() {
                   </div>
 
                   {/* Trust microcopy stack — 4 claims com dots */}
-                  <p className="text-xs text-zinc-500 max-w-xl mx-auto">
+                  <p className="text-xs text-white/50 max-w-xl mx-auto">
                     🔒 Sem login bancário · Sem cadastro · Arquivo apagado após análise · LGPD
                   </p>
                 </div>
               </section>
 
-              {/* Fade zone hero dark → conteúdo */}
-              <div className="h-24 md:h-32 bg-gradient-to-b from-[#09090b] to-white dark:from-[#09090b] dark:to-zinc-950" aria-hidden="true" />
+              {/* Fade zone entre hero warm-dark e conteudo */}
+              <div className="h-32 md:h-48 bg-gradient-to-b from-[#13110F] to-background" aria-hidden="true" />
 
               {/* Method selector + Upload/Connect */}
               <section className="py-8 px-4">
