@@ -106,9 +106,20 @@ function groupTransactionsBySimilarity(transactions: Transaction[]): Transaction
 
     const similarities: number[] = [1.0];
 
-    // Encontra candidatos via bigram index
+    // Encontra candidatos via bigram index. Para descrições muito curtas
+    // (poucos bigrams disponíveis) cai num scan linear contra todos os
+    // ainda-não-processados, senão duplicatas exatas seriam perdidas.
     const baseBigrams = generateBigrams(baseName);
-    const candidates = findCandidates(baseBigrams, bigramIndex, MIN_SHARED_BIGRAMS);
+    const minShared = Math.min(MIN_SHARED_BIGRAMS, Math.max(1, baseBigrams.size));
+    let candidates: Set<number>;
+    if (baseBigrams.size === 0 || baseName.length < 4) {
+      candidates = new Set<number>();
+      for (let k = i + 1; k < transactions.length; k++) {
+        if (!processed.has(k)) candidates.add(k);
+      }
+    } else {
+      candidates = findCandidates(baseBigrams, bigramIndex, minShared);
+    }
 
     for (const j of candidates) {
       if (j <= i || processed.has(j)) continue;

@@ -30,13 +30,9 @@ const ACCEPTED_TYPES = {
 export function FileUpload({ onFilesSelected, status, error }: FileUploadProps) {
   const [files, setFiles] = useState<File[]>([]);
 
-  const onDrop = useCallback(
-    (acceptedFiles: File[]) => {
-      const newFiles = [...files, ...acceptedFiles].slice(0, MAX_FILES);
-      setFiles(newFiles);
-    },
-    [files]
-  );
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    setFiles((prev) => [...prev, ...acceptedFiles].slice(0, MAX_FILES));
+  }, []);
 
   const { getRootProps, getInputProps, isDragActive, fileRejections } =
     useDropzone({

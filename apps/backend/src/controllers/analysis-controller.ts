@@ -16,6 +16,7 @@
  * - Conformidade com LGPD (minimização de dados)
  */
 
+import { randomUUID } from 'crypto';
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import type { MultipartFile } from '@fastify/multipart';
 import { config } from '../config/index.js';
@@ -42,11 +43,8 @@ export function getSSEManager(): SSEManager | null {
   return sseManager;
 }
 
-/**
- * Gera ID único para rastreamento de requisição (sem dados sensíveis)
- */
 function generateRequestId(): string {
-  return `req_${Date.now().toString(36)}_${Math.random().toString(36).substring(2, 7)}`;
+  return `req_${randomUUID()}`;
 }
 
 /**
@@ -108,14 +106,11 @@ export function registerAnalysisRoutes(app: FastifyInstance): void {
     const startTime = Date.now();
     const requestId = generateRequestId();
 
-    // DEBUG: Log da requisição (sem dados sensíveis)
-    console.log(`[${requestId}] POST /api/analyze - Iniciando`);
-    console.log(`[${requestId}] Content-Type: ${request.headers['content-type'] ?? 'não informado'}`);
+    request.log.info({ requestId }, 'POST /api/analyze - iniciando');
 
     try {
-      // Verifica se a request é multipart
       if (!request.isMultipart()) {
-        console.warn(`[${requestId}] Erro: Content-Type inválido`);
+        request.log.warn({ requestId }, 'Content-Type invalido');
         return reply.status(400).send({
           success: false,
           error: {
@@ -132,14 +127,14 @@ export function registerAnalysisRoutes(app: FastifyInstance): void {
       // Processa os arquivos do upload com tratamento de erro detalhado
       const uploadResult = await processUploadedFiles(request, requestId);
 
-      // DEBUG: Log de resultado do processamento
-      console.log(
-        `[${requestId}] Upload: ${uploadResult.debugInfo.partsReceived} partes, ` +
-        `${uploadResult.debugInfo.filesReceived} arquivos, ` +
-        `${uploadResult.debugInfo.fieldsReceived} campos, ` +
-        `${uploadResult.files.length} válidos, ` +
-        `${uploadResult.errors.length} erros`
-      );
+      request.log.info({
+        requestId,
+        parts: uploadResult.debugInfo.partsReceived,
+        files: uploadResult.debugInfo.filesReceived,
+        fields: uploadResult.debugInfo.fieldsReceived,
+        valid: uploadResult.files.length,
+        errors: uploadResult.errors.length,
+      }, 'Upload processado');
 
       if (uploadResult.files.length === 0) {
         // Mensagem de erro detalhada para ajudar no debug
@@ -147,7 +142,7 @@ export function registerAnalysisRoutes(app: FastifyInstance): void {
           ? uploadResult.errors.join('; ')
           : 'Nenhum arquivo recebido. Verifique se está enviando com o campo "files"';
 
-        console.warn(`[${requestId}] Nenhum arquivo válido: ${errorMessage}`);
+        request.log.warn({ requestId, errorMessage }, 'Nenhum arquivo valido');
 
         return reply.status(400).send({
           success: false,
@@ -166,12 +161,13 @@ export function registerAnalysisRoutes(app: FastifyInstance): void {
         } satisfies ApiResponse<never>);
       }
 
-      // Log de métricas dos arquivos (sem conteúdo sensível)
       uploadResult.files.forEach((f, i) => {
-        console.log(
-          `[${requestId}] Arquivo ${i + 1}: ` +
-          `${f.filename} (${(f.content.length / 1024).toFixed(1)}KB, ${f.mimetype})`
-        );
+        request.log.info({
+          requestId,
+          index: i + 1,
+          sizeKB: Math.round(f.content.length / 1024),
+          mimetype: f.mimetype,
+        }, 'Arquivo recebido');
       });
 
       // Analisa os extratos
@@ -182,7 +178,7 @@ export function registerAnalysisRoutes(app: FastifyInstance): void {
       secureCleanupFiles(uploadResult.files);
 
       if (!analysisResult.success) {
-        console.warn(`[${requestId}] Análise falhou:`, analysisResult.errors);
+        request.log.warn({ requestId, errors: analysisResult.errors }, 'Analise falhou');
 
         return reply.status(422).send({
           success: false,
@@ -197,15 +193,14 @@ export function registerAnalysisRoutes(app: FastifyInstance): void {
         } satisfies ApiResponse<never>);
       }
 
-      // Log de métricas de sucesso (sem dados sensíveis)
       const processingTime = Date.now() - startTime;
-      console.log(
-        `[${requestId}] SUCESSO - ` +
-        `${uploadResult.files.length} arquivo(s), ` +
-        `${analysisResult.result?.subscriptions.length ?? 0} assinatura(s), ` +
-        `${analysisResult.result?.summary.transactionsAnalyzed ?? 0} transações, ` +
-        `${processingTime}ms`
-      );
+      request.log.info({
+        requestId,
+        files: uploadResult.files.length,
+        subscriptions: analysisResult.result?.subscriptions.length ?? 0,
+        transactions: analysisResult.result?.summary.transactionsAnalyzed ?? 0,
+        ms: processingTime,
+      }, 'Analise concluida');
 
       return reply.status(200).send({
         success: true,
@@ -213,14 +208,10 @@ export function registerAnalysisRoutes(app: FastifyInstance): void {
       } satisfies ApiResponse<AnalysisResult>);
 
     } catch (error) {
-      // SEGURANÇA: Log interno com detalhes, resposta externa sem detalhes
+      // SEGURANÇA: Pino serializa o err automaticamente (stack só no log interno).
       const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
-      const errorStack = error instanceof Error ? error.stack : undefined;
 
-      console.error(`[${requestId}] ERRO INTERNO: ${errorMessage}`);
-      if (process.env['NODE_ENV'] !== 'production' && errorStack) {
-        console.error(`[${requestId}] Stack:`, errorStack);
-      }
+      request.log.error({ requestId, err: error }, 'Erro interno');
 
       return reply.status(500).send({
         success: false,
@@ -245,7 +236,7 @@ export function registerAnalysisRoutes(app: FastifyInstance): void {
    */
   app.post('/api/analyze/stream', async (request: FastifyRequest, reply: FastifyReply) => {
     const requestId = generateRequestId();
-    console.log(`[${requestId}] POST /api/analyze/stream - Iniciando`);
+    request.log.info({ requestId }, 'POST /api/analyze/stream - iniciando');
 
     if (!request.isMultipart()) {
       return reply.status(400).send({
@@ -271,12 +262,12 @@ export function registerAnalysisRoutes(app: FastifyInstance): void {
       } satisfies ApiResponse<never>);
     }
 
-    const jobId = `job_${Date.now().toString(36)}_${Math.random().toString(36).substring(2, 7)}`;
+    const jobId = `job_${randomUUID()}`;
     const generator = runPipeline(uploadResult.files, requestId);
 
     jobs.set(jobId, { generator, createdAt: Date.now() });
 
-    console.log(`[${requestId}] Job criado: ${jobId} (${uploadResult.files.length} arquivo(s))`);
+    request.log.info({ requestId, jobId, files: uploadResult.files.length }, 'Job criado');
 
     return reply.status(200).send({
       success: true,
@@ -343,6 +334,10 @@ export function registerAnalysisRoutes(app: FastifyInstance): void {
         'X-Content-Type-Options': 'nosniff',
         'X-Frame-Options': 'DENY',
         'Referrer-Policy': 'no-referrer',
+        'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
+        'Content-Security-Policy': "default-src 'none'",
+        'Permissions-Policy': 'geolocation=(), camera=(), microphone=()',
+        'Cross-Origin-Resource-Policy': 'same-origin',
         // CORS (plugin bypass fix)
         'Access-Control-Allow-Origin': config.cors.origin,
       });
@@ -386,6 +381,13 @@ export function registerAnalysisRoutes(app: FastifyInstance): void {
           }
         }
       } finally {
+        // Garante que o gerador rode seu próprio finally (CleanupStage,
+        // clearTimeout) mesmo quando o cliente desconecta no meio do stream.
+        try {
+          await job.generator.return(undefined as never);
+        } catch {
+          // ignora — o que importa é dar a chance ao finally interno
+        }
         if (sseManager) {
           sseManager.clearBuffer(analysisId);
           sseManager.removeConnection(connectionId);
@@ -650,13 +652,12 @@ async function processUploadedFiles(
     for await (const part of parts) {
       debugInfo.partsReceived++;
 
-      // Log de debug para cada parte recebida
-      console.log(
-        `[${requestId}] Parte ${debugInfo.partsReceived}: ` +
-        `type=${part.type}, fieldname=${part.fieldname}`
-      );
+      request.log.debug({
+        requestId,
+        index: debugInfo.partsReceived,
+        type: part.type,
+      }, 'Parte multipart recebida');
 
-      // Ignora campos que não são arquivos
       if (part.type !== 'file') {
         debugInfo.fieldsReceived++;
         continue;
@@ -665,11 +666,11 @@ async function processUploadedFiles(
       debugInfo.filesReceived++;
       const file: MultipartFile = part;
 
-      // Log de debug do arquivo
-      console.log(
-        `[${requestId}] Arquivo recebido: ` +
-        `fieldname=${file.fieldname}, filename=${sanitizeFilename(file.filename)}, mimetype=${file.mimetype}`
-      );
+      request.log.debug({
+        requestId,
+        filename: sanitizeFilename(file.filename),
+        mimetype: file.mimetype,
+      }, 'Arquivo recebido');
 
       // SEGURANÇA: Valida quantidade de arquivos
       if (files.length >= config.server.maxFiles) {
@@ -717,7 +718,7 @@ async function processUploadedFiles(
     }
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Erro ao processar upload';
-    console.error(`[${requestId}] Erro no processamento de upload:`, errorMessage);
+    request.log.error({ requestId, err: error }, 'Erro no processamento de upload');
     errors.push(`Erro ao processar upload: ${errorMessage}`);
   }
 

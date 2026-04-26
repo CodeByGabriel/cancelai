@@ -14,7 +14,7 @@ export function Footer() {
           </div>
 
           <div className="flex items-center gap-6 text-sm text-foreground-muted">
-            <span>Cancelai 2024</span>
+            <span>Cancelai {new Date().getFullYear()}</span>
             <a
               href="/privacidade"
               className="hover:text-brand-text transition-colors"

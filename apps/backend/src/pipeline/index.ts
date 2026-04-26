@@ -16,5 +16,3 @@ export type {
   CompleteEvent,
   ErrorEvent,
 } from './pipeline-events.js';
-export { LoggingObserver, observePipeline } from './pipeline-observer.js';
-export type { PipelineObserver } from './pipeline-observer.js';

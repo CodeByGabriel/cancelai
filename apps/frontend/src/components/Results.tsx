@@ -1,5 +1,6 @@
 'use client';
 
+import { useMemo } from 'react';
 import { RefreshCw, AlertTriangle, PartyPopper, CheckCircle2, HelpCircle } from 'lucide-react';
 import type { AnalysisResult, DetectedSubscription } from '@/types';
 import { ResultsSummary } from './ResultsSummary';
@@ -14,13 +15,15 @@ export function Results({ result, onReset }: ResultsProps) {
   const { subscriptions, summary, metadata, info } = result;
   const hasSubscriptions = subscriptions.length > 0;
 
-  // Separa assinaturas confirmadas (alta confiança) das que precisam revisão
-  const confirmedSubscriptions = subscriptions.filter(
-    (s) => s.confidence === 'high'
-  );
-  const needsReviewSubscriptions = subscriptions.filter(
-    (s) => s.confidence === 'medium' || s.confidence === 'low'
-  );
+  const { confirmedSubscriptions, needsReviewSubscriptions } = useMemo(() => {
+    const confirmed: DetectedSubscription[] = [];
+    const review: DetectedSubscription[] = [];
+    for (const s of subscriptions) {
+      if (s.confidence === 'high') confirmed.push(s);
+      else review.push(s);
+    }
+    return { confirmedSubscriptions: confirmed, needsReviewSubscriptions: review };
+  }, [subscriptions]);
 
   return (
     <div className="w-full max-w-4xl mx-auto space-y-8 animate-fade-in">

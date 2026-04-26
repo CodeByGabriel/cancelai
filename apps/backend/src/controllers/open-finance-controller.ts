@@ -10,6 +10,7 @@
  * 4. LGPD: dados sensiveis (CPF, conta) sao removidos no servico
  */
 
+import { randomUUID } from 'crypto';
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import {
   createLink,
@@ -23,15 +24,12 @@ import { runPipelineFromTransactions } from '../pipeline/pipeline-orchestrator.j
 import { config } from '../config/index.js';
 import type { ApiResponse } from '../types/index.js';
 
-/**
- * Gera ID unico para jobs Open Finance
- */
 function generateJobId(): string {
-  return `ofjob_${Date.now().toString(36)}_${Math.random().toString(36).substring(2, 7)}`;
+  return `ofjob_${randomUUID()}`;
 }
 
 function generateRequestId(): string {
-  return `ofreq_${Date.now().toString(36)}_${Math.random().toString(36).substring(2, 7)}`;
+  return `ofreq_${randomUUID()}`;
 }
 
 /**
@@ -66,7 +64,7 @@ export function registerOpenFinanceRoutes(app: FastifyInstance): void {
    * Cria um connect token para o widget Pluggy Connect.
    * O frontend usa este token para abrir o widget de conexao bancaria.
    */
-  app.post('/api/open-finance/link', async (_request: FastifyRequest, reply: FastifyReply) => {
+  app.post('/api/open-finance/link', async (request: FastifyRequest, reply: FastifyReply) => {
     if (!isOpenFinanceConfigured()) {
       return reply.status(501).send({
         success: false,
@@ -84,8 +82,7 @@ export function registerOpenFinanceRoutes(app: FastifyInstance): void {
         data: { accessToken: link.accessToken },
       });
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Erro ao criar link de conexao';
-      console.error('[Open Finance] Erro ao criar link:', message);
+      request.log.error({ err: error }, '[Open Finance] Erro ao criar link');
       return reply.status(502).send({
         success: false,
         error: {
@@ -131,8 +128,7 @@ export function registerOpenFinanceRoutes(app: FastifyInstance): void {
           data: { accounts },
         });
       } catch (error) {
-        const message = error instanceof Error ? error.message : 'Erro ao buscar contas';
-        console.error('[Open Finance] Erro ao buscar contas:', message);
+        request.log.error({ err: error }, '[Open Finance] Erro ao buscar contas');
         return reply.status(502).send({
           success: false,
           error: {
@@ -157,10 +153,10 @@ export function registerOpenFinanceRoutes(app: FastifyInstance): void {
       body: {
         type: 'object' as const,
         properties: {
-          accountId: { type: 'string' as const },
-          dateFrom: { type: 'string' as const },
-          dateTo: { type: 'string' as const },
-          bankName: { type: 'string' as const },
+          accountId: { type: 'string' as const, minLength: 1, maxLength: 128 },
+          dateFrom: { type: 'string' as const, format: 'date' as const },
+          dateTo: { type: 'string' as const, format: 'date' as const },
+          bankName: { type: 'string' as const, maxLength: 64 },
         },
         required: ['accountId', 'dateFrom', 'dateTo'] as const,
         additionalProperties: false,
@@ -194,17 +190,42 @@ export function registerOpenFinanceRoutes(app: FastifyInstance): void {
       } satisfies ApiResponse<never>);
     }
 
+    const fromDate = new Date(body.dateFrom);
+    const toDate = new Date(body.dateTo);
+
+    if (isNaN(fromDate.getTime()) || isNaN(toDate.getTime())) {
+      return reply.status(400).send({
+        success: false,
+        error: { code: 'INVALID_DATE', message: 'dateFrom/dateTo invalidos' },
+      } satisfies ApiResponse<never>);
+    }
+
+    if (fromDate >= toDate) {
+      return reply.status(400).send({
+        success: false,
+        error: { code: 'INVALID_RANGE', message: 'dateFrom deve ser anterior a dateTo' },
+      } satisfies ApiResponse<never>);
+    }
+
+    const MAX_WINDOW_DAYS = 365;
+    const windowDays = (toDate.getTime() - fromDate.getTime()) / (1000 * 60 * 60 * 24);
+    if (windowDays > MAX_WINDOW_DAYS) {
+      return reply.status(400).send({
+        success: false,
+        error: {
+          code: 'WINDOW_TOO_LARGE',
+          message: `Janela maxima e de ${MAX_WINDOW_DAYS} dias`,
+        },
+      } satisfies ApiResponse<never>);
+    }
+
     const requestId = generateRequestId();
     const bankName = body.bankName ?? 'open-finance';
 
-    console.log(`[${requestId}] POST /api/open-finance/analyze - accountId=${body.accountId}`);
+    request.log.info({ requestId, accountId: body.accountId }, 'POST /api/open-finance/analyze');
 
     try {
-      // Busca transacoes do agregador
-      const dateRange = {
-        from: new Date(body.dateFrom),
-        to: new Date(body.dateTo),
-      };
+      const dateRange = { from: fromDate, to: toDate };
 
       const aggregatorTransactions = await getTransactions(body.accountId, dateRange);
 
@@ -218,8 +239,9 @@ export function registerOpenFinanceRoutes(app: FastifyInstance): void {
         });
       }
 
-      console.log(
-        `[${requestId}] ${aggregatorTransactions.length} transacoes obtidas do agregador`
+      request.log.info(
+        { requestId, count: aggregatorTransactions.length },
+        'Transacoes obtidas do agregador',
       );
 
       // Adapta transacoes para formato do pipeline
@@ -231,15 +253,14 @@ export function registerOpenFinanceRoutes(app: FastifyInstance): void {
 
       jobs.set(jobId, { generator, createdAt: Date.now() });
 
-      console.log(`[${requestId}] Job criado: ${jobId} (${transactions.length} transacoes)`);
+      request.log.info({ requestId, jobId, transactions: transactions.length }, 'Job criado');
 
       return reply.status(200).send({
         success: true,
         data: { jobId, streamUrl: `/api/open-finance/${jobId}/stream` },
       });
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Erro ao processar transacoes';
-      console.error(`[${requestId}] Erro:`, message);
+      request.log.error({ requestId, err: error }, 'Erro no analyze Open Finance');
       return reply.status(502).send({
         success: false,
         error: {
@@ -294,6 +315,10 @@ export function registerOpenFinanceRoutes(app: FastifyInstance): void {
         'X-Content-Type-Options': 'nosniff',
         'X-Frame-Options': 'DENY',
         'Referrer-Policy': 'no-referrer',
+        'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
+        'Content-Security-Policy': "default-src 'none'",
+        'Permissions-Policy': 'geolocation=(), camera=(), microphone=()',
+        'Cross-Origin-Resource-Policy': 'same-origin',
         'Access-Control-Allow-Origin': config.cors.origin,
       });
 
@@ -314,6 +339,11 @@ export function registerOpenFinanceRoutes(app: FastifyInstance): void {
           reply.raw.write(`event: error\ndata: ${JSON.stringify(errorEvent)}\n\n`);
         }
       } finally {
+        try {
+          await job.generator.return(undefined as never);
+        } catch {
+          // ignora
+        }
         if (!reply.raw.destroyed) {
           reply.raw.end();
         }
@@ -357,8 +387,7 @@ export function registerOpenFinanceRoutes(app: FastifyInstance): void {
           data: { message: 'Conexao bancaria revogada com sucesso' },
         });
       } catch (error) {
-        const message = error instanceof Error ? error.message : 'Erro ao revogar conexao';
-        console.error('[Open Finance] Erro ao revogar:', message);
+        request.log.error({ err: error }, '[Open Finance] Erro ao revogar conexao');
         return reply.status(502).send({
           success: false,
           error: {

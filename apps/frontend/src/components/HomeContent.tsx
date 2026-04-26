@@ -2,7 +2,7 @@
 
 import { useReducer, useCallback, useState, useEffect } from 'react';
 import { m, AnimatePresence } from 'motion/react';
-import { AlertCircle, RefreshCw, ChevronDown } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import { Header } from './Header';
 import { FileUpload } from './FileUpload';
 import { Results } from './Results';
@@ -274,9 +274,13 @@ export function HomeContent() {
   }, [fallbackToSync]);
 
   // ── Computed values for streaming view ──
+  // Usa annualAmount (já considera o periodo detectado) e ignora low-confidence
+  // para alinhar com o totalAnnualSpending exibido no resultado final.
   const totalAnnualSpending =
     state.status === 'streaming'
-      ? state.subscriptions.reduce((sum, s) => sum + s.monthlyAmount * 12, 0)
+      ? state.subscriptions
+          .filter((s) => s.confidence !== 'low')
+          .reduce((sum, s) => sum + s.annualAmount, 0)
       : 0;
 
   // SSR placeholder

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { m } from 'motion/react';
 import { Landmark, Shield, Loader2, Unplug, Calendar } from 'lucide-react';
 import {
@@ -48,18 +48,8 @@ export function BankConnect({ onAnalysisStarted, onConnecting, onError, status, 
         return;
       }
 
-      // In production, this would open the Pluggy Connect widget
-      // For now, we simulate the connection flow
-      // The accessToken would be passed to the Pluggy Connect widget
-      const accessToken = linkResponse.data.accessToken;
-
       // TODO: Integrate Pluggy Connect widget here
-      // PluggyConnect.init({ connectToken: accessToken, onSuccess: (data) => { ... } })
-      // For now, log the token for development
-      console.log('[Open Finance] Connect token obtained:', accessToken.substring(0, 20) + '...');
-
-      // Simulated: In real integration, the widget callback would provide the itemId
-      // For development, we show a message that the widget would open here
+      // PluggyConnect.init({ connectToken: linkResponse.data.accessToken, onSuccess: (data) => { ... } })
       onError('Pluggy Connect widget nao integrado ainda. Configure AGGREGATOR_CLIENT_ID e AGGREGATOR_CLIENT_SECRET e integre o widget @pluggy/react.');
     } catch {
       onError('Erro ao conectar com o banco. Tente o upload manual de extrato.');
@@ -130,11 +120,13 @@ export function BankConnect({ onAnalysisStarted, onConnecting, onError, status, 
     }
   }, [connectionId]);
 
-  // Expose handleBankConnected for widget callback
-  // In real integration: window.__pluggyCallback = handleBankConnected
-  if (typeof window !== 'undefined') {
-    (window as unknown as Record<string, unknown>).__pluggyCallback = handleBankConnected;
-  }
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    window.__pluggyCallback = handleBankConnected;
+    return () => {
+      delete window.__pluggyCallback;
+    };
+  }, [handleBankConnected]);
 
   return (
     <m.div

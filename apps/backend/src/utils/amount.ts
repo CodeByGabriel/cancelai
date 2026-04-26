@@ -21,35 +21,56 @@ export function parseAmount(amountStr: string): number | null {
 
   let cleaned = amountStr.trim();
 
-  // Remove símbolos de moeda e parênteses
+  // Remove símbolos de moeda, parênteses e o sinal negativo de prefixo
+  // (apenas o do início; manter `-` no meio impediria detectar valores
+  // malformados com hífens internos que devem virar NaN).
   cleaned = cleaned
     .replace(/R\$\s*/gi, '')
     .replace(/[()]/g, '')
-    .replace(/-/g, '')
+    .replace(/^-/, '')
     .trim();
 
-  // Se tem ponto e vírgula, assume formato brasileiro (1.234,56)
   if (cleaned.includes(',') && cleaned.includes('.')) {
-    // Formato brasileiro: ponto é milhar, vírgula é decimal
-    cleaned = cleaned.replace(/\./g, '').replace(',', '.');
+    // Tem ambos: a posição relativa decide o formato.
+    // - Brasileiro (1.234,56): último separador é a vírgula
+    // - Americano  (1,234.56): último separador é o ponto
+    const lastComma = cleaned.lastIndexOf(',');
+    const lastDot = cleaned.lastIndexOf('.');
+    if (lastComma > lastDot) {
+      // BR: pontos são milhares, vírgula é decimal
+      cleaned = cleaned.replace(/\./g, '').replace(',', '.');
+    } else {
+      // US: vírgulas são milhares, ponto é decimal
+      cleaned = cleaned.replace(/,/g, '');
+    }
   } else if (cleaned.includes(',')) {
-    // Só vírgula: assume decimal brasileiro
-    cleaned = cleaned.replace(',', '.');
-  }
-
-  // Remove pontos extras que sobraram (milhares)
-  const lastDotIndex = cleaned.lastIndexOf('.');
-  if (lastDotIndex !== -1) {
-    const beforeDot = cleaned.substring(0, lastDotIndex).replace(/\./g, '');
-    const afterDot = cleaned.substring(lastDotIndex);
-    cleaned = beforeDot + afterDot;
+    // Só vírgula: ambíguo. Se há ≤ 2 dígitos depois da última vírgula,
+    // tratamos como decimal brasileiro; caso contrário (ex.: "1,234"),
+    // tratamos como milhar americano.
+    const lastComma = cleaned.lastIndexOf(',');
+    const decimals = cleaned.length - lastComma - 1;
+    if (decimals <= 2 && cleaned.indexOf(',') === lastComma) {
+      cleaned = cleaned.replace(',', '.');
+    } else {
+      cleaned = cleaned.replace(/,/g, '');
+    }
+  } else if (cleaned.includes('.')) {
+    // Só ponto: pode ser decimal americano (1234.56) ou milhar BR (1.234).
+    // Se houver múltiplos pontos OU mais de 2 dígitos após o último ponto,
+    // tratamos como milhares e removemos.
+    const lastDot = cleaned.lastIndexOf('.');
+    const decimals = cleaned.length - lastDot - 1;
+    const hasMultipleDots = cleaned.indexOf('.') !== lastDot;
+    if (hasMultipleDots || decimals > 2) {
+      cleaned = cleaned.replace(/\./g, '');
+    }
+    // caso contrário, manter como está (decimal americano)
   }
 
   const value = parseFloat(cleaned);
 
   if (isNaN(value)) return null;
 
-  // Retorna sempre positivo - o tipo (débito/crédito) é determinado separadamente
   return Math.abs(value);
 }
 

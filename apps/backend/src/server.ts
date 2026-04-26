@@ -22,8 +22,9 @@ export async function buildServer() {
   const isProd = process.env['NODE_ENV'] === 'production';
 
   const app = Fastify({
-    // SEGURANÇA: Necessário para Railway/proxies reversos — request.ip retorna IP real
-    trustProxy: true,
+    // SEGURANÇA: confiar em apenas 1 hop de proxy (Railway/Cloudflare).
+    // trustProxy: true aceitaria qualquer X-Forwarded-For e abriria spoofing.
+    trustProxy: 1,
     logger: {
       level: isProd ? 'info' : 'debug',
       // Dev: pino-pretty colorido. Prod: JSON puro (parseável por log aggregators)
@@ -62,17 +63,18 @@ export async function buildServer() {
   // PLUGINS DE SEGURANÇA
   // ============================================================
 
-  // SEGURANÇA: Helmet adiciona headers de segurança HTTP
+  // SEGURANÇA: Helmet adiciona headers de segurança HTTP.
+  // useDefaults: true preserva as directives padrão (base-uri, form-action,
+  // frame-ancestors, object-src, etc.) e apenas mescla nossos overrides.
   await app.register(helmet, {
     contentSecurityPolicy: {
+      useDefaults: true,
       directives: {
         defaultSrc: ["'self'"],
-        // Permite apenas o domínio do frontend
         connectSrc: ["'self'", config.cors.origin],
       },
     },
-    // Habilita proteções contra clickjacking, XSS, etc.
-    crossOriginEmbedderPolicy: false, // Desabilita para permitir imagens externas
+    crossOriginEmbedderPolicy: false,
   });
 
   // SEGURANÇA: CORS configurável por ambiente

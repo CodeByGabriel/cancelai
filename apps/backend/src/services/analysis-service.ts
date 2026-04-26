@@ -7,6 +7,7 @@
  * SEGURANCA: Todos os dados sao processados em memoria e descartados.
  */
 
+import { randomUUID } from 'crypto';
 import type { AnalysisResult } from '../types/index.js';
 import type { FileToProcess } from '../parsers/index.js';
 import { runPipeline } from '../pipeline/index.js';
@@ -33,7 +34,7 @@ export interface AnalysisServiceResult {
 export async function analyzeStatements(
   files: FileToProcess[]
 ): Promise<AnalysisServiceResult> {
-  const requestId = `svc_${Date.now().toString(36)}_${Math.random().toString(36).substring(2, 7)}`;
+  const requestId = `svc_${randomUUID()}`;
 
   let result: AnalysisResult | undefined;
   const errors: string[] = [];

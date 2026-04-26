@@ -72,16 +72,25 @@ const LIMITS_PRODUCTION = {
 } as const;
 
 /**
- * Limites granulares por grupo de rota (produção)
- * Cada grupo tem seu próprio counter e janela
+ * Limites granulares por grupo de rota.
+ * Em produção valem os números abaixo. Em desenvolvimento são multiplicados
+ * por DEV_MULTIPLIER para permitir testes sem desligar a proteção por completo.
  */
-const ROUTE_LIMITS: Record<string, number> = {
-  'POST:/api/analyze': 10,       // Upload pesado — 10 req/min
-  'GET:/api/analyze/stream': 20,  // SSE — 20 req/min
-  'GET:/api/health': 60,          // Monitoring — 60 req/min
-  'GET:/api/info': 60,            // Info — 60 req/min
-  'default': 30,                  // Demais rotas — 30 req/min
+const ROUTE_LIMITS_PROD: Record<string, number> = {
+  'POST:/api/analyze': 10,
+  'GET:/api/analyze/stream': 20,
+  'GET:/api/health': 60,
+  'GET:/api/info': 60,
+  'default': 30,
 };
+
+const DEV_MULTIPLIER = parseInt(process.env['RATE_LIMIT_DEV_MULTIPLIER'] ?? '10', 10);
+
+const ROUTE_LIMITS: Record<string, number> = isProduction()
+  ? ROUTE_LIMITS_PROD
+  : Object.fromEntries(
+      Object.entries(ROUTE_LIMITS_PROD).map(([k, v]) => [k, v * DEV_MULTIPLIER]),
+    );
 
 /**
  * Determina o limite de rate para a rota atual
@@ -133,23 +142,12 @@ function getClientKey(request: FastifyRequest): string {
 }
 
 /**
- * Extrai o IP real do cliente (considerando proxies)
+ * Extrai o IP real do cliente.
+ * Confia em request.ip do Fastify, que respeita o trustProxy configurado
+ * no server.ts. Não lemos headers x-forwarded-for/x-real-ip diretamente
+ * para evitar spoofing por clientes não atrás do proxy esperado.
  */
 function getClientIP(request: FastifyRequest): string {
-  // Ordem de prioridade para headers de proxy
-  const forwardedFor = request.headers['x-forwarded-for'];
-  if (forwardedFor) {
-    const ips = Array.isArray(forwardedFor)
-      ? forwardedFor[0]
-      : forwardedFor.split(',')[0];
-    return ips?.trim() ?? 'unknown';
-  }
-
-  const realIP = request.headers['x-real-ip'];
-  if (realIP) {
-    return Array.isArray(realIP) ? realIP[0]! : realIP;
-  }
-
   return request.ip ?? 'unknown';
 }
 
@@ -281,19 +279,9 @@ export function smartRateLimitHook(
   request: FastifyRequest,
   reply: FastifyReply
 ): void {
-  // ==========================================================
-  // BYPASS PARA DESENVOLVIMENTO
-  // Em ambiente de desenvolvimento, NÃO aplicar rate limiting
-  // para permitir testes livres sem bloqueios
-  // ==========================================================
-  if (!isProduction()) {
-    // Em desenvolvimento: permitir todas as requisições
-    return;
-  }
-
-  // ==========================================================
-  // PRODUÇÃO: Aplicar rate limiting completo
-  // ==========================================================
+  // Rate limit ativo em todos os ambientes. Limites são mais frouxos
+  // em dev (controlados por DEV_MULTIPLIER) mas nunca zerados, para
+  // proteger ambientes de preview/staging acidentalmente expostos.
   const clientKey = getClientKey(request);
 
   // Estima tamanho do upload pelo Content-Length

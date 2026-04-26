@@ -16,6 +16,19 @@ import {
   X,
 } from 'lucide-react';
 import type { DetectedSubscription } from '@/types';
+
+// Aceita apenas http:/https: para evitar javascript:/data:/vbscript:/etc.
+function parseSafeHttpUrl(value: string): string | null {
+  try {
+    const url = new URL(value);
+    if (url.protocol === 'http:' || url.protocol === 'https:') {
+      return url.toString();
+    }
+  } catch {
+    return null;
+  }
+  return null;
+}
 import {
   formatCurrency,
   formatDate,
@@ -296,28 +309,31 @@ export const SubscriptionCard = memo(function SubscriptionCard({ subscription, i
           )}
 
           {/* Instruções de cancelamento */}
-          {subscription.cancelInstructions && (
-            <div className="pt-2 border-t border-border-strong">
-              <h4 className="text-sm font-medium text-foreground-secondary mb-2">
-                Como cancelar
-              </h4>
-              {subscription.cancelInstructions.startsWith('http') ? (
-                <a
-                  href={subscription.cancelInstructions}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 transition-colors shadow-sm"
-                >
-                  <ExternalLink className="w-4 h-4" />
-                  Ir para página de cancelamento
-                </a>
-              ) : (
-                <p className="text-sm text-foreground-secondary bg-card px-3 py-2 rounded-lg border border-border-strong">
-                  {subscription.cancelInstructions}
-                </p>
-              )}
-            </div>
-          )}
+          {subscription.cancelInstructions && (() => {
+            const safeUrl = parseSafeHttpUrl(subscription.cancelInstructions);
+            return (
+              <div className="pt-2 border-t border-border-strong">
+                <h4 className="text-sm font-medium text-foreground-secondary mb-2">
+                  Como cancelar
+                </h4>
+                {safeUrl ? (
+                  <a
+                    href={safeUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 transition-colors shadow-sm"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                    Ir para página de cancelamento
+                  </a>
+                ) : (
+                  <p className="text-sm text-foreground-secondary bg-card px-3 py-2 rounded-lg border border-border-strong">
+                    {subscription.cancelInstructions}
+                  </p>
+                )}
+              </div>
+            );
+          })()}
         </div>
       )}
     </div>

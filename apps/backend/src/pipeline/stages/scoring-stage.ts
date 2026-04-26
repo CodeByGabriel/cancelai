@@ -21,6 +21,7 @@ import { SCORING_WEIGHTS_V2, CONFIDENCE_THRESHOLDS_V2, RECURRENCE_PERIODS, UTILI
 import { extractServiceName, capitalizeServiceName } from '../../utils/string.js';
 import { daysBetween } from '../../utils/date.js';
 import { calculateAverage, roundToTwo } from '../../utils/amount.js';
+import { sanitizeForCSV, sanitizeForCSVList } from '../../utils/csv-safe.js';
 import {
   findKnownService,
   detectPlatformHint,
@@ -323,10 +324,13 @@ function analyzeGroupWithScore(
 
   const avgAmount = calculateAverage(amounts);
 
+  const rawName = knownService?.canonicalName ?? platformHint?.label ?? capitalizeServiceName(serviceName);
+  const cancelInstr = knownService ? getCancelInstructions(knownService) : undefined;
+
   const subscription: DetectedSubscription = {
     id: generateId(),
-    name: knownService?.canonicalName ?? platformHint?.label ?? capitalizeServiceName(serviceName),
-    originalNames: Array.from(group.originalNames),
+    name: sanitizeForCSV(rawName),
+    originalNames: sanitizeForCSVList(Array.from(group.originalNames)),
     monthlyAmount: roundToTwo(avgAmount),
     annualAmount: roundToTwo(avgAmount * 12),
     occurrences: transactions.length,
@@ -336,14 +340,14 @@ function analyzeGroupWithScore(
         (t): SubscriptionTransaction => ({
           date: t.date,
           amount: t.amount,
-          description: t.description,
+          description: sanitizeForCSV(t.description),
         }),
       ),
     confidence: confidenceLevel,
     confidenceScore: roundToTwo(finalScore * 100) / 100,
     confidenceReasons,
     ...(knownService?.category ? { category: knownService.category } : platformHint?.category ? { category: platformHint.category } : {}),
-    ...(knownService && { cancelInstructions: getCancelInstructions(knownService) }),
+    ...(cancelInstr && { cancelInstructions: sanitizeForCSV(cancelInstr) }),
     ...(group.detectedPeriod && group.detectedPeriod !== 'unknown' && { detectedPeriod: group.detectedPeriod }),
     ...(priceRangeFlag && { priceRangeFlag: priceRangeFlag as 'promo' }),
   };
