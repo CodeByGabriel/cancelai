@@ -52,7 +52,7 @@ export function Features() {
         <div
           key={index}
           data-spotlight
-          className="group spotlight-card relative overflow-hidden text-center p-6 rounded-2xl backdrop-blur-sm bg-white/50 dark:bg-white/5 border border-white/30 dark:border-white/10 hover:-translate-y-1 hover:bg-white/70 dark:hover:bg-white/10 hover:shadow-[0_0_0_1px_rgba(255,240,220,0.06),0_8px_24px_-8px_rgba(0,0,0,0.25)] active:translate-y-0 transition-all duration-300 ease-out"
+          className="group spotlight-card relative overflow-hidden text-center p-6 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:-translate-y-1 hover:border-zinc-300 dark:hover:border-zinc-700 active:translate-y-0 transition-all duration-200 ease-out"
         >
           <div className="relative z-10 w-12 h-12 bg-brand-muted rounded-xl flex items-center justify-center mx-auto mb-3 transition-all duration-300 group-hover:drop-shadow-[0_0_8px_rgba(34,197,94,0.5)] group-hover:text-green-400">
             <feature.icon className="w-6 h-6 text-brand-text" />
