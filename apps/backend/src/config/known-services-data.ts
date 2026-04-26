@@ -50,11 +50,11 @@ export const KNOWN_SERVICES_DATA: Record<string, KnownService> = {
       'amazon prime', 'prime video', 'amzn prime', 'amz prime', 'amz*prime',
       'amazon*prime', 'amazon.com.br prime', 'amazon prime video', 'primevideo',
       'amazon br', 'amzn*prime video', 'amazon digital', 'amzn mktp br',
-      'amazon mktplace', 'amzn marketplace',
+      'amazon mktplace', 'amzn marketplace', 'amazonprimebr', 'amazon prime br',
     ],
     billingDescriptors: [
       'AMZN*PRIME', 'AMAZON.COM.BR PARC', 'AMAZON BR PARC',
-      'PAG*AMAZONPRIME', 'MERCPAGO*AMAZON',
+      'PAG*AMAZONPRIME', 'MERCPAGO*AMAZON', 'AMAZONPRIMEBR',
     ],
     category: 'streaming',
     cancelUrl: 'https://www.amazon.com.br/hz/mycd/myx',
@@ -957,14 +957,18 @@ export const KNOWN_SERVICES_DATA: Record<string, KnownService> = {
 
   claude: {
     canonicalName: 'Claude Pro',
-    aliases: ['anthropic', 'claude', 'claude pro', 'anthropic.com', 'claude*'],
-    billingDescriptors: ['ANTHROPIC.COM', 'ANTHROPIC', 'STRIPE*ANTHROPIC'],
+    aliases: ['anthropic', 'claude', 'claude pro', 'anthropic.com', 'claude*', 'claude.ai'],
+    billingDescriptors: [
+      'ANTHROPIC.COM', 'ANTHROPIC', 'STRIPE*ANTHROPIC',
+      'CLAUDE.AI SUBSCRIPTION', 'CLAUDE.AI',
+    ],
     category: 'software',
     cancelUrl: 'https://claude.ai/settings',
     cancelMethod: 'web',
-    typicalPriceRange: { min: 90, max: 120 },
+    typicalPriceRange: { min: 90, max: 600 },
     currency: 'USD',
     iofApplicable: true,
+    isPopular: true,
   },
 
   grammarly: {
@@ -3458,9 +3462,9 @@ export const KNOWN_SERVICES_DATA: Record<string, KnownService> = {
     canonicalName: 'Meli+ (Mercado Livre+)',
     aliases: [
       'meli+', 'meli plus', 'mercado livre+', 'mercado livre plus',
-      'nivel 6 mercado livre',
+      'nivel 6 mercado livre', 'melimais', 'meli mais', 'mp melimais',
     ],
-    billingDescriptors: ['MERCPAGO*MELI', 'MERCPAGO*MELIPLUS'],
+    billingDescriptors: ['MERCPAGO*MELI', 'MERCPAGO*MELIPLUS', 'MP*MELIMAIS', 'MP*MELI+'],
     category: 'finance',
     cancelUrl: 'https://www.mercadolivre.com.br/assinaturas/meli-plus',
     cancelMethod: 'web',
@@ -5436,5 +5440,40 @@ export const KNOWN_SERVICES_DATA: Record<string, KnownService> = {
     cancelMethod: 'web',
     typicalPriceRange: { min: 15, max: 80 },
     currency: 'BRL',
+  },
+
+  hostinger: {
+    canonicalName: 'Hostinger',
+    aliases: [
+      'hostinger', 'hostinger.com.br', 'hostinger brasil', 'hostingercombr',
+      'dm hostingercombr', 'dm*hostingercombr', 'hostinger hosting',
+    ],
+    billingDescriptors: [
+      'DM*HOSTINGERCOMBR', 'DM*HOSTINGER', 'HOSTINGER',
+      'DM *HOSTINGERCOMBR', 'PAG*HOSTINGER',
+    ],
+    category: 'software',
+    cancelUrl: 'https://www.hostinger.com.br/cpanel-hosting',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 10, max: 200 },
+    currency: 'BRL',
+  },
+
+  xCorpPaid: {
+    canonicalName: 'X Premium (Twitter/X)',
+    aliases: [
+      'x corp', 'x premium', 'twitter blue', 'twitter premium',
+      'x corp paid features', 'twitter x', 'x twitter',
+    ],
+    billingDescriptors: [
+      'X CORP. PAID FEATURES', 'X CORP PAID FEATURES', 'X CORP',
+      'TWITTER BLUE', 'X PREMIUM', 'STRIPE*X CORP',
+    ],
+    category: 'software',
+    cancelUrl: 'https://twitter.com/i/billing',
+    cancelMethod: 'web',
+    typicalPriceRange: { min: 15, max: 200 },
+    currency: 'USD',
+    iofApplicable: true,
   },
 } as const;

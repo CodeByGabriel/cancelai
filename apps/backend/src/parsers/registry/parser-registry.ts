@@ -9,11 +9,11 @@
  * - Wrapping: converte Transaction[] em ParseResult
  */
 
-import pdfParse from 'pdf-parse';
 import type { ParseResult } from '../../types/index.js';
 import type { FileToProcess } from '../index.js';
 import type { BankParserPlugin, FileMetadata, ParseOptions } from './bank-parser.interface.js';
 import { isOFXContent } from '../formats/ofx-format.js';
+import { extractPDFText } from '../formats/pdf-extractor.js';
 
 /**
  * Determina o formato do arquivo pela extensao e mimetype
@@ -118,8 +118,7 @@ class ParserRegistry {
             warnings: [],
           };
         }
-        const pdfData = await pdfParse(buffer);
-        contentStr = pdfData.text;
+        contentStr = await extractPDFText(buffer);
         if (!contentStr || contentStr.trim().length === 0) {
           return {
             success: false,

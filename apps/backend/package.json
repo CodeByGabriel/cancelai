@@ -22,14 +22,13 @@
     "fuse.js": "^7.1.0",
     "ofx-data-extractor": "^1.4.8",
     "opossum": "^9.0.0",
-    "pdf-parse": "^1.1.1",
+    "pdfjs-dist": "^3.11.174",
     "pluggy-sdk": "^0.85.2",
     "string-comparisons": "^0.0.20"
   },
   "devDependencies": {
     "@types/node": "^20.11.5",
     "@types/opossum": "^8.1.9",
-    "@types/pdf-parse": "^1.1.4",
     "@typescript-eslint/eslint-plugin": "^6.19.0",
     "@typescript-eslint/parser": "^6.19.0",
     "eslint": "^8.56.0",
