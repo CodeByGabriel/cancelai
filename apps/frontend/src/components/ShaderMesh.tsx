@@ -44,18 +44,29 @@ export default function ShaderMesh({ palette, className }: Props) {
   // Cap de pixels = ~2x a area de tela. Em DPR 1 (mobile) isso vira ~2M pixels.
   const maxPixelCount = 1920 * 1080 * 2;
 
+  // Mascara dissolve o retangulo do shader nas bordas — sem isso a transicao
+  // pro proximo bloco fica dura.
+  const maskStyle: React.CSSProperties = {
+    maskImage:
+      'radial-gradient(ellipse 120% 100% at 50% 40%, black 40%, transparent 100%)',
+    WebkitMaskImage:
+      'radial-gradient(ellipse 120% 100% at 50% 40%, black 40%, transparent 100%)',
+  };
+
   return (
     <div
       ref={containerRef}
       aria-hidden="true"
       className={className}
-      style={{ position: 'absolute', inset: 0, zIndex: 0 }}
+      style={{ position: 'absolute', inset: 0, zIndex: 0, ...maskStyle }}
     >
       <MeshGradient
         colors={[...palette]}
-        distortion={1.0}
-        swirl={0.6}
-        speed={isVisible ? 0.15 : 0}
+        distortion={0.4}
+        swirl={0.3}
+        grainMixer={0.15}
+        grainOverlay={0.08}
+        speed={isVisible ? 0.03 : 0}
         minPixelRatio={dpr}
         maxPixelCount={maxPixelCount}
         style={{ width: '100%', height: '100%' }}

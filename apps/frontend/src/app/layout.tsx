@@ -1,13 +1,30 @@
 import type { Metadata } from 'next';
-import { DM_Sans } from 'next/font/google';
+import { DM_Sans, Space_Grotesk, JetBrains_Mono } from 'next/font/google';
 import { Providers } from '@/components/Providers';
 import './globals.css';
 
+// Body — DM Sans (mantido como fallback / utility)
 const dmSans = DM_Sans({
   subsets: ['latin'],
   weight: ['400', '500', '600', '700'],
   display: 'swap',
   variable: '--font-dm-sans',
+});
+
+// Display — Space Grotesk: weight 600, tracking negativo nos titulos
+const spaceGrotesk = Space_Grotesk({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  display: 'swap',
+  variable: '--font-display',
+});
+
+// Mono — JetBrains Mono: numeros financeiros tabulares
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  weight: ['400', '500', '600'],
+  display: 'swap',
+  variable: '--font-mono',
 });
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://cancelai.com.br';
@@ -65,7 +82,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="pt-BR" suppressHydrationWarning className={dmSans.variable}>
+    <html
+      lang="pt-BR"
+      suppressHydrationWarning
+      className={`${dmSans.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable}`}
+    >
       <body className="min-h-screen bg-background font-sans">
         <Providers>{children}</Providers>
       </body>
