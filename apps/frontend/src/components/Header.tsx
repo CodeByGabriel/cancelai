@@ -9,12 +9,12 @@ export function Header() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <div className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center shadow-lg shadow-primary-500/25">
-              <span className="text-white text-xl font-bold">C</span>
+          <div className="flex items-center gap-2.5">
+            <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-700 rounded-xl flex items-center justify-center shadow-md" style={{ boxShadow: '0 4px 12px rgba(196,98,63,0.3)' }}>
+              <span className="text-white text-xl font-bold font-display">C</span>
             </div>
-            <span className="text-xl font-bold text-foreground">
-              Cancel<span className="text-brand-text">aí</span>
+            <span className="text-xl font-display font-bold text-foreground tracking-tight">
+              Cancel<span className="text-brand-text italic">aí</span>
             </span>
           </div>
 

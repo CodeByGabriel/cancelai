@@ -326,11 +326,12 @@ export function HomeContent() {
               <section className="relative overflow-hidden py-20 md:py-32 px-4 min-h-[60vh]">
                 <HeroBackground />
                 {/* Overlay para legibilidade do texto sobre o shader */}
-                <div className="absolute inset-0 bg-white/60 dark:bg-black/55 z-[1]" aria-hidden="true" />
+                <div className="absolute inset-0 bg-white/55 dark:bg-black/55 z-[1]" aria-hidden="true" />
                 <div className="relative z-10 max-w-4xl mx-auto text-center">
-                  <h1 className="text-5xl md:text-7xl font-bold text-foreground mb-6 tracking-tight">
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-foreground-muted mb-4">Privacidade-first · LGPD-ready</p>
+                  <h1 className="font-display text-5xl md:text-7xl font-semibold text-foreground mb-6 tracking-tight leading-tight">
                     Descubra assinaturas
-                    <span className="text-brand-text italic block sm:inline"> esquecidas</span>
+                    <em className="text-brand-text not-italic font-display italic block sm:inline"> esquecidas</em>
                   </h1>
                   <p className="text-lg md:text-xl text-foreground-secondary max-w-2xl mx-auto mb-12">
                     Envie seus extratos bancarios e descubra quanto voce gasta com
@@ -345,7 +346,7 @@ export function HomeContent() {
                     ].map(({ value, label }) => (
                       <div
                         key={label}
-                        className="text-center cursor-default transition-all duration-300 hover:text-green-500 dark:hover:text-green-400 hover:drop-shadow-[0_0_8px_rgba(34,197,94,0.5)]"
+                        className="text-center cursor-default transition-all duration-300 hover:text-brand dark:hover:text-brand hover:drop-shadow-[0_0_8px_rgba(196,98,63,0.4)]"
                       >
                         <p className="text-3xl md:text-4xl font-bold text-foreground">{value}</p>
                         <p className="text-xs uppercase tracking-widest text-foreground-muted mt-1">{label}</p>

@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { DM_Sans } from 'next/font/google';
+import { DM_Sans, Fraunces, JetBrains_Mono } from 'next/font/google';
 import { Providers } from '@/components/Providers';
 import './globals.css';
 
@@ -8,6 +8,21 @@ const dmSans = DM_Sans({
   weight: ['400', '500', '600', '700'],
   display: 'swap',
   variable: '--font-dm-sans',
+});
+
+const fraunces = Fraunces({
+  subsets: ['latin'],
+  weight: ['500', '600', '700'],
+  style: ['normal', 'italic'],
+  display: 'swap',
+  variable: '--font-fraunces',
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  weight: ['400', '500'],
+  display: 'swap',
+  variable: '--font-jetbrains-mono',
 });
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://cancelai.com.br';
@@ -65,7 +80,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="pt-BR" suppressHydrationWarning className={dmSans.variable}>
+    <html lang="pt-BR" suppressHydrationWarning className={`${dmSans.variable} ${fraunces.variable} ${jetbrainsMono.variable}`}>
       <body className="min-h-screen bg-background font-sans">
         <Providers>{children}</Providers>
       </body>

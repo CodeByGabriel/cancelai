@@ -81,17 +81,15 @@ export const SubscriptionCard = memo(function SubscriptionCard({ subscription, i
     <div
       className={cn(
         'rounded-2xl overflow-hidden border',
-        'backdrop-blur-md bg-white/70 dark:bg-white/5',
-        'shadow-lg shadow-black/5 dark:shadow-black/20',
-        'hover:bg-white/80 dark:hover:bg-white/10',
-        'hover:shadow-xl hover:shadow-green-500/5 dark:hover:shadow-green-500/10',
-        'hover:scale-[1.01] active:scale-[0.99] transition-all duration-300',
+        'bg-card dark:bg-card',
+        'shadow-md',
+        'hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 active:scale-[0.99] transition-all duration-200',
         'animate-slide-up content-auto will-change-auto',
         subscription.confidence === 'high'
-          ? 'border-green-200/60 dark:border-green-700/40'
+          ? 'border-olive-300/50 dark:border-olive-600/30'
           : subscription.confidence === 'medium'
-          ? 'border-yellow-200/60 dark:border-yellow-700/40'
-          : 'border-white/30 dark:border-white/10',
+          ? 'border-ochre-300/50 dark:border-ochre-600/30'
+          : 'border-border-default',
       )}
       style={{ animationDelay: `${index * 100}ms` }}
       onAnimationStart={(e) => { e.currentTarget.style.willChange = 'transform'; }}
@@ -158,12 +156,12 @@ export const SubscriptionCard = memo(function SubscriptionCard({ subscription, i
             <p className="text-sm text-foreground-muted mb-1">
               {formatCurrency(subscription.monthlyAmount)}/mês
             </p>
-            <div className="bg-red-50 dark:bg-red-900/20 rounded-lg px-3 py-1.5 border border-red-100 dark:border-red-800">
-              <p className="text-xs text-red-600 dark:text-red-400 font-medium flex items-center justify-end gap-1">
+            <div className="bg-rust-100 dark:bg-[rgba(162,62,44,0.18)] rounded-xl px-3 py-1.5 border border-rust-300/50 dark:border-rust-600/30">
+              <p className="text-xs text-rust-700 dark:text-rust-300 font-semibold uppercase tracking-wide flex items-center justify-end gap-1" style={{ fontSize: '10px', letterSpacing: '0.1em' }}>
                 <TrendingUp className="w-3 h-3" />
                 Impacto anual
               </p>
-              <p className="text-xl font-bold text-red-700 dark:text-red-300">
+              <p className="font-display text-xl font-bold text-rust-700 dark:text-rust-300 tracking-tight">
                 {formatCurrency(subscription.annualAmount)}
               </p>
             </div>
@@ -193,17 +191,17 @@ export const SubscriptionCard = memo(function SubscriptionCard({ subscription, i
             <div className="flex flex-wrap gap-2">
               <button
                 onClick={() => handleConfirmation('confirmed')}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 border border-green-200 dark:border-green-800 rounded-lg hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-olive-100 dark:bg-[rgba(107,122,63,0.18)] text-olive-700 dark:text-olive-300 border border-olive-300/60 dark:border-olive-600/30 rounded-lg hover:bg-olive-100 dark:hover:bg-[rgba(107,122,63,0.28)] transition-colors"
               >
                 <ThumbsUp className="w-3.5 h-3.5" />
-                Sim, e assinatura
+                Sim, é assinatura
               </button>
               <button
                 onClick={() => handleConfirmation('rejected')}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-rust-100 dark:bg-[rgba(162,62,44,0.15)] text-rust-700 dark:text-rust-300 border border-rust-300/60 dark:border-rust-600/30 rounded-lg hover:bg-rust-100 dark:hover:bg-[rgba(162,62,44,0.25)] transition-colors"
               >
                 <ThumbsDown className="w-3.5 h-3.5" />
-                Nao e assinatura
+                Não é assinatura
               </button>
               <button
                 onClick={() => handleConfirmation('unsure')}
@@ -220,14 +218,14 @@ export const SubscriptionCard = memo(function SubscriptionCard({ subscription, i
         {showConfirmationButtons && userConfirmation !== null && (
           <div className={cn(
             'mt-4 p-3 rounded-xl border flex items-center justify-between',
-            userConfirmation === 'confirmed' && 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800',
-            userConfirmation === 'rejected' && 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800',
+            userConfirmation === 'confirmed' && 'bg-olive-100 dark:bg-[rgba(107,122,63,0.18)] border-olive-300/50 dark:border-olive-600/30',
+            userConfirmation === 'rejected' && 'bg-rust-100 dark:bg-[rgba(162,62,44,0.18)] border-rust-300/50 dark:border-rust-600/30',
             userConfirmation === 'unsure' && 'bg-surface border-border-strong'
           )}>
             <span className={cn(
               'text-sm font-medium',
-              userConfirmation === 'confirmed' && 'text-green-700 dark:text-green-300',
-              userConfirmation === 'rejected' && 'text-red-700 dark:text-red-300',
+              userConfirmation === 'confirmed' && 'text-olive-700 dark:text-olive-300',
+              userConfirmation === 'rejected' && 'text-rust-700 dark:text-rust-300',
               userConfirmation === 'unsure' && 'text-foreground-secondary'
             )}>
               {userConfirmation === 'confirmed' && 'Marcado como assinatura'}
@@ -325,7 +323,7 @@ export const SubscriptionCard = memo(function SubscriptionCard({ subscription, i
                     href={safeUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 transition-colors shadow-sm"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-rust-600 text-white rounded-xl text-sm font-semibold hover:bg-rust-700 transition-colors shadow-sm"
                   >
                     <ExternalLink className="w-4 h-4" />
                     Ir para página de cancelamento

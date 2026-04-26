@@ -7,59 +7,84 @@
    ══════════════════════════════════════════════════ */
 
 :root {
-  /* Page */
-  --color-bg: #FFFFFF;
-  --color-bg-surface: #F9FAFB;
-  --color-bg-elevated: #F3F4F6;
-  --color-bg-card: #FFFFFF;
+  /* Fonts */
+  --font-display: 'Fraunces', 'Times New Roman', Georgia, serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
 
-  /* Text */
-  --color-text: #111827;
-  --color-text-secondary: #4B5563;
-  --color-text-muted: #6B7280;
-  --color-text-faint: #71717a;
+  /* Page — warm clay palette */
+  --color-bg: #FBF6F0;          /* clay-50: warm cream */
+  --color-bg-surface: #F5EBDD;  /* clay-100: card surfaces */
+  --color-bg-elevated: #EAD9BF; /* clay-200: elevated/dividers */
+  --color-bg-card: #FFFFFF;     /* white cards on cream bg */
+  --color-bg-card-soft: #FFFCF7;
+
+  /* Text — warm brown scale */
+  --color-text: #3A2A1F;           /* clay-800 */
+  --color-text-secondary: #4B3C2C; /* clay-700 */
+  --color-text-muted: #65503C;     /* clay-600 */
+  --color-text-faint: #8C6F52;     /* clay-500 */
 
   /* Border */
-  --color-border: #F3F4F6;
-  --color-border-strong: #E5E7EB;
+  --color-border: #EAD9BF;       /* clay-200 */
+  --color-border-strong: #D9C2A0; /* clay-300 */
 
-  /* Primary (brand green) */
-  --color-primary: #22c55e;
-  --color-primary-soft: #F0FDF4;
-  --color-primary-muted: #DCFCE7;
-  --color-primary-text: #15803D;
+  /* Primary — terracotta brand */
+  --color-primary: #C4623F;       /* terracotta-500 */
+  --color-primary-soft: #FBEEE7;  /* terracotta-50 */
+  --color-primary-muted: #F4D6C5; /* terracotta-100 */
+  --color-primary-text: #7E3A22;  /* terracotta-700 */
 
-  /* Shadow */
-  --color-shadow: rgba(0, 0, 0, 0.05);
+  /* Semantic states */
+  --color-success: #6B7A3F;       /* olive-600 */
+  --color-success-soft: #EAEED5;  /* olive-100 */
+  --color-warn: #B57E2C;          /* ochre-600 */
+  --color-warn-soft: #FBEACB;     /* ochre-100 */
+  --color-danger: #A23E2C;        /* rust-600 */
+  --color-danger-soft: #F4D6CF;   /* rust-100 */
 
-  /* Shimmer */
-  --color-shimmer-from: #f0f0f0;
-  --color-shimmer-via: #e0e0e0;
+  /* Shadow — warm brown tint */
+  --color-shadow: rgba(58, 42, 31, 0.08);
+
+  /* Shimmer — warm clay tones */
+  --color-shimmer-from: #F5EBDD;
+  --color-shimmer-via: #EAD9BF;
+
+  /* Motion */
+  --easing-out: cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
 .dark {
-  --color-bg: #0a0a0a;
-  --color-bg-surface: #171717;
-  --color-bg-elevated: #262626;
-  --color-bg-card: #171717;
+  /* Dark mode — warm dark browns (not pure black) */
+  --color-bg: #1A130E;
+  --color-bg-surface: #211812;
+  --color-bg-elevated: #2C2017;
+  --color-bg-card: #211812;
+  --color-bg-card-soft: #261D14;
 
-  --color-text: #f5f5f5;
-  --color-text-secondary: #d4d4d4;
-  --color-text-muted: #a3a3a3;
-  --color-text-faint: #8b8b8b;
+  --color-text: #FBF6F0;
+  --color-text-secondary: #E5D7C4;
+  --color-text-muted: #B89B78;
+  --color-text-faint: #8C6F52;
 
-  --color-border: #262626;
-  --color-border-strong: #404040;
+  --color-border: rgba(255, 240, 220, 0.08);
+  --color-border-strong: rgba(255, 240, 220, 0.16);
 
-  --color-primary: #4ade80;
-  --color-primary-soft: rgba(74, 222, 128, 0.1);
-  --color-primary-muted: rgba(74, 222, 128, 0.15);
-  --color-primary-text: #86efac;
+  --color-primary: #DD8C66;           /* terracotta-300 — brighter for dark */
+  --color-primary-soft: rgba(196, 98, 63, 0.12);
+  --color-primary-muted: rgba(196, 98, 63, 0.22);
+  --color-primary-text: #E9B194;
 
-  --color-shadow: rgba(0, 0, 0, 0.4);
+  --color-success: #B7C282;
+  --color-success-soft: rgba(107, 122, 63, 0.18);
+  --color-warn: #EDC585;
+  --color-warn-soft: rgba(181, 126, 44, 0.15);
+  --color-danger: #DD7E69;
+  --color-danger-soft: rgba(162, 62, 44, 0.18);
 
-  --color-shimmer-from: #262626;
-  --color-shimmer-via: #333333;
+  --color-shadow: rgba(0, 0, 0, 0.45);
+
+  --color-shimmer-from: #2C2017;
+  --color-shimmer-via: #3A2A1F;
 }
 
 /* ══════════════════════════════════════════════════
@@ -144,31 +169,31 @@ body {
 
 .shader-css-fallback {
   background:
-    radial-gradient(ellipse at 30% 20%, #dcfce7 0%, transparent 50%),
-    radial-gradient(ellipse at 70% 60%, #bbf7d0 0%, transparent 50%),
-    radial-gradient(ellipse at 50% 90%, #86efac 0%, transparent 50%),
-    linear-gradient(135deg, #f8fafc 0%, #f0fdf4 100%);
+    radial-gradient(ellipse at 30% 20%, #F4D6C5 0%, transparent 55%),
+    radial-gradient(ellipse at 70% 60%, #FBEACB 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 90%, #F4D6C5 0%, transparent 50%),
+    linear-gradient(135deg, #FBF6F0 0%, #F5EBDD 100%);
   background-size: 200% 200%;
   animation: drift 20s ease-in-out infinite;
 }
 
 .dark .shader-css-fallback {
   background:
-    radial-gradient(ellipse at 30% 20%, rgba(20, 83, 45, 0.6) 0%, transparent 50%),
-    radial-gradient(ellipse at 70% 60%, rgba(34, 197, 94, 0.25) 0%, transparent 50%),
-    radial-gradient(ellipse at 50% 90%, rgba(5, 46, 22, 0.5) 0%, transparent 50%),
-    linear-gradient(135deg, #020617 0%, #0a0a0a 100%);
+    radial-gradient(ellipse at 30% 20%, rgba(90, 41, 24, 0.5) 0%, transparent 55%),
+    radial-gradient(ellipse at 70% 60%, rgba(58, 42, 31, 0.6) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 90%, rgba(196, 98, 63, 0.15) 0%, transparent 50%),
+    linear-gradient(135deg, #1A130E 0%, #211812 100%);
   background-size: 200% 200%;
   animation: drift 20s ease-in-out infinite;
 }
 
-/* Pulso de glow no CTA primario */
+/* Pulso de glow no CTA primario — terracota */
 @keyframes glow-pulse {
   0%, 100% {
-    box-shadow: 0 0 5px rgba(34, 197, 94, 0.4), 0 0 20px rgba(34, 197, 94, 0.1);
+    box-shadow: 0 0 5px rgba(196, 98, 63, 0.4), 0 0 20px rgba(196, 98, 63, 0.1);
   }
   50% {
-    box-shadow: 0 0 10px rgba(34, 197, 94, 0.6), 0 0 30px rgba(34, 197, 94, 0.2);
+    box-shadow: 0 0 12px rgba(196, 98, 63, 0.6), 0 0 30px rgba(196, 98, 63, 0.25);
   }
 }
 
@@ -179,7 +204,7 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .btn-glow {
     animation: none;
-    box-shadow: 0 0 5px rgba(34, 197, 94, 0.4);
+    box-shadow: 0 0 5px rgba(196, 98, 63, 0.4);
   }
 }
 
@@ -200,7 +225,7 @@ body {
   border: 2px solid transparent;
   background:
     linear-gradient(var(--color-bg-card), var(--color-bg-card)) padding-box,
-    conic-gradient(from var(--shader-angle), #22c55e, #3b82f6, #22c55e) border-box;
+    conic-gradient(from var(--shader-angle), #C4623F, #D89A3F, #C4623F) border-box;
   animation: border-rotate 3s linear infinite;
 }
 

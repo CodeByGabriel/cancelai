@@ -106,12 +106,12 @@ export function FileUpload({ onFilesSelected, status, error }: FileUploadProps) 
 
       {/* Erros de rejeição */}
       {fileRejections.length > 0 && (
-        <div className="mt-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl">
-          <div className="flex items-center gap-2 text-red-700 dark:text-red-300 mb-2">
+        <div className="mt-4 p-4 bg-rust-100 dark:bg-[rgba(162,62,44,0.18)] border border-rust-300/60 dark:border-rust-600/30 rounded-xl">
+          <div className="flex items-center gap-2 text-rust-700 dark:text-rust-300 mb-2">
             <AlertCircle className="w-5 h-5" />
             <span className="font-medium">Arquivos rejeitados</span>
           </div>
-          <ul className="text-sm text-red-600 dark:text-red-400 space-y-1">
+          <ul className="text-sm text-rust-600 dark:text-rust-300 space-y-1">
             {fileRejections.map(({ file, errors }) => (
               <li key={file.name}>
                 {file.name}: {errors.map((e) => e.message).join(', ')}
@@ -123,8 +123,8 @@ export function FileUpload({ onFilesSelected, status, error }: FileUploadProps) 
 
       {/* Erro da API */}
       {error && (
-        <div className="mt-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl">
-          <div className="flex items-center gap-2 text-red-700 dark:text-red-300">
+        <div className="mt-4 p-4 bg-rust-100 dark:bg-[rgba(162,62,44,0.18)] border border-rust-300/60 dark:border-rust-600/30 rounded-xl">
+          <div className="flex items-center gap-2 text-rust-700 dark:text-rust-300">
             <AlertCircle className="w-5 h-5" />
             <span>{error}</span>
           </div>
@@ -161,7 +161,7 @@ export function FileUpload({ onFilesSelected, status, error }: FileUploadProps) 
                 {!isProcessing && (
                   <button
                     onClick={() => removeFile(index)}
-                    className="p-2 text-foreground-faint hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                    className="p-2 text-foreground-faint hover:text-rust-600 hover:bg-rust-100 dark:hover:bg-[rgba(162,62,44,0.18)] rounded-lg transition-colors"
                     aria-label={`Remover ${file.name}`}
                   >
                     <X className="w-4 h-4" />
@@ -176,9 +176,9 @@ export function FileUpload({ onFilesSelected, status, error }: FileUploadProps) 
             onClick={handleAnalyze}
             disabled={files.length === 0 || isProcessing}
             className={cn(
-              'w-full py-4 px-6 rounded-xl font-semibold text-white transition-all duration-200',
-              'bg-gradient-to-r from-primary-600 to-primary-500',
-              'hover:from-primary-700 hover:to-primary-600',
+              'w-full py-4 px-6 rounded-2xl font-semibold text-white transition-all duration-200',
+              'bg-gradient-to-br from-primary-500 to-primary-700',
+              'hover:from-primary-600 hover:to-primary-800',
               'active:scale-[0.98]',
               'focus:ring-4 focus:ring-primary-500/25',
               'disabled:opacity-50 disabled:cursor-not-allowed',

@@ -13,8 +13,8 @@ const ShaderMesh = dynamic(() => import('./ShaderMesh'), {
 });
 
 const PALETTE = {
-  light: ['#f8fafc', '#dcfce7', '#bbf7d0', '#22c55e'],
-  dark: ['#020617', '#052e16', '#14532d', '#22c55e'],
+  light: ['#FBF6F0', '#F4D6C5', '#FBEACB', '#C4623F'],
+  dark: ['#1A130E', '#3A2A1F', '#5A2918', '#C4623F'],
 } as const;
 
 export function HeroBackground() {

@@ -39,11 +39,11 @@ export function formatFileSize(bytes: number): string {
 export function getConfidenceColor(confidence: 'high' | 'medium' | 'low'): string {
   switch (confidence) {
     case 'high':
-      return 'bg-green-100 text-green-800 border-green-200 dark:bg-green-900/20 dark:text-green-200 dark:border-green-800';
+      return 'bg-olive-100 text-olive-700 border-olive-300 dark:bg-[rgba(107,122,63,0.18)] dark:text-olive-300 dark:border-[rgba(183,194,130,0.3)]';
     case 'medium':
-      return 'bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-200 dark:border-yellow-800';
+      return 'bg-ochre-100 text-ochre-700 border-ochre-300 dark:bg-[rgba(181,126,44,0.15)] dark:text-ochre-300 dark:border-[rgba(237,197,133,0.3)]';
     case 'low':
-      return 'bg-gray-100 text-gray-600 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700';
+      return 'bg-elevated text-foreground-muted border-border-strong dark:bg-elevated dark:text-foreground-muted dark:border-border-strong';
   }
 }
 
@@ -160,9 +160,9 @@ export function formatConfidenceScore(score?: number): string {
  * Retorna cor da barra de progresso baseada no score
  */
 export function getScoreBarColor(score: number): string {
-  if (score >= 0.8) return 'bg-green-500';
-  if (score >= 0.6) return 'bg-yellow-500';
-  return 'bg-gray-400 dark:bg-gray-600';
+  if (score >= 0.8) return 'bg-olive-600';
+  if (score >= 0.6) return 'bg-ochre-500';
+  return 'bg-clay-400 dark:bg-clay-600';
 }
 
 /**
