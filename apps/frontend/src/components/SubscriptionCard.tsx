@@ -80,14 +80,18 @@ export const SubscriptionCard = memo(function SubscriptionCard({ subscription, i
   return (
     <div
       className={cn(
-        'bg-card rounded-2xl border overflow-hidden',
-        'shadow-sm hover:shadow-md hover:scale-[1.02] transition-all duration-200',
+        'rounded-2xl overflow-hidden border',
+        'backdrop-blur-md bg-white/70 dark:bg-white/5',
+        'shadow-lg shadow-black/5 dark:shadow-black/20',
+        'hover:bg-white/80 dark:hover:bg-white/10',
+        'hover:shadow-xl hover:shadow-green-500/5 dark:hover:shadow-green-500/10',
+        'hover:scale-[1.01] active:scale-[0.99] transition-all duration-300',
         'animate-slide-up content-auto will-change-auto',
         subscription.confidence === 'high'
-          ? 'border-green-200 dark:border-green-700'
+          ? 'border-green-200/60 dark:border-green-700/40'
           : subscription.confidence === 'medium'
-          ? 'border-yellow-200 dark:border-yellow-700'
-          : 'border-border-strong'
+          ? 'border-yellow-200/60 dark:border-yellow-700/40'
+          : 'border-white/30 dark:border-white/10',
       )}
       style={{ animationDelay: `${index * 100}ms` }}
       onAnimationStart={(e) => { e.currentTarget.style.willChange = 'transform'; }}

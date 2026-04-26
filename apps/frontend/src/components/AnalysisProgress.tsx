@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { CheckCircle, Loader2 } from 'lucide-react';
 import { m, AnimatePresence } from 'motion/react';
 import { cn } from '@/lib/utils';
+import { ProcessingShader } from './ProcessingShader';
 
 interface AnalysisProgressProps {
   currentStage: string;
@@ -62,9 +63,9 @@ export function AnalysisProgress({
       aria-busy={!isComplete}
       aria-label="Progresso da analise"
     >
-      {/* Header */}
-      <div className="text-center mb-6">
-        {isComplete ? (
+      {/* Header — durante processamento mostra Metaballs shader; ao completar, ícone */}
+      {isComplete ? (
+        <div className="text-center mb-6">
           <m.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
@@ -73,22 +74,31 @@ export function AnalysisProgress({
           >
             <CheckCircle className="w-8 h-8 text-green-600 dark:text-green-400" />
           </m.div>
-        ) : (
-          <div className="w-16 h-16 bg-brand-muted rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <Loader2 className="w-8 h-8 text-brand-text animate-spin" />
+
+          <h3 className="text-xl font-semibold text-foreground mb-1">
+            Analisado em {displayDuration}s
+          </h3>
+          <p className="text-foreground-muted text-sm tabular-nums">
+            {subscriptionsFound} assinaturas encontradas
+          </p>
+        </div>
+      ) : (
+        <m.div
+          initial={{ opacity: 0, scale: 0.85 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.25 }}
+          className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 mb-6"
+        >
+          <ProcessingShader size={160} className="sm:!w-[200px] sm:!h-[200px]" />
+          <div className="text-center sm:text-left">
+            <h3 className="text-xl font-semibold text-foreground mb-1">
+              Analisando seus extratos
+            </h3>
+            <p className="text-foreground-muted text-sm tabular-nums">{displayDuration}s</p>
           </div>
-        )}
-
-        <h3 className="text-xl font-semibold text-foreground mb-1">
-          {isComplete
-            ? `Analisado em ${displayDuration}s`
-            : 'Analisando seus extratos'}
-        </h3>
-
-        <p className="text-foreground-muted text-sm tabular-nums">
-          {isComplete ? `${subscriptionsFound} assinaturas encontradas` : `${displayDuration}s`}
-        </p>
-      </div>
+        </m.div>
+      )}
 
       {/* Progress bar */}
       <div className="h-2 bg-elevated rounded-full overflow-hidden mb-4">

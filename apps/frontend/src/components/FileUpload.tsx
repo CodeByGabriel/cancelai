@@ -61,11 +61,11 @@ export function FileUpload({ onFilesSelected, status, error }: FileUploadProps) 
       <div
         {...getRootProps()}
         className={cn(
-          'relative border-2 border-dashed rounded-2xl p-8 sm:p-12 transition-all duration-200 cursor-pointer',
+          'relative rounded-2xl p-8 sm:p-12 transition-all duration-200 cursor-pointer',
           isDragActive
-            ? 'border-brand bg-brand-soft'
-            : 'border-border-strong hover:border-brand/50 hover:bg-surface',
-          isProcessing && 'opacity-50 cursor-not-allowed'
+            ? 'dropzone-shimmer'
+            : 'border-2 border-dashed border-border-strong hover:border-brand/50 hover:bg-surface',
+          isProcessing && 'opacity-50 cursor-not-allowed',
         )}
       >
         <input {...getInputProps()} aria-label="Selecionar arquivos de extrato bancário" />
@@ -182,7 +182,7 @@ export function FileUpload({ onFilesSelected, status, error }: FileUploadProps) 
               'active:scale-[0.98]',
               'focus:ring-4 focus:ring-primary-500/25',
               'disabled:opacity-50 disabled:cursor-not-allowed',
-              'shadow-lg shadow-primary-500/25'
+              !isProcessing && files.length > 0 && 'btn-glow',
             )}
           >
             {isProcessing ? (

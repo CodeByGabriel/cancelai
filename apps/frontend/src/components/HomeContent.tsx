@@ -14,6 +14,8 @@ import { SubscriptionTags } from './SubscriptionTags';
 import { PrivacyBadge } from './PrivacyBadge';
 import { MethodSelector } from './MethodSelector';
 import { BankConnect } from './BankConnect';
+import { HeroBackground } from './HeroBackground';
+import { SuccessConfetti } from './SuccessConfetti';
 import { analyzeStatements, startStreamAnalysis } from '@/lib/api';
 import { useSSEStream } from '@/lib/use-sse-stream';
 import { ConnectionStatus } from './ConnectionStatus';
@@ -144,7 +146,7 @@ function FaqItem({ question, answer }: { question: string; answer: string }) {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="bg-card rounded-xl shadow-sm overflow-hidden transition-colors">
+    <div className="rounded-xl overflow-hidden backdrop-blur-sm bg-white/50 dark:bg-white/5 border border-white/30 dark:border-white/10 hover:bg-white/70 dark:hover:bg-white/10 transition-all duration-300">
       <button
         onClick={() => setOpen(!open)}
         className="w-full flex items-center justify-between p-6 text-left"
@@ -153,18 +155,18 @@ function FaqItem({ question, answer }: { question: string; answer: string }) {
         <h3 className="font-semibold text-foreground">{question}</h3>
         <ChevronDown
           className={cn(
-            'w-5 h-5 text-foreground-faint transition-transform duration-200',
-            open && 'rotate-180'
+            'w-5 h-5 text-foreground-faint transition-transform duration-300',
+            open && 'rotate-180',
           )}
         />
       </button>
-      <AnimatePresence>
+      <AnimatePresence initial={false}>
         {open && (
           <m.div
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.2 }}
+            transition={{ duration: 0.3, ease: 'easeInOut' }}
             className="overflow-hidden"
           >
             <p className="px-6 pb-6 text-foreground-secondary">{answer}</p>
@@ -320,31 +322,35 @@ export function HomeContent() {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.25 }}
             >
-              {/* Hero */}
-              <section className="py-12 sm:py-20 px-4">
-                <div className="max-w-4xl mx-auto text-center">
-                  <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground mb-6">
+              {/* Hero com shader de fundo */}
+              <section className="relative overflow-hidden py-20 md:py-32 px-4 min-h-[60vh]">
+                <HeroBackground />
+                {/* Overlay para legibilidade do texto sobre o shader */}
+                <div className="absolute inset-0 bg-white/60 dark:bg-black/55 z-[1]" aria-hidden="true" />
+                <div className="relative z-10 max-w-4xl mx-auto text-center">
+                  <h1 className="text-5xl md:text-7xl font-bold text-foreground mb-6 tracking-tight">
                     Descubra assinaturas
-                    <span className="text-brand-text block sm:inline"> esquecidas</span>
+                    <span className="text-brand-text italic block sm:inline"> esquecidas</span>
                   </h1>
-                  <p className="text-lg sm:text-xl text-foreground-secondary max-w-2xl mx-auto mb-8">
+                  <p className="text-lg md:text-xl text-foreground-secondary max-w-2xl mx-auto mb-12">
                     Envie seus extratos bancarios e descubra quanto voce gasta com
                     assinaturas que talvez nem lembre mais.
                   </p>
 
-                  <div className="flex justify-center gap-8 mb-12 text-sm">
-                    <div className="text-center">
-                      <p className="text-2xl font-bold text-foreground">15+</p>
-                      <p className="text-foreground-muted">Bancos suportados</p>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-2xl font-bold text-foreground">500+</p>
-                      <p className="text-foreground-muted">Servicos conhecidos</p>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-2xl font-bold text-foreground">0</p>
-                      <p className="text-foreground-muted">Dados armazenados</p>
-                    </div>
+                  <div className="flex justify-center gap-8 md:gap-12">
+                    {[
+                      { value: '15+', label: 'Bancos suportados' },
+                      { value: '500+', label: 'Servicos conhecidos' },
+                      { value: '0', label: 'Dados armazenados' },
+                    ].map(({ value, label }) => (
+                      <div
+                        key={label}
+                        className="text-center cursor-default transition-all duration-300 hover:text-green-500 dark:hover:text-green-400 hover:drop-shadow-[0_0_8px_rgba(34,197,94,0.5)]"
+                      >
+                        <p className="text-3xl md:text-4xl font-bold text-foreground">{value}</p>
+                        <p className="text-xs uppercase tracking-widest text-foreground-muted mt-1">{label}</p>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </section>
@@ -525,6 +531,10 @@ export function HomeContent() {
               transition={{ type: 'spring', stiffness: 260, damping: 20 }}
               className="py-8 px-4"
             >
+              <SuccessConfetti
+                trigger
+                annualSavings={state.result.summary.totalAnnualSpending ?? 0}
+              />
               <Results
                 result={state.result}
                 onReset={() => dispatch({ type: 'RESET' })}
