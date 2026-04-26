@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { Loader2 } from 'lucide-react';
 import { useReducedMotion } from 'motion/react';
@@ -25,6 +26,15 @@ interface Props {
 export function ProcessingShader({ size = 200, className }: Props) {
   const reduceMotion = useReducedMotion();
   const { resolvedTheme } = useTheme();
+  const [tabVisible, setTabVisible] = useState(true);
+
+  // Pausa o shader quando a tab fica inativa para economizar GPU/bateria.
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
+    const onVisibility = () => setTabVisible(!document.hidden);
+    document.addEventListener('visibilitychange', onVisibility);
+    return () => document.removeEventListener('visibilitychange', onVisibility);
+  }, []);
 
   if (reduceMotion) {
     return (
@@ -55,7 +65,7 @@ export function ProcessingShader({ size = 200, className }: Props) {
       <Metaballs
         colors={[...palette]}
         colorBack="rgba(0,0,0,0)"
-        speed={0.3}
+        speed={tabVisible ? 0.3 : 0}
         scale={1.2}
         count={6}
         size={0.55}

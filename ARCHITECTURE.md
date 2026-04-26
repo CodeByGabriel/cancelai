@@ -356,13 +356,18 @@ app/layout.tsx (Server Component)
 └── app/page.tsx (Server Component - NAO adicionar 'use client')
     └── HomeContent.tsx (Client Component - estado centralizado)
         ├── Header.tsx
-        ├── FileUpload.tsx (react-dropzone)
+        ├── HeroBackground.tsx (dynamic shader + CssMeshFallback)
+        │   ├── ShaderMesh.tsx (MeshGradient + IntersectionObserver + DPR cap)
+        │   └── CssMeshFallback.tsx (gradient CSS para reduced-motion / SSR)
+        ├── FileUpload.tsx (react-dropzone + .dropzone-shimmer + .btn-glow)
         ├── AnalysisProgress.tsx (4 steps: upload → read → analyze → validate)
+        │   └── ProcessingShader.tsx (Metaballs + visibilitychange pause)
+        ├── SuccessConfetti.tsx (canvas-confetti, gating >= R$100)
         ├── Results.tsx
         │   ├── ResultsSummary.tsx (impacto financeiro + metricas)
-        │   ├── SubscriptionCard.tsx (expandivel, com cancel link)
+        │   ├── SubscriptionCard.tsx (glass morphism, expandivel)
         │   └── SubscriptionTags.tsx (categoria + periodo)
-        ├── Features.tsx
+        ├── Features.tsx (glass morphism + icon glow)
         ├── PrivacyBadge.tsx
         ├── ThemeToggle.tsx (dark mode via next-themes)
         ├── AnimatedCounter.tsx (react-countup)
@@ -420,6 +425,48 @@ if (!isMounted) return <Loading />;
 - **Cores:** `primary` (green #22c55e), `accent` (blue #3b82f6)
 - **Fonte:** Inter, system-ui, sans-serif
 - **Animacoes:** `fade-in`, `slide-up`, `pulse-slow`
+
+### Camada Visual — Paper Shaders + CSS Effects
+
+Stack de efeitos visuais GPU + CSS, com defesa em profundidade contra perda de FPS em mobile.
+
+**Shaders WebGL2 (`@paper-design/shaders-react`):**
+- `ShaderMesh.tsx` — `MeshGradient` no hero, paleta troca por `resolvedTheme` (light/dark)
+- `ProcessingShader.tsx` — `Metaballs` circular durante `processing`/`streaming`
+
+**Pattern obrigatorio para qualquer shader novo:**
+```tsx
+const ShaderX = dynamic(() => import('./ShaderX'), {
+  ssr: false,                       // WebGL nao existe no server
+  loading: () => <CssFallback />,   // evita flash branco no FCP
+});
+
+export function Wrapper() {
+  const reduceMotion = useReducedMotion();
+  if (reduceMotion) return <CssFallback />;  // a11y first
+  return <ShaderX />;
+}
+```
+
+**Defesas de performance (todas obrigatorias):**
+1. `dynamic(..., { ssr: false })` + CSS fallback no `loading`
+2. `useReducedMotion()` retorna fallback estatico
+3. `IntersectionObserver` zera `speed` quando offscreen
+4. `visibilitychange` zera `speed` quando tab inativa
+5. `minPixelRatio = Math.min(devicePixelRatio, 1.5)` (DPR cap)
+6. MAX 1 shader animado visivel por vez
+7. `aria-hidden="true"` no canvas (decorativo)
+
+**Efeitos CSS puros (zero shader):**
+- `.btn-glow` — `glow-pulse` keyframe + `prefers-reduced-motion: reduce` desativa
+- `.dropzone-shimmer` — `border-rotate` + `@property --shader-angle` (Chrome 85+ / Safari 15.4+)
+- Glass morphism: `backdrop-blur-{sm,md} bg-white/70 dark:bg-white/5`
+- Stats / icone hover: `hover:drop-shadow-[0_0_8px_rgba(34,197,94,0.5)]`
+
+**Confetti (`canvas-confetti`):**
+- `SuccessConfetti.tsx` dispara apenas se `annualSavings >= 100`
+- 80 particulas (≤ R$500) ou 150 (> R$500)
+- `disableForReducedMotion: true` (built-in da lib)
 - **Responsivo:** Mobile-first (sm/md/lg breakpoints)
 
 ---
@@ -603,10 +650,12 @@ Frontend (Next.js) e backend (Fastify) sao servicos separados no Railway.
 | `react` | ^18.2 | UI |
 | `react-dropzone` | ^14.2 | Drag-drop upload |
 | `lucide-react` | ^0.321 | Icones |
-| `motion` | ^12.34 | Animacoes |
+| `motion` | ^12.34 | Animacoes (LazyMotion strict) |
 | `next-themes` | ^0.4 | Dark mode |
 | `react-countup` | ^6.5 | Contadores animados |
 | `tailwindcss` | ^3.4 | Styling |
+| `@paper-design/shaders-react` | ^0.0.76 | Shaders WebGL2 (MeshGradient, Metaballs) — lazy loaded |
+| `canvas-confetti` | ^1.9 | Confetti no success com gating financeiro |
 
 ---
 
