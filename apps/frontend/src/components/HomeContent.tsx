@@ -151,7 +151,7 @@ function FaqItem({ question, answer }: { question: string; answer: string }) {
     <div className="rounded-xl overflow-hidden bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors duration-200">
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between p-6 text-left hover:text-green-600 dark:hover:text-green-400 transition-colors duration-200"
+        className="w-full flex items-center justify-between p-6 text-left"
         aria-expanded={open}
       >
         <h3 className="font-semibold text-foreground">{question}</h3>
