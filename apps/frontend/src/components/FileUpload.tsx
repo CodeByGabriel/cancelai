@@ -63,7 +63,7 @@ export function FileUpload({ onFilesSelected, status, error }: FileUploadProps) 
         className={cn(
           'relative rounded-2xl p-8 sm:p-12 transition-all duration-200 cursor-pointer',
           isDragActive
-            ? 'dropzone-shimmer'
+            ? 'border-2 border-dashed border-green-500 bg-green-50/50 dark:bg-green-950/20'
             : 'border-2 border-dashed border-border-strong hover:border-brand/50 hover:bg-surface',
           isProcessing && 'opacity-50 cursor-not-allowed',
         )}
@@ -176,7 +176,7 @@ export function FileUpload({ onFilesSelected, status, error }: FileUploadProps) 
             onClick={handleAnalyze}
             disabled={files.length === 0 || isProcessing}
             className={cn(
-              'w-full py-4 px-6 rounded-xl font-semibold text-white transition-all duration-200',
+              'w-full py-3 px-8 rounded-full font-semibold text-white transition-all duration-200',
               'bg-gradient-to-r from-primary-600 to-primary-500',
               'hover:from-primary-700 hover:to-primary-600',
               'active:scale-[0.98]',
