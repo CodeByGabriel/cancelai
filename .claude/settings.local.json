@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "Bash(xargs grep *)",
+      "mcp__claude_ai_Figma__whoami",
+      "Bash(git revert *)",
+      "Bash(git stash *)",
+      "Bash(git checkout *)"
+    ]
+  }
+}
