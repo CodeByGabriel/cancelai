@@ -20,7 +20,7 @@ import type {
 import type { FileToProcess } from '../parsers/index.js';
 
 // ═══════════════════════════════════════════════════════════════
-// TRANSACTION GROUP — extraido de subscription-detector.ts
+// TRANSACTION GROUP
 // ═══════════════════════════════════════════════════════════════
 
 /**

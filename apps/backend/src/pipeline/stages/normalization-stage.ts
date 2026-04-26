@@ -4,8 +4,6 @@
  * Filtra transacoes invalidas: totais de fatura, PIX, transferencias.
  * Parcelas sao separadas em context.installments (nao descartadas).
  * Mantem apenas debitos que podem ser assinaturas recorrentes.
- *
- * Extraido de subscription-detector.ts linhas 107-188.
  */
 
 import type { Transaction, DetectedInstallment } from '../../types/index.js';
@@ -13,7 +11,7 @@ import type { PipelineContext, PipelineEvent, PipelineStage } from '../pipeline-
 import { DEBITO_AUTOMATICO_PATTERNS } from '../../config/index.js';
 
 // ═══════════════════════════════════════════════════════════════
-// PATTERNS — extraidos de subscription-detector.ts
+// PATTERNS
 // ═══════════════════════════════════════════════════════════════
 
 const AGGREGATE_PATTERNS = [

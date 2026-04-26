@@ -13,7 +13,7 @@
 - `turbo build`: OK (2 packages, cache funcional)
 - `turbo test -- --run`: OK (75 testes passando, 0 failing)
 - `turbo typecheck`: OK (0 erros em backend e frontend)
-- `turbo lint`: Frontend OK. Backend tem 55 erros pré-existentes (documentados em SECURITY-AUDIT.md — require-await nos bank parsers, unused vars no legacy detector, test files fora do tsconfig).
+- `turbo lint`: Frontend OK. Backend tem 55 erros pré-existentes (documentados em docs/audits/SECURITY-AUDIT.md — require-await nos bank parsers, unused vars no legacy detector, test files fora do tsconfig).
 
 ### Notas
 - **Deploy é Railway** (vercel.json removido, deploy.yml reescrito para Railway CLI)
@@ -52,7 +52,7 @@
 - [x] **T21: Data stripping (PII)** — `pii-stripper.ts` com funcao pura stripPII(). Remove: CPF, CNPJ, numeros de conta, cartao, saldo, email, telefone via regex patterns.
 - [x] **T22: Privacy policy page** — `/privacidade` em PT-BR. 9 secoes: dados coletados, processamento, base legal, transferencia internacional, retencao, direitos do titular, cookies, seguranca, contato. Link no Footer.
 - [x] **T23: ROPA documentation** — `docs/ROPA.md` conforme LGPD Art. 37. Identificacao do controlador, atividades de tratamento, dados NAO coletados, medidas de seguranca, direitos do titular, transferencias internacionais.
-- [x] **T24: Security audit final** — SECURITY-AUDIT.md atualizado com Phase 3 fixes (MED-5, LOW-4, LOW-5 todos FIXED). Tabela de hardening implementado. Verificacao: 88 testes, build limpo.
+- [x] **T24: Security audit final** — docs/audits/SECURITY-AUDIT.md atualizado com Phase 3 fixes (MED-5, LOW-4, LOW-5 todos FIXED). Tabela de hardening implementado. Verificacao: 88 testes, build limpo.
 
 ### Verificacoes
 - `turbo build`: OK (2 packages)
@@ -125,4 +125,4 @@
 - **Testes:** 113/113 passando
 - **Typecheck:** 0 erros
 - **Accuracy:** F1=1.000, Precision=1.000, Recall=1.000
-- **Relatorio completo:** FINAL-AUDIT-REPORT.md
+- **Relatorio completo:** docs/audits/FINAL-AUDIT-REPORT.md

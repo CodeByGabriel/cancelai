@@ -4,8 +4,6 @@
  * Agrupa transacoes por similaridade de descricao usando bigram inverted index
  * para pre-filtrar candidatos (O(n × avg_candidates) em vez de O(n²)).
  * Apos agrupamento, enriquece com metricas de recorrencia.
- *
- * Extraido de subscription-detector.ts linhas 362-426.
  */
 
 import type { Transaction } from '../../types/index.js';

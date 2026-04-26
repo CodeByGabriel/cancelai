@@ -13,7 +13,7 @@ import { describe, it, expect, beforeAll, afterAll, afterEach } from 'vitest';
 import * as fc from 'fast-check';
 import { analyzeStatements } from '../src/services/analysis-service.js';
 import type { FileToProcess } from '../src/parsers/index.js';
-import { buildCorpus, tfidfCosineSimilarity } from '../src/detector/tfidf-scorer.js';
+import { buildCorpus, tfidfCosineSimilarity } from '../src/services/tfidf-scorer.js';
 import { normalizeDescription, clearNormalizationCache } from '../src/utils/string.js';
 
 // ══════════════════════════════════════════════════════════════

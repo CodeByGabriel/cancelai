@@ -9,8 +9,6 @@
  *         + knownService*0.15 + habituality*0.10 + maturity*0.05
  *
  * Thresholds: high >= 0.85, medium >= 0.60, low >= 0.40
- *
- * Extraido de subscription-detector.ts linhas 430-696.
  */
 
 import type {
@@ -32,7 +30,7 @@ import {
 } from '../../services/known-services.js';
 import { validateGroupSanity, validateHighValueSubscription } from './sanity-stage.js';
 import { isDebitoAutomatico } from './normalization-stage.js';
-import { buildCorpus, tfidfCosineSimilarity, type TfidfCorpus } from '../../detector/tfidf-scorer.js';
+import { buildCorpus, tfidfCosineSimilarity, type TfidfCorpus } from '../../services/tfidf-scorer.js';
 
 // ═══════════════════════════════════════════════════════════════
 // TIPOS INTERNOS

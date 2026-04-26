@@ -3,8 +3,6 @@
  *
  * Exporta funcoes puras de validacao de sanidade matematica
  * e implementa um stage de post-filtering.
- *
- * Extraido de subscription-detector.ts linhas 194-285.
  */
 
 import type { Transaction } from '../../types/index.js';

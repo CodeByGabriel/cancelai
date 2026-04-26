@@ -32,7 +32,7 @@ npm run lint             # ESLint
 - Nunca use `any` — use `unknown`, generics, ou tipo especifico
 - Nunca atribua `undefined` a prop opcional — use spread condicional ou `delete`
 - Nunca crie arquivo fora de kebab-case — `analysis-service.ts`, nao `analysisService.ts`
-- Nunca adicione dependencia sem necessidade — `zod` ja esta instalado e NUNCA foi importado
+- Nunca adicione dependencia sem necessidade — verifique se ja existe um util equivalente
 - Nunca importe sem `.js` no backend — build falha silenciosamente em runtime
 - Nunca use `toBe()` para comparar floats — use `toBeCloseTo(val, 2)`
 - Nunca adicione `'use client'` em `page.tsx` — e Server Component, estado fica em `HomeContent.tsx`
@@ -56,7 +56,6 @@ new RegExp(delimiter.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g')
 - **High confidence:** >= 0.85 (`config/index.ts:315`, `CONFIDENCE_THRESHOLDS_V2`)
 - **Medium:** >= 0.60 | **Low:** >= 0.40
 - **IA min confidence:** >= 0.75 para promover ambiguo (`ai-classifier.ts`)
-- **NOTA:** `subscription-detector.ts` tem thresholds legados (0.80) mas NAO e usado pelo pipeline
 
 ## Variaveis de Ambiente
 
@@ -71,4 +70,4 @@ AGGREGATOR_CLIENT_SECRET=xxx # OPCIONAL — Pluggy Client Secret (Open Finance)
 ## Referencia
 
 Para pipeline, tipos, algoritmo, endpoints, bancos, UI e tudo mais: **ARCHITECTURE.md**
-Para progresso entre sessoes: **SCRATCHPAD.md**
+Para progresso entre sessoes: **docs/audits/SCRATCHPAD.md**

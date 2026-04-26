@@ -41,3 +41,8 @@ export {
   type OpenFinanceAccount,
   type OpenFinanceTransaction,
 } from './open-finance.service.js';
+export {
+  buildCorpus,
+  tfidfCosineSimilarity,
+  type TfidfCorpus,
+} from './tfidf-scorer.js';

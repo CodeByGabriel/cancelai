@@ -8,6 +8,13 @@ dist/
 build/
 .next/
 out/
+.turbo/
+
+# Lighthouse raw reports (mantém apenas o resumo .md)
+tasks/lighthouse-local
+tasks/lighthouse-result
+tasks/lighthouse-*.json
+tasks/lighthouse-*.html
 
 # Environment
 .env
