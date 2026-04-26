@@ -16,8 +16,6 @@ import { MethodSelector } from './MethodSelector';
 import { BankConnect } from './BankConnect';
 import { HeroBackground } from './HeroBackground';
 import { SuccessConfetti } from './SuccessConfetti';
-import { ReciboResultado } from './ReciboResultado';
-import { RevealSection } from './RevealSection';
 import { analyzeStatements, startStreamAnalysis } from '@/lib/api';
 import { useSSEStream } from '@/lib/use-sse-stream';
 import { ConnectionStatus } from './ConnectionStatus';
@@ -324,54 +322,38 @@ export function HomeContent() {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.25 }}
             >
-              {/* Hero — always-dark warm com shader de fundo + loss framing */}
-              <section className="relative overflow-hidden bg-[#13110F] text-white py-24 md:py-36 px-4 min-h-[70vh]">
+              {/* Hero com shader de fundo */}
+              <section className="relative overflow-hidden py-20 md:py-32 px-4 min-h-[60vh]">
                 <HeroBackground />
-                {/* Overlay para legibilidade — warm-black */}
-                <div className="absolute inset-0 bg-[#13110F]/60 z-[1]" aria-hidden="true" />
-                {/* Noise overlay (gradient sem grain bandeia em telas 8-bit) */}
-                <div className="noise-overlay" aria-hidden="true" />
-                {/* Focal point amber atras do titulo */}
-                <div className="hero-focal" aria-hidden="true" />
-
+                {/* Overlay para legibilidade do texto sobre o shader */}
+                <div className="absolute inset-0 bg-white/60 dark:bg-black/55 z-[1]" aria-hidden="true" />
                 <div className="relative z-10 max-w-4xl mx-auto text-center">
-                  <h1 className="font-display text-5xl md:text-7xl font-semibold text-white mb-6 leading-[1.05]" style={{ letterSpacing: '-0.035em' }}>
-                    Você está
-                    <span className="block sm:inline gradient-text-amber-green"> perdendo dinheiro</span>
+                  <h1 className="text-5xl md:text-7xl font-bold text-foreground mb-6 tracking-tight">
+                    Descubra assinaturas
+                    <span className="text-brand-text italic block sm:inline"> esquecidas</span>
                   </h1>
-                  <p className="font-body text-lg md:text-xl text-white/70 max-w-xl mx-auto mb-10">
-                    com assinaturas que esqueceu de cancelar.
+                  <p className="text-lg md:text-xl text-foreground-secondary max-w-2xl mx-auto mb-12">
+                    Envie seus extratos bancarios e descubra quanto voce gasta com
+                    assinaturas que talvez nem lembre mais.
                   </p>
 
-                  <div className="flex justify-center gap-10 md:gap-16 mb-10">
+                  <div className="flex justify-center gap-8 md:gap-12">
                     {[
-                      { value: '15+', label: 'Bancos' },
-                      { value: '500+', label: 'Servicos' },
-                      { value: '0', label: 'Dados guardados' },
+                      { value: '15+', label: 'Bancos suportados' },
+                      { value: '500+', label: 'Servicos conhecidos' },
+                      { value: '0', label: 'Dados armazenados' },
                     ].map(({ value, label }) => (
                       <div
                         key={label}
-                        className="text-center cursor-default transition-all duration-300 hover:drop-shadow-[0_0_12px_rgba(34,197,94,0.5)]"
+                        className="text-center cursor-default transition-all duration-300 hover:text-green-500 dark:hover:text-green-400 hover:drop-shadow-[0_0_8px_rgba(34,197,94,0.5)]"
                       >
-                        <p className="font-mono tabular-nums slashed-zero text-4xl md:text-5xl font-bold text-white tracking-tight">
-                          {value}
-                        </p>
-                        <p className="text-[10px] uppercase tracking-[0.2em] text-white/40 mt-2">
-                          {label}
-                        </p>
+                        <p className="text-3xl md:text-4xl font-bold text-foreground">{value}</p>
+                        <p className="text-xs uppercase tracking-widest text-foreground-muted mt-1">{label}</p>
                       </div>
                     ))}
                   </div>
-
-                  {/* Trust microcopy stack — 4 claims com dots */}
-                  <p className="text-xs text-white/50 max-w-xl mx-auto">
-                    🔒 Sem login bancário · Sem cadastro · Arquivo apagado após análise · LGPD
-                  </p>
                 </div>
               </section>
-
-              {/* Fade zone entre hero warm-dark e conteudo */}
-              <div className="h-32 md:h-48 bg-gradient-to-b from-[#13110F] to-background" aria-hidden="true" />
 
               {/* Method selector + Upload/Connect */}
               <section className="py-8 px-4">
@@ -398,19 +380,19 @@ export function HomeContent() {
               </section>
 
               {/* Features */}
-              <RevealSection className="py-16 px-4 bg-surface transition-colors">
+              <section className="py-16 px-4 bg-surface transition-colors">
                 <div className="max-w-6xl mx-auto">
-                  <h2 className="font-display text-3xl md:text-4xl font-semibold text-foreground text-center mb-8 tracking-tight">
+                  <h2 className="text-2xl font-bold text-foreground text-center mb-8">
                     Por que usar o Cancel<span className="text-brand-text">aí</span>?
                   </h2>
                   <Features />
                 </div>
-              </RevealSection>
+              </section>
 
               {/* Como funciona */}
-              <RevealSection className="py-16 px-4">
+              <section className="py-16 px-4">
                 <div className="max-w-4xl mx-auto">
-                  <h2 className="font-display text-3xl md:text-4xl font-semibold text-foreground text-center mb-12 tracking-tight">
+                  <h2 className="text-2xl font-bold text-foreground text-center mb-12">
                     Como funciona?
                   </h2>
                   <div className="grid sm:grid-cols-3 gap-8">
@@ -419,8 +401,8 @@ export function HomeContent() {
                       { step: 2, title: 'Analise automatica', desc: 'Algoritmos identificam padroes de cobranca recorrente. Isso leva de 10 a 30 segundos.' },
                       { step: 3, title: 'Revise e economize', desc: 'Veja as assinaturas detectadas, revise os resultados e descubra como cancelar.' },
                     ].map(({ step, title, desc }) => (
-                      <div key={step} className="group text-center hover:-translate-y-1 transition-transform duration-300 ease-out">
-                        <div className="w-12 h-12 bg-brand text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4 transition-all duration-300 group-hover:drop-shadow-[0_0_12px_rgba(34,197,94,0.5)]">
+                      <div key={step} className="text-center">
+                        <div className="w-12 h-12 bg-brand text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">
                           {step}
                         </div>
                         <h3 className="font-semibold text-foreground mb-2">{title}</h3>
@@ -429,12 +411,12 @@ export function HomeContent() {
                     ))}
                   </div>
                 </div>
-              </RevealSection>
+              </section>
 
               {/* FAQ */}
-              <RevealSection className="py-16 px-4 bg-surface transition-colors">
+              <section className="py-16 px-4 bg-surface transition-colors">
                 <div className="max-w-3xl mx-auto">
-                  <h2 className="font-display text-3xl md:text-4xl font-semibold text-foreground text-center mb-12 tracking-tight">
+                  <h2 className="text-2xl font-bold text-foreground text-center mb-12">
                     Perguntas frequentes
                   </h2>
                   <div className="space-y-4">
@@ -456,7 +438,7 @@ export function HomeContent() {
                     />
                   </div>
                 </div>
-              </RevealSection>
+              </section>
             </m.div>
           )}
 
@@ -553,17 +535,6 @@ export function HomeContent() {
                 trigger
                 annualSavings={state.result.summary.totalAnnualSpending ?? 0}
               />
-
-              {state.result.subscriptions.length > 0 && (
-                <div className="mb-12 px-2">
-                  <ReciboResultado
-                    subscriptions={state.result.subscriptions}
-                    totalMonthly={state.result.summary.totalMonthlySpending ?? 0}
-                    totalAnnual={state.result.summary.totalAnnualSpending ?? 0}
-                  />
-                </div>
-              )}
-
               <Results
                 result={state.result}
                 onReset={() => dispatch({ type: 'RESET' })}

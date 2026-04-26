@@ -12,11 +12,9 @@ const ShaderMesh = dynamic(() => import('./ShaderMesh'), {
   loading: () => <CssMeshFallback />,
 });
 
-// Paleta warm-analoga (60deg do circulo cromatico). Cream/amber/mint produz
-// interpolacao suave; complementares produzem marrom feio na zona de mistura.
 const PALETTE = {
-  light: ['#FAF7F2', '#FEF3C7', '#FDE68A', '#22c55e'],
-  dark: ['#13110F', '#1C1815', '#2D1F0E', '#065F46'],
+  light: ['#f8fafc', '#dcfce7', '#bbf7d0', '#22c55e'],
+  dark: ['#020617', '#052e16', '#14532d', '#22c55e'],
 } as const;
 
 export function HeroBackground() {

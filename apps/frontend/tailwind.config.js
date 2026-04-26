@@ -54,9 +54,6 @@ module.exports = {
       },
       fontFamily: {
         sans: ['var(--font-dm-sans)', 'system-ui', 'sans-serif'],
-        display: ['var(--font-display)', 'var(--font-dm-sans)', 'system-ui', 'sans-serif'],
-        body: ['var(--font-dm-sans)', 'system-ui', 'sans-serif'],
-        mono: ['var(--font-mono)', 'ui-monospace', 'SFMono-Regular', 'monospace'],
       },
       animation: {
         'fade-in': 'fadeIn 0.5s ease-out',
