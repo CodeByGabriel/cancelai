@@ -20,19 +20,17 @@ cancelai/
 │   └── backend/               # Fastify + TypeScript
 │       └── src/
 │           ├── config/            # Configuracao central + known-services-data (352 servicos)
-│           ├── adapters/           # open-finance.adapter.ts (agregador → Transaction)
+│           ├── adapters/          # open-finance.adapter.ts (agregador → Transaction)
 │           ├── controllers/       # Route handlers (analysis-controller.ts, open-finance-controller.ts)
-│           ├── detector/          # Algoritmo legado (subscription-detector.ts) — NAO usado pelo pipeline
 │           ├── middleware/        # Rate limiting (smart-rate-limit.ts)
 │           ├── parsers/           # Sistema de plugins por banco
-│           │   ├── banks/         # 21 parsers (1 arquivo = 1 banco) + generic fallback
+│           │   ├── banks/         # 19 parsers (1 arquivo = 1 banco) + generic fallback
 │           │   ├── formats/       # csv-format.ts, pdf-format.ts, ofx-format.ts
 │           │   └── registry/      # ParserRegistry + BankParserPlugin interface
 │           ├── pipeline/          # Pipeline async 8 stages + SSE
 │           │   ├── stages/        # 8 stages + recurrence-analyzer
 │           │   ├── pipeline-orchestrator.ts
-│           │   ├── pipeline-events.ts
-│           │   └── pipeline-observer.ts
+│           │   └── pipeline-events.ts
 │           ├── services/          # Logica de negocio
 │           │   ├── analysis-service.ts    # Facade consumindo runPipeline()
 │           │   ├── ai-classifier.ts       # Pipeline IA (DeepSeek)
@@ -40,8 +38,6 @@ cancelai/
 │           ├── utils/             # Helpers (string.ts, date.ts, amount.ts, lru-cache.ts)
 │           └── types/             # Interfaces (todas readonly)
 │
-├── api/                       # Serverless entrypoint (legado, nao usado no Railway)
-│   └── index.ts                   # Adapta Fastify para serverless (legado)
 └── package.json               # Workspace root (engines: node >= 18)
 ```
 
@@ -133,15 +129,14 @@ Upload → ValidationStage → ParsingStage → NormalizationStage → GroupingS
 
 ```
 confidenceScore =
-    stringSimilarity    x 0.20    // Similaridade de descricao
+    stringSimilarity    x 0.15    // Similaridade de descricao
+  + tfidfBonus          x 0.05    // Bonus TF-IDF para termos discriminativos
   + recurrenceScore     x 0.30    // Padrao periodico (semanal a anual)
   + valueStabilityScore x 0.20    // Consistencia de valor (±15%)
   + knownServiceBonus   x 0.15    // Servico conhecido
   + habitualityScore    x 0.10    // Regularidade dos intervalos
   + streamMaturity      x 0.05    // Historico e quantidade de ocorrencias
 ```
-
-> **NOTA:** `detector/subscription-detector.ts` contem uma versao legada com 4 sinais (0.25/0.35/0.20/0.20, high >= 0.80). Este arquivo NAO e usado pelo pipeline ativo — mantido apenas como referencia historica.
 
 ### Thresholds REAIS (codigo fonte: `config/index.ts:314-318`)
 
