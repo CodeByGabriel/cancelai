@@ -208,7 +208,7 @@ const fuseIndex = new Fuse(fuseItems, {
     { name: 'canonicalName', weight: 1.0 },
     { name: 'aliases', weight: 0.8 },
   ],
-  threshold: 0.4,
+  threshold: 0.3,
   distance: 100,
   includeScore: true,
 });
@@ -270,7 +270,7 @@ export function findKnownService(description: string): KnownService | null {
   if (!result) {
     const fuseResults = fuseIndex.search(normalized);
     const topResult = fuseResults[0];
-    if (topResult && topResult.score !== undefined && topResult.score < 0.4) {
+    if (topResult && topResult.score !== undefined && topResult.score < 0.3) {
       result = topResult.item.service;
     }
   }

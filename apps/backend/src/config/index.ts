@@ -346,6 +346,8 @@ export const RETAIL_EXCLUSION = Object.freeze([
   'panvel', 'carrefour', 'extra hiper', 'atacadao', 'assai',
   'big bompreco', 'lojas americanas', 'casas bahia', 'ponto frio',
   'mercado livre', 'mercadolivre',
+  // Generic tool-purchase descriptors that recur but are not cancelable subscriptions
+  'scraping tools', 'scraping tool',
 ] as const);
 
 /**

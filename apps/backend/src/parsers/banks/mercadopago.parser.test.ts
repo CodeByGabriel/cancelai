@@ -6,10 +6,11 @@ import mercadopagoParser from './mercadopago.parser.js';
 // independently from the PDF extraction layer.
 const SAMPLE_PDF_TEXT = `
 Mercado Pago
-Cartão Visa
+Cartão Visa [****0715]
 
 Detalhes de consumo
 
+Movimentações na fatura
 Data  Estabelecimento  Valor
 
 08/04  DM*hostingercombr  R$ 69,99
@@ -117,5 +118,20 @@ describe('Mercado Pago PDF Parser', () => {
   test('filtra "IOF do rotativo"', async () => {
     const txs = await mercadopagoParser.parse(SAMPLE_PDF_TEXT, OPTIONS);
     expect(txs.every((t) => !t.description.toLowerCase().includes('iof do rotativo'))).toBe(true);
+  });
+
+  test('filtra header "Detalhes de consumo"', async () => {
+    const txs = await mercadopagoParser.parse(SAMPLE_PDF_TEXT, OPTIONS);
+    expect(txs.every((t) => !t.description.toLowerCase().includes('detalhes de consumo'))).toBe(true);
+  });
+
+  test('filtra header "Cartão Visa"', async () => {
+    const txs = await mercadopagoParser.parse(SAMPLE_PDF_TEXT, OPTIONS);
+    expect(txs.every((t) => !/cart[aã]o\s*visa/i.test(t.description))).toBe(true);
+  });
+
+  test('filtra "Movimentações na fatura"', async () => {
+    const txs = await mercadopagoParser.parse(SAMPLE_PDF_TEXT, OPTIONS);
+    expect(txs.every((t) => !/movimenta/i.test(t.description))).toBe(true);
   });
 });

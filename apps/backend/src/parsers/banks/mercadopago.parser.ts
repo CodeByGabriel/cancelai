@@ -79,7 +79,19 @@ const SKIP_PATTERNS = [
   /valor\s*(?:da\s*)?fatura/i,
   /saldo\s*(?:da\s*)?fatura/i,
   /cobran[cç]a\s*de\s*anuidade/i,
-  // Exchange rate lines from international purchases
+  // PDF section headers — never transactions
+  /detalhes\s+de\s+consumo/i,
+  /cart[aã]o\s+visa/i,
+  /movimenta[çc][oõ]es\s+na\s+fatura/i,
+  /resumo\s+da\s+fatura/i,
+  /lan[cç]amentos\s+futuros/i,
+  /informa[çc][oõ]es\s+complementares/i,
+  /parcele\s+a\s+fatura/i,
+  /op[cç][oõ]es\s+de\s+pagamento/i,
+  // Masked card number identifiers e.g. [****0715] or Cartão [****1234]
+  /\[\*{4,}\d{4}\]/,
+  // Exchange rate lines from international purchases (USD X = R$ Y, BRL X = USD Y)
+  /^[A-Z]{3}\s+[\d.,]+\s*=/i,
   /(?:USD|EUR|GBP|ARS|JPY)\s+[\d.,]+\s*=\s*R?\$/i,
   /brl\s+[\d.,]+\s*=\s*(?:USD|EUR)/i,
 ];

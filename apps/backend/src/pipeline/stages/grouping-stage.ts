@@ -130,10 +130,16 @@ function groupTransactionsBySimilarity(transactions: Transaction[]): Transaction
       const similarity = calculateSimilarity(baseName, candidateName);
 
       if (similarity >= config.detection.similarityThreshold) {
+        // Exact description matches (same service) tolerate up to 50% amount
+        // variance — covers usage-based billing (Railway) and FX fluctuation (USD services).
+        // Standard 15% tolerance applies to similar-but-not-identical descriptions.
+        const effectiveTolerance = similarity >= 1.0
+          ? 0.50
+          : config.detection.amountTolerancePercent;
         const amountSimilar = isWithinTolerance(
           baseTransaction.amount,
           candidate.amount,
-          config.detection.amountTolerancePercent,
+          effectiveTolerance,
         );
 
         if (amountSimilar) {

@@ -5464,6 +5464,8 @@ export const KNOWN_SERVICES_DATA: Record<string, KnownService> = {
     aliases: [
       'x corp', 'x premium', 'twitter blue', 'twitter premium',
       'x corp paid features', 'twitter x', 'x twitter',
+      // extractServiceName filters single-char "x", leaving these as the matched tokens
+      'corp paid features', 'corp paid', 'x corp paid',
     ],
     billingDescriptors: [
       'X CORP. PAID FEATURES', 'X CORP PAID FEATURES', 'X CORP',
