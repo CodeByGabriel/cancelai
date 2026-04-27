@@ -275,6 +275,12 @@ export function HomeContent() {
     }
   }, [fallbackToSync]);
 
+  // ── Logo click → reset analysis state (back to idle) ──
+  const handleLogoReset = useCallback(() => {
+    if (state.status === 'idle') return;
+    dispatch({ type: 'RESET' });
+  }, [state.status]);
+
   // ── Computed values for streaming view ──
   // Usa annualAmount (já considera o periodo detectado) e ignora low-confidence
   // para alinhar com o totalAnnualSpending exibido no resultado final.
@@ -305,7 +311,7 @@ export function HomeContent() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header />
+      <Header onReset={handleLogoReset} />
 
       <main
         className="flex-1"
